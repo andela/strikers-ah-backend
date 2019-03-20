@@ -1,3 +1,10 @@
+sudo: false
 langauge: node_js
 node_js:
 - "stable"
+install:
+- npm ci
+script:
+- npm run test
+notifications:
+  email: false
