@@ -8,6 +8,7 @@ yarn-error.log*
 #Environment Variables
 .env
 
+
 # Runtime data
 pids
 *.pid
@@ -46,6 +47,8 @@ typings/
 #ignore package-lock
 package-lock.json
 
+# TypeScript v1 declaration files
+typings/
 # Optional npm cache directory
 .npm
 
@@ -68,5 +71,4 @@ package-lock.json
 
 # next.js build output
 .next
-
 
