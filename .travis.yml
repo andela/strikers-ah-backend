@@ -3,7 +3,7 @@ langauge: node_js
 node_js:
 - "stable"
 install:
-- npm ci
+- npm i
 script:
 - npm run test
 notifications:
