@@ -4,7 +4,7 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "nyc _mocha",
     "start": "babel-node ./index.js",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov | coveralls",
     "lint": "eslint ./",
