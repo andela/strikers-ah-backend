@@ -4,14 +4,9 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
     "test": "mocha",
     "start": "babel-node ./index.js",
-    "coverage": "nyc mocha-lcov-reporter | coveralls"
-=======
-    "test": "nyc _mocha",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov | coveralls"
->>>>>>> ch #164489777 resolving conficts from the base branch
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
