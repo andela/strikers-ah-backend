@@ -1,5 +1,5 @@
 # Authors Haven - A Social platform for the creative at heart.
-
+[![Build Status](https://travis-ci.com/andela/strikers-ah-backend.svg?branch=develop)](https://travis-ci.com/andela/strikers-ah-backend)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed%20by-Hound-%239069ad.svg)](https://houndci.com)
 
 ## Vision
