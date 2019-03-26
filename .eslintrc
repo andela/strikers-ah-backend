@@ -1,19 +1,19 @@
-module.exports = {
-  env: {
-    es6: true,
-    node: true,
-    mocha: true
+{
+  "extends": "airbnb-base",
+  "env": {
+    "es6": true,
+    "node": true,
+    "mocha": true
   },
-  extends: 'airbnb-base',
-  globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly',
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
   },
-  parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module',
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
   },
-  rules: {
+  "rules": {
     "one-var": 0,
     "one-var-declaration-per-line": 0,
     "new-cap": 0,
@@ -21,7 +21,7 @@ module.exports = {
     "no-param-reassign": 0,
     "comma-dangle": 0,
     "curly": ["error", "multi-line"],
-    "import/no-unresolved": [2, { commonjs: true }],
+    "import/no-unresolved": [2, { "commonjs": true }],
     "no-shadow": ["error", { "allow": ["req", "res", "err"] }],
     "valid-jsdoc": ["error", {
       "requireReturn": true,
@@ -36,5 +36,5 @@ module.exports = {
             "ClassDeclaration": true
         }
     }]
-  },
-};
+  }
+}
