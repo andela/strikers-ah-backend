@@ -16,11 +16,4 @@ const sequelize = new Sequelize(dbname,process.env.DBUSERNAME,process.env.DBPASS
   },
 
 });
-
-sequelize.authenticate()
-.then(m => {
-  console.log('connection established');
-})
-
-
 export default sequelize;
