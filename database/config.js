@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-let dbname = (process.env.NODE_ENV === 'test') ? process.env.TESTDBNAME : process.env.DBNAME;
+let dbname = process.env.NODE_ENV === 'test' ? process.env.TESTDBNAME : process.env.DBNAME;
 
 const sequelize = new Sequelize(dbname,process.env.DBUSERNAME,process.env.DBPASSWORD,{
   host: process.env.DBHOST,
@@ -16,5 +16,11 @@ const sequelize = new Sequelize(dbname,process.env.DBUSERNAME,process.env.DBPASS
   },
 
 });
+
+sequelize.authenticate()
+.then(m => {
+  console.log('connection established');
+})
+
 
 export default sequelize;
