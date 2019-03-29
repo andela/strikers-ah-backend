@@ -5,14 +5,19 @@ import YAML from 'yamljs';
 import routes from './routes/routes';
 
 const swaggerDocument = YAML.load('./swagger.yaml');
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/', routes);
 
+app.use('/', (req, res) => {
+  res.sendStatus(200);
+});
+
+app.use('/api', routes);
 const port = process.env.PORT || 3000;
 
 app.listen(port);
