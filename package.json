@@ -6,6 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --require @babel/polyfill --require @babel/register ./test/*.js --exit",
     "start": "babel-node ./index.js",
+    "dev":"nodemon --exec babel-node ./index.js",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov | coveralls",
     "lint": "eslint ./",
     "lint-fix": "eslint ./ --fix",
@@ -27,7 +28,9 @@
     "express": "^4.16.3",
     "express-jwt": "^5.3.1",
     "express-session": "^1.15.6",
+    "joi": "^14.3.1",
     "jsonwebtoken": "^8.3.0",
+    "lodash": "^4.17.11",
     "method-override": "^2.3.10",
     "methods": "^1.1.2",
     "morgan": "^1.9.1",
@@ -37,7 +40,8 @@
     "request": "^2.87.0",
     "sequelize": "^5.1.1",
     "slug": "^1.0.0",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.4.0",
