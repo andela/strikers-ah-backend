@@ -7,10 +7,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use('/', (req, res) => {
-  res.sendStatus(200);
-});
-
 app.use('/api', routes);
 const port = process.env.PORT || 3000;
 
