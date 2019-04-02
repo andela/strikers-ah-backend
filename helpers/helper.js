@@ -1,4 +1,8 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(12);
@@ -11,6 +15,22 @@ const comparePassword = async (password, hashedPassword) => {
   return comparison;
 };
 
+const generateToken = (user) => {
+  const token = jwt.sign(user, process.env.secretKey);
+  return token;
+};
+
+const verifyToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, process.env.secretKey);
+    return decoded;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 export default {
-  hashPassword, comparePassword
+  hashPassword,
+  comparePassword,
+  generateToken,
+  verifyToken
 };
