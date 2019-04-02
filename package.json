@@ -36,7 +36,8 @@
     "request": "^2.87.0",
     "sequelize": "^5.1.1",
     "slug": "^1.0.0",
-    "underscore": "^1.9.1"
+    "swagger-ui-express": "^4.0.2",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.4.0",
