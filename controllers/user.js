@@ -1,3 +1,4 @@
+import passport from 'passport';
 import userModel from '../models/user';
 /**
  * Adds contains all user methods.
@@ -9,7 +10,7 @@ class User {
  * @param {Object} res
  * @returns {Object} Returns the response
  */
-  static async twitterLogin(req, res) {
+  static async linkedInLogin(req, res) {
     return res.json({ status: 200 });
   }
 
@@ -19,7 +20,7 @@ class User {
  * @param {Object} res
  * @returns {Object} Returns the response
  */
-  static async twitterCallback(req, res) {
+  static async linkedInCallback(req, res) {
     return res.json({ status: 200 });
   }
 }

@@ -1,42 +1,42 @@
-import sequelize, { UUIDV4 } from 'sequelize';
-import db from '../database/config';
 
-const User = db.define('user', {
-  id: {
-    type: sequelize.UUID,
-    default: UUIDV4,
-    primaryKey: true
-  },
-  firstname: {
-    type: sequelize.STRING(30),
-    allowNull: false,
-  },
-  lastname: {
-    type: sequelize.STRING(30),
-  },
-  username: {
-    type: sequelize.STRING(30),
-    allowNull: false,
-    unique: true
-  },
-  email: {
-    type: sequelize.STRING(30),
-    allowNull: false,
-    unique: true,
-  },
-  bio: {
-    type: sequelize.STRING(50),
-    allowNull: true,
-  },
-  password: {
-    type: sequelize.STRING(30),
-    allowNull: true,
-  },
-  image: {
-    type: sequelize.STRING(50),
-    allowNull: true,
-  }
-});
-User.sync({ force: false });
+const UserModel = (sequelize, DataType) => {
+  const User = sequelize.define('User', {
+    id: {
+      type: DataType.UUID,
+      defaultValue: DataType.UUIDV4,
+      primaryKey: true
+    },
+    firstname: {
+      type: DataType.STRING,
+      allowNull: false,
+    },
+    lastname: {
+      type: DataType.STRING
+    },
+    username: {
+      type: DataType.STRING,
+      allowNull: false,
+      unique: true
+    },
+    email: {
+      type: DataType.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    bio: {
+      type: DataType.STRING,
+      allowNull: true,
+    },
+    password: {
+      type: DataType.STRING,
+      allowNull: true,
+    },
+    image: {
+      type: DataType.STRING,
+      allowNull: true,
+    }
+  }, {});
+  return User;
+};
 
-export default User;
+export default UserModel;
