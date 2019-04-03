@@ -1,0 +1,39 @@
+swagger: '2.0'
+info:
+  version: '0.0.1'
+  title: Author Haven
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths
+basePath: /
+#
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /:
+    # binds a127 app logic to a route
+    get:
+      description: Returns Welcome to Author Haven
+      responses:
+        '200':
+          description: Success
+          schema:
+            # a pointer to a definition
+            type: object
+            properties:
+              Message:
+                type: 'String'
+                example: 'Welcome to Author Haven'
+          '404':
+            description: Route not found
+          # responses may fall through to errors
+          default:
+            description: Unexpected Error
