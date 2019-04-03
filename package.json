@@ -9,6 +9,7 @@
     "dev": "nodemon --exec babel-node ./index.js",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov | coveralls",
     "lint": "eslint ./",
+    "migrate":"",
     "lint-fix": "eslint ./ --fix",
     "fix-code": "prettier-eslint --write './**/*.js' "
   },
