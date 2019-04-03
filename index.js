@@ -21,7 +21,7 @@ app.use('/api', routes);
 app.get('/', (req, res) => {
   if (!req.user) res.json({ user: 'welcome' });
   const {
-    id, firstname, lastname, username,
+    firstname, lastname,
   } = req.user.dataValues;
   res.json({ user: `welcome: ${firstname} ${lastname}` });
 });
