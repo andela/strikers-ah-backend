@@ -1,12 +1,16 @@
+/* eslint-disable no-unused-vars */
 import express from 'express';
 import bodyParser from 'body-parser';
-import routes from './routes/routes';
+import passport from 'passport';
+import user from './routes/user';
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use('/', routes);
+app.use(passport.initialize());
+app.use('/api/v1/login', user);
 
 const port = process.env.PORT || 3000;
 

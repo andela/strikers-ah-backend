@@ -1,51 +1,41 @@
-import sequelize from 'sequelize';
-import db from '../database/config';
-
-const User = db.define('user', {
-  id: {
-    type: sequelize.UUID,
-    defaultValue: sequelize.UUIDV4,
-    primaryKey: true
-  },
-  firstname: {
-    type: sequelize.STRING,
-    allowNull: true,
-  },
-  lastname: {
-    type: sequelize.STRING,
-    allowNull: true
-  },
-  username: {
-    type: sequelize.STRING,
-    allowNull: true,
-    unique: true
-  },
-  email: {
-    type: sequelize.STRING,
-    allowNull: true,
-    unique: true,
-  },
-  bio: {
-    type: sequelize.TEXT,
-    allowNull: true,
-  },
-  password: {
-    type: sequelize.STRING,
-    allowNull: true,
-  },
-  image: {
-    type: sequelize.STRING,
-    allowNull: true,
-  },
-  provider: {
-    type: sequelize.STRING,
-    allowNull: true
-  },
-  provideruserid: {
-    type: sequelize.STRING,
-    allowNull: true
-  }
-});
-User.sync();
-
-export default User;
+module.exports = (Sequelize, DataTypes) => {
+  const User = Sequelize.define('user', {
+    firstname: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    lastname: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    bio: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    image: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    password: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    provider: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    provideruserid: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
+  }, {});
+  return User;
+};
