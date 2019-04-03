@@ -6,7 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --require @babel/polyfill --require @babel/register ./test/*.js --exit",
     "start": "babel-node ./index.js",
-    "dev":"nodemon --exec babel-node ./index.js",
+    "dev": "nodemon --exec babel-node ./index.js",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov | coveralls",
     "lint": "eslint ./",
     "lint-fix": "eslint ./ --fix",

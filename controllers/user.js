@@ -52,7 +52,8 @@ class User {
         username: insertedUser.username,
         email: insertedUser.email,
         password: insertedUser.password
-      }
+      },
+      token
     });
   }
 }
