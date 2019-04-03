@@ -1,42 +1,51 @@
-import sequelize, { UUIDV4 } from 'sequelize';
+import sequelize from 'sequelize';
 import db from '../database/config';
 
 const User = db.define('user', {
   id: {
     type: sequelize.UUID,
-    default: UUIDV4,
+    defaultValue: sequelize.UUIDV4,
     primaryKey: true
   },
   firstname: {
-    type: sequelize.STRING(30),
-    allowNull: false,
+    type: sequelize.STRING,
+    allowNull: true,
   },
   lastname: {
-    type: sequelize.STRING(30),
+    type: sequelize.STRING,
+    allowNull: true
   },
   username: {
-    type: sequelize.STRING(30),
-    allowNull: false,
+    type: sequelize.STRING,
+    allowNull: true,
     unique: true
   },
   email: {
-    type: sequelize.STRING(30),
-    allowNull: false,
+    type: sequelize.STRING,
+    allowNull: true,
     unique: true,
   },
   bio: {
-    type: sequelize.STRING(50),
+    type: sequelize.TEXT,
     allowNull: true,
   },
   password: {
-    type: sequelize.STRING(30),
+    type: sequelize.STRING,
     allowNull: true,
   },
   image: {
-    type: sequelize.STRING(50),
+    type: sequelize.STRING,
     allowNull: true,
+  },
+  provider: {
+    type: sequelize.STRING,
+    allowNull: true
+  },
+  provideruserid: {
+    type: sequelize.STRING,
+    allowNull: true
   }
 });
-User.sync({ force: false });
+User.sync();
 
 export default User;

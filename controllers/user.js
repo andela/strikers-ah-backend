@@ -1,9 +1,6 @@
-import userModel from '../models/user';
-import Controller from './controller';
-
+/**
+ * @author frank harerimana
+ */
 class User {
-    
 }
-
-const user = new User();
-export default user;
+export default User;
