@@ -1,6 +1,6 @@
 
 const UserModel = (sequelize, DataType) => {
-  const User = sequelize.define('User', {
+  const User = sequelize.define('user', {
     id: {
       type: DataType.UUID,
       defaultValue: DataType.UUIDV4,
@@ -15,12 +15,12 @@ const UserModel = (sequelize, DataType) => {
     },
     username: {
       type: DataType.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true
     },
     email: {
       type: DataType.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
     },
     bio: {
@@ -34,7 +34,15 @@ const UserModel = (sequelize, DataType) => {
     image: {
       type: DataType.STRING,
       allowNull: true,
-    }
+    },
+    provider: {
+      type: DataType.STRING,
+      allowNull: false,
+    },
+    provideruserid: {
+      type: DataType.STRING,
+      allowNull: true,
+    },
   }, {});
   return User;
 };

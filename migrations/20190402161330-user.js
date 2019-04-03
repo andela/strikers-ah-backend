@@ -17,12 +17,12 @@ module.exports = {
     },
     username: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
     },
     bio: {
@@ -36,7 +36,25 @@ module.exports = {
     image: {
       type: Sequelize.STRING,
       allowNull: true,
+    },
+    provider: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    provideruserid: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    createdAt: {
+      allowNull: false,
+      type: Sequelize.DATE,
+      default: true
+    },
+    updatedAt: {
+      allowNull: false,
+      type: Sequelize.DATE
     }
+
 
   }),
 
