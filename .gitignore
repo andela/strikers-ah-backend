@@ -73,3 +73,5 @@ typings/
 
 # package-lock.json files
 package-lock.json
+
+config/config.json
