@@ -19,6 +19,7 @@
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.4.2",
     "body-parser": "^1.18.3",
+    "config": "^3.0.1",
     "cors": "^2.8.4",
     "debug": "^4.1.1",
     "dotenv": "^6.0.0",

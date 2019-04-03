@@ -1,6 +1,8 @@
 const USerModel = (Sequelize, DataTypes) => {
   const User = Sequelize.define('user', {
-    name: { type: DataTypes.STRING, allowNull: true },
+    firstname: { type: DataTypes.STRING, allowNull: true },
+
+    lastname: { type: DataTypes.STRING, allowNull: true },
 
     username: { type: DataTypes.STRING, allowNull: false },
 

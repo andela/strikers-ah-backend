@@ -1,9 +1,8 @@
 // eslint-disable-next-line import/no-dynamic-require
-import configPath from '../config/configDB';
-
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
+import fs from 'fs';
+import path from 'path';
+import configPath from '../config/config';
 
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
