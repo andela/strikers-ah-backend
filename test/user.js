@@ -8,7 +8,6 @@ chai.should();
 
 describe('Test User Signup', () => {
   let user;
-  let token;
   before((done) => {
     chai.request(app);
     // clear data in the table
