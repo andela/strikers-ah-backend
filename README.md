@@ -1,7 +1,7 @@
 # Authors Haven - A Social platform for the creative at heart.
 [![Build Status](https://travis-ci.com/andela/strikers-ah-backend.svg?branch=develop)](https://travis-ci.com/andela/strikers-ah-backend)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed%20by-Hound-%239069ad.svg)](https://houndci.com)
-
+[![Coverage Status](https://coveralls.io/repos/github/andela/strikers-ah-backend/badge.svg)](https://coveralls.io/github/andela/strikers-ah-backend)
 ## Vision
 
 Create a community of like minded authors to foster inspiration and innovation
