@@ -1,8 +1,10 @@
 import uuid from 'uuid';
 import select from 'lodash';
+import Sequelize from 'sequelize';
 import userModel from '../models/user';
 import helper from '../helpers/helper';
 
+const { Op } = Sequelize;
 /**
  * @param { class } User -- User }
  */
@@ -47,6 +49,31 @@ class User {
       }
     } catch (error) {
       res.status(500).json({ error: `${error}` });
+    }
+  }
+
+  /**
+   * @param {Object} req
+   * @param {Object} res
+   * @returns { null } --
+   */
+  static async loginWithEmail(req, res) {
+    const { email, password } = req.body;
+    try { 
+      const user = await userModel.findOne({ where: { [Op.or]: [{ email }, { username: email }] } });
+      if (user.email) {
+        // verify password
+        if (helper.comparePassword(password, user.password)) {
+          // return user and token
+          const userAccount = select.pick(user, ['firstname', 'lastname', 'username', 'email', 'bio', 'image']);
+          const token = helper.generateToken(userAccount);
+          return res.header('x-auth-token', token).status(200).json({ user: { ...userAccount, token } });
+        }
+        return res.status(401).json({ error: 'Invalid username or password' });
+      }
+      return res.status(401).json({ error: 'Invalid username or password' });
+    } catch (error) {
+      return res.status(500).json({ error: `Server Error: ${error}` });
     }
   }
 }
