@@ -4,22 +4,21 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const hashPassword = async (password) => {
+const hashPassword = (password) => {
   try {
-    const salt = await bcrypt.genSalt(12);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = bcrypt.genSaltSync(12);
+    const hashedPassword = bcrypt.hashSync(password, salt);
     return hashedPassword;
   } catch (error) {
-    return error;
+    return false;
   }
 };
 // compare password
-const comparePassword = async (password, hashedPassword) => {
+const comparePassword = (password, hashedPassword) => {
   try {
-    const comparison = await bcrypt.compare(password, hashedPassword);
-    return comparison;
+    return (bcrypt.compareSync(password, hashedPassword));
   } catch (error) {
-    return error;
+    return false;
   }
 };
 
@@ -27,18 +26,19 @@ const generateToken = (user) => {
   const token = jwt.sign(user, process.env.secretKey);
   return token;
 };
-
-const verifyToken = (token) => {
-  try {
-    const decoded = jwt.verify(token, process.env.secretKey);
-    return decoded;
-  } catch (error) {
-    return error;
+const handleUsed = (emailUsed, userNameUsed) => {
+  if (emailUsed && userNameUsed) {
+    return 'Both email and username are in use';
+  } if (emailUsed) {
+    return 'email is already in use';
+  } if (userNameUsed) {
+    return 'username is not available';
   }
+  return true;
 };
 export default {
   hashPassword,
   comparePassword,
   generateToken,
-  verifyToken
+  handleUsed
 };

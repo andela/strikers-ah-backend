@@ -13,7 +13,7 @@ const Schema = {
 
   }),
   loginSchema: joi.object().keys({
-    email: joi.string().email().required() || joi.string().min(5),
+    email: joi.string().email().required(),
     password: joi.string().min(8).required()
   }),
   option: { allowUnknown: false }

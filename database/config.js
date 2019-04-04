@@ -14,6 +14,7 @@ const sequelize = new Sequelize(dbname, process.env.DBUSERNAME, process.env.DBPA
     min: 0,
     idle: 10000
   },
+  logging: false
 
 });
 export default sequelize;

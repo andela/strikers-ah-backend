@@ -11,16 +11,13 @@ describe('Test helpers', () => {
   const hashed = helpers.hashPassword(password);
 
   it('Should be able to hash password', (done) => {
-    helpers.hashPassword(password).then((res) => {
-      res.should.be.a('string');
-    }).catch(error => error);
+    const hashNow = helpers.hashPassword(password);
+    hashNow.should.be.a('string');
     done();
   });
-  it('Should be able to compare password', (done) => {
-    helpers.comparePassword(password, hashed).then((res) => {
-      res.should.be.a('boolean');
-    }).catch(error => error);
-    done();
+  it('Should be able to compare password', async () => {
+    const verify = helpers.comparePassword(password, hashed);
+    verify.should.be.a('boolean').eql(true);
   });
   it('should be able to generate token', (done) => {
     helpers.generateToken(user).should.be.a('string');
