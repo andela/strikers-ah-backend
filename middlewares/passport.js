@@ -1,4 +1,4 @@
-import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2';
+import { Strategy as GithubStrategy } from 'passport-github';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
 import dotenv from 'dotenv';
 import models from '../models/index';
@@ -16,13 +16,48 @@ const radomUserName = (fname, lname) => {
 };
 
 const socialAuth = (passport) => {
-  passport.use(new LinkedInStrategy({
-    clientID: process.env.LINKEDIN_ID,
-    clientSecret: process.env.LINKEDIN_SECRET,
-    callbackURL: process.env.LINKEDIN_CALLBACK,
-    scope: ['r_liteprofile']
-  }, ((accessToken, refreshToken, profile, done) => {
-    process.nextTick(() => done(null, profile));
+  passport.use(new GithubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: process.env.GITHUB_CALLBACK
+  },
+  ((accessToken, refreshToken, profile, cb) => {
+    const { _json } = profile;
+    // Replace for getting large image
+    const image = _json.avatar_url;
+
+    // Remove special characters from name + emojis
+    let names = _json.name;
+    names = names.replace(/[^a-zA-Z ]/g, '').trim(); // Regex from stackoveflow
+    // Split Functions from stackoverflow
+    const firstName = names.split(' ').slice(0, -1).join(' ');
+    const lastName = names.split(' ').slice(-1).join(' ');
+
+    const username = radomUserName(firstName, lastName);
+
+    const profileData = {
+      username,
+      firstname: firstName,
+      lastname: lastName,
+      bio: _json.bio,
+      provider: 'github',
+      image,
+      provideruserid: _json.id.toString()
+    };
+
+    User.findOrCreate({ where: { provideruserid: profileData.provideruserid, provider: profileData.provider }, defaults: profileData })
+      .then(([users, created]) => {
+        if (!users) {
+          const user = created;
+          cb(null, user);
+        } else {
+          const user = users;
+          cb(null, user);
+        }
+      })
+      .catch((error) => {
+        cb(null, false, error);
+      });
   })));
   // @login with twitter
   passport.use(new TwitterStrategy({

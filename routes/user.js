@@ -3,10 +3,9 @@ import passport from 'passport';
 
 const router = express.Router();
 
-/* Linkedin ROUTER */
-// route.get('/auth/linkedin', user.linkedInLogin);
-router.get('/auth/linkedin', passport.authenticate('linkedin', { state: 'SOME STATE' }), (req, res) => {});
-router.get('/auth/linkedin/callback', passport.authenticate('linkedin', {
+/* Github ROUTER */
+router.get('/auth/github', passport.authenticate('github', { state: 'SOME STATE' }), (req, res) => {});
+router.get('/auth/github/callback', passport.authenticate('github', {
   successRedirect: '/',
   failureRedirect: '/login'
 }));
