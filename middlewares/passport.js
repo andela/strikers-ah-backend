@@ -1,4 +1,3 @@
-import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
 import dotenv from 'dotenv';
 import models from '../models/index';
@@ -16,14 +15,6 @@ const radomUserName = (fname, lname) => {
 };
 
 const socialAuth = (passport) => {
-  passport.use(new LinkedInStrategy({
-    clientID: process.env.LINKEDIN_ID,
-    clientSecret: process.env.LINKEDIN_SECRET,
-    callbackURL: process.env.LINKEDIN_CALLBACK,
-    scope: ['r_liteprofile']
-  }, ((accessToken, refreshToken, profile, done) => {
-    process.nextTick(() => done(null, profile));
-  })));
   // @login with twitter
   passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_CONSUMER_KEY,
