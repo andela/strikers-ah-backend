@@ -13,7 +13,7 @@ const Facebook = new FacebookStrategy(
       accessToken,
       refreshToken,
       profile,
-      done
+      done,
     );
   }
 );

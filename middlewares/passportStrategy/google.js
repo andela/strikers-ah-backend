@@ -11,7 +11,7 @@ const Google = new GoogleStrategy(
       accessToken,
       refreshToken,
       profile,
-      done
+      done,
     );
   }
 );
