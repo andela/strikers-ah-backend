@@ -1,41 +1,32 @@
-import sequelize from 'sequelize';
-import db from '../database/config';
+const UserModel = (Sequelize, DataTypes) => {
+  const User = Sequelize.define('user', {
+    firstname: { type: DataTypes.STRING, allowNull: true },
 
-const User = db.define('user', {
-  id: {
-    type: sequelize.UUID,
-    defaultValue: sequelize.UUID,
-    primaryKey: true
-  },
-  firstname: {
-    type: sequelize.STRING(50),
-    allowNull: false,
-  },
-  lastname: {
-    type: sequelize.STRING(50),
-  },
-  username: {
-    type: sequelize.STRING(50),
-    allowNull: false,
-    unique: true
-  },
-  email: {
-    type: sequelize.STRING(60),
-    allowNull: false,
-    unique: true,
-  },
-  bio: {
-    type: sequelize.TEXT,
-    allowNull: true,
-  },
-  password: {
-    type: sequelize.STRING(125),
-    allowNull: true,
-  },
-  image: {
-    type: sequelize.STRING(255),
-    allowNull: true,
-  }
-});
-User.sync();
-export default User;
+    lastname: { type: DataTypes.STRING, allowNull: true },
+
+    username: { type: DataTypes.STRING, allowNull: false },
+
+    email: { type: DataTypes.STRING, allowNull: true },
+
+    bio: { type: DataTypes.STRING, allowNull: true, },
+
+    image: { type: DataTypes.TEXT, allowNull: true },
+
+    password: { type: DataTypes.TEXT, allowNull: true, },
+
+    provider: { type: DataTypes.STRING, allowNull: true, },
+
+    provideruserid: { type: DataTypes.STRING, allowNull: true, }
+
+  });
+
+  User.prototype.socialUsers = async (userProfile) => {
+    const result = await User.findOrCreate({
+      where: { provideruserid: userProfile.provideruserid },
+      defaults: userProfile
+    });
+    return result[0].dataValues;
+  };
+  return User;
+};
+export default UserModel;

@@ -1,8 +1,10 @@
-import uuid from 'uuid';
 import select from 'lodash';
 import Sequelize from 'sequelize';
-import userModel from '../models/user';
 import helper from '../helpers/helper';
+/* eslint-disable class-methods-use-this */
+import model from '../models/index';
+
+const { user: UserModel } = model;
 
 const { Op } = Sequelize;
 /**
@@ -19,16 +21,15 @@ class User {
     try {
       const data = req.body;
       const newUser = {
-        id: uuid.v4(),
         ...data,
         password: await helper.hashPassword(data.password),
       };
       // check if the user does not already exist
-      const emailUsed = await userModel.findOne({ where: { email: newUser.email } });
-      const userNameUsed = await userModel.findOne({ where: { username: newUser.username } });
+      const emailUsed = await UserModel.findOne({ where: { email: newUser.email } });
+      const userNameUsed = await UserModel.findOne({ where: { username: newUser.username } });
       const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
       if (uniqueEmailUsername === true) {
-        const insertedUser = select.pick(await userModel.create(newUser), ['username', 'email', 'firstname', 'lastname']);
+        const insertedUser = select.pick(await UserModel.create(newUser), ['username', 'email', 'firstname', 'lastname']);
         const token = helper.generateToken(insertedUser);
         return res.header('x-auth-token', token).status(201).json({
           user: { ...insertedUser },
@@ -49,7 +50,7 @@ class User {
   static async loginWithEmail(req, res) {
     const { email, password } = req.body;
     try {
-      const user = await userModel.findOne({ where: { [Op.or]: [{ email }, { username: email }] } });
+      const user = await UserModel.findOne({ where: { [Op.or]: [{ email }, { username: email }] } });
       // verify password
       if (user && helper.comparePassword(password, user.password)) {
         // return user and token
@@ -62,6 +63,31 @@ class User {
       return res.status(500).json({ error: `Server Error: ${error}` });
     }
   }
-}
 
+  /**
+   * @author frank harerimana
+   * @param {*} req user from social
+   * @param {*} res logged
+   * @returns { object } user logged in
+   */
+  static async socialLogin(req, res) {
+    const ruser = {
+      username: req.user.username,
+      email: req.user.email,
+      firstname: req.user.firstname,
+      lastname: req.user.lastname,
+      image: req.user.image,
+      provider: req.user.provider,
+      provideruserid: req.user.provideruserid
+    };
+    const result = await new UserModel().socialUsers(ruser);
+    return res.status(200).json({
+      username: result.username,
+      email: result.email,
+      bio: result.bio,
+      image: result.image,
+      createAt: result.createAt,
+    });
+  }
+}
 export default User;

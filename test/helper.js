@@ -23,4 +23,13 @@ describe('Test helpers', () => {
     helpers.generateToken(user).should.be.a('string');
     done();
   });
+  it('should not hash password if there is an error', () => {
+    helpers.hashPassword({}).should.be.a('boolean').eql(false);
+  });
+  it('should return false if there is a password comparison error', () => {
+    helpers.comparePassword({}, 'Hashed').should.be.a('boolean').eql(false);
+  });
+  it('should return email used if email is found', () => {
+    helpers.handleUsed(true, false).should.be.a('string').contains('email');
+  });
 });
