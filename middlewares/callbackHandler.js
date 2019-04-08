@@ -1,32 +1,30 @@
 /* eslint-disable no-underscore-dangle */
-import models from '../models/index';
+import usernameGenerator from './uniquestring';
 
-const { user } = models;
-const MyUSername = providerUSername => providerUSername.replace(/\s/g, '').toLowerCase() + Math.floor(Math.random() * 1000);
+/**
+ * @author frank harerimana
+ * @param {*} accessToken
+ * @param {*} refreshToken
+ * @param {*} profile
+ * @param {*} done
+ * @returns { Object } user
+ */
+const GetSocial = async (accessToken, refreshToken, profile, done) => {
+  /**
+   * get unique formatted username
+   */
+  const usernamestring = new usernameGenerator(profile.displayName);
 
-const GetSocial = (accessToken, refreshToken, profile, done) => {
   const SocialUser = {
     email: profile._json.email,
-    username: MyUSername(profile.displayName),
+    username: usernamestring.getUsername(),
     firstname: profile.name.familyName,
     lastname: profile.name.givenName,
     image: profile.photos[0].value,
-    provider: 'facebook',
+    provider: profile.provider,
     provideruserid: profile.id
   };
-  user.findOrCreate({
-    where: { provideruserid: SocialUser.provideruserid },
-    defaults: SocialUser
-  })
-    .then(([nUser, created]) => {
-      if (!nUser) {
-        const Ruser = created;
-        done(null, Ruser);
-      } else {
-        const Ruser = nUser;
-        done(null, Ruser);
-      }
-    })
-    .catch(err => done(err, false));
+
+  done(null, SocialUser);
 };
 export default GetSocial;

@@ -1,6 +1,9 @@
 import FacebookStrategy from 'passport-facebook';
 import GetSocial from '../callbackHandler';
-
+/**
+ * @author frank harerimana
+ * @returns Facebook strategy
+ */
 const Facebook = new FacebookStrategy(
   {
     callbackURL: process.env.FacebookCallback_URL,

@@ -18,6 +18,15 @@ const USerModel = (Sequelize, DataTypes) => {
 
     provideruserid: { type: DataTypes.STRING, allowNull: true, }
 
-  }, {}); return User;
+  });
+
+  User.prototype.socialUsers = async (userProfile) => {
+    const result = await User.findOrCreate({
+      where: { provideruserid: userProfile.provideruserid },
+      defaults: userProfile
+    });
+    return result[0].dataValues;
+  };
+  return User;
 };
 export default USerModel;
