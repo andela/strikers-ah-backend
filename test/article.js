@@ -31,9 +31,7 @@ describe('Create an article', () => {
       res.body.article.should.have.property('updatedAt');
       done();
     })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(err => err);
   });
 });
 describe('It checks input errors', () => {
@@ -49,9 +47,7 @@ describe('It checks input errors', () => {
       res.body.should.have.property('error').eql('"title" is not allowed to be empty');
       done();
     })
-      .then((err) => {
-        console.log(err);
-      });
+      .catch(err => err);
   });
   it('should not create and article if the body is empty', (done) => {
     const newArticle = {
@@ -64,7 +60,8 @@ describe('It checks input errors', () => {
       res.body.should.be.a('object');
       res.body.should.have.property('error').eql('"body" is not allowed to be empty');
       done();
-    });
+    })
+      .catch(err => err);
   });
   it('should not create an article if the description value is null', (done) => {
     const newArticle = {
@@ -80,8 +77,6 @@ describe('It checks input errors', () => {
       res.body.errors[0].should.have.property('message').eql('article.description cannot be null');
       done();
     })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch(err => err);
   });
 });

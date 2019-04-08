@@ -6,7 +6,7 @@ import passport from 'passport';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import user from './routes/user';
-import Strategy from './middlewares/auth';
+// import Strategy from './middlewares/auth';
 import articleRoutes from './routes/articles';
 
 const swaggerDocument = YAML.load('./swagger.yaml');
@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(passport.initialize());
-const strategy = new Strategy();
+// const strategy = new Strategy();
 app.use('/api/v1/login', user);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
