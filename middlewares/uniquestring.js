@@ -1,23 +1,42 @@
+/* eslint-disable class-methods-use-this */
 /**
  * @author frank harerimana
  * Generate unique username
  */
 class Generate {
   /**
-     * @param {*} strings
-     */
-  constructor(strings) {
-    this.strings = strings;
+   * @author frank harerimana
+   */
+  constructor() {
     this.randomNumber = Math.floor(Math.random() * 10000);
     this.randomString = Math.random().toString(36).slice(2);
   }
 
   /**
      * @author frank harerimana
+     * @param { String } name
      * @returns { String } username
      */
-  getUsername() {
-    return this.strings.replace(/\s/g, '-').toLowerCase() + this.randomNumber;
+  getUsername(name) {
+    return name.replace(/\s/g, '-').toLowerCase() + this.randomNumber;
+  }
+
+  /**
+     * @author Jacques Nyilinkindi
+     * @param { String } words
+     * @returns { String } string
+     */
+  removeSpecialCharacters(words) {
+    return words.replace(/[^a-zA-Z ]/g, '').trim();
+  }
+
+  /**
+     * @author Jacques Nyilinkindi
+     * @param { String } image
+     * @returns { String } string
+     */
+  generateLargeTwitterProfile(image) {
+    return image.replace('_normal', '');
   }
 }
 export default Generate;

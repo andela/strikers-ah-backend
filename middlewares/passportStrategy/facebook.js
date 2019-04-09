@@ -1,5 +1,5 @@
 import FacebookStrategy from 'passport-facebook';
-import GetSocial from '../callbackHandler';
+import { GetSocial } from '../callbackHandler';
 /**
  * @author frank harerimana
  * @returns Facebook strategy

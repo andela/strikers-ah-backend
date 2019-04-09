@@ -1,5 +1,5 @@
 import GoogleStrategy from 'passport-google-oauth20';
-import GetSocial from '../callbackHandler';
+import { GetSocial } from '../callbackHandler';
 
 /**
  * @author frank harerimana

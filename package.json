@@ -40,6 +40,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-linkedin": "^1.0.0",
+    "passport-twitter": "^1.0.4",
     "pg": "^7.9.0",
     "request": "^2.87.0",
     "sequelize": "^4.42.0",
