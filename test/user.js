@@ -2,11 +2,14 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import debug from 'debug';
 import app from '../index';
-import models from '../models/index';
+import userController from '../controllers/user';
+import model from '../models/index';
+
+process.env.NODE_ENV = 'test';
+
+const { user: UserModel } = model;
 
 const logError = debug('app:*');
-
-const User = models.user;
 
 chai.use(chaiHttp);
 chai.should();
@@ -21,7 +24,7 @@ const user = {
 describe('Test User', () => {
   before(async () => {
     // clear data in the table
-    await User.destroy({ where: { email: user.email } });
+    await UserModel.destroy({ where: { email: user.email } });
   });
   describe('Test User Sign up', () => {
     describe('POST /api/users', () => {
@@ -70,6 +73,34 @@ describe('Test User', () => {
         })
           .catch(error => logError(error));
       });
+    });
+  });
+
+  describe('should be able to create a user', () => {
+    it('return user object', (done) => {
+      const userObj = {
+        user: {
+          username: 'john',
+          email: 'john@gmail.com',
+          firstname: 'makenga',
+          lastname: 'mwarimu',
+          bio: 'major genereal',
+          image: 'majorjohn.jpg',
+          provider: 'andela',
+          provideruserid: '453948387878'
+        }
+      };
+
+      userController.socialLogin(userObj)
+        .then(() => {
+          UserModel.findAll({
+            limit: 1, order: [['createdAt', 'DESC']]
+          }).then((res) => {
+            res.should.be.a('array');
+          });
+        });
+      // result.should.have.status(200);
+      done();
     });
   });
 });

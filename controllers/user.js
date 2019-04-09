@@ -78,10 +78,10 @@ class User {
   static async socialLogin(req, res) {
     const ruser = {
       username: req.user.username,
-      email: req.user.email || '',
+      email: req.user.email,
       firstname: req.user.firstname,
-      lastname: req.user.lastname || '',
-      bio: req.user.bio || '',
+      lastname: req.user.lastname,
+      bio: req.user.bio,
       image: req.user.image,
       provider: req.user.provider,
       provideruserid: req.user.provideruserid
