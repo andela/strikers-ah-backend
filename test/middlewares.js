@@ -44,7 +44,7 @@ describe('/ Should remove special character from strings', () => {
  */
 describe('/ Should make twitter image large', () => {
   it('it should remove _normal from the image URL', (done) => {
-    const result = uniusername.generateLargeTwitterProfile('_normalthisisimage.jpg');
+    const result = uniusername.largeTwitterImage('_normalthisisimage.jpg');
     result.should.be.eql('thisisimage.jpg');
     done();
   });

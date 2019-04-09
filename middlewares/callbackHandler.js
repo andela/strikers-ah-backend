@@ -36,26 +36,22 @@ const GetSocial = async (accessToken, refreshToken, profile, done) => {
  * @param {*} done
  * @returns { Object } user
  */
-const GetSocialTwitter = async (token, tokenSecret, profile, done) => {
-  /**
-   * get unique formatted username
-   */
+const GetSocialTwitterGithub = async (token, tokenSecret, profile, done) => {
   const { _json } = profile;
-  // _json.profile_image_url.
-  const image = usernamestring.generateLargeTwitterProfile(_json.profile_image_url);
+  const image = _json.avatar_url || usernamestring.largeTwitterImage(_json.profile_image_url);
   const names = usernamestring.removeSpecialCharacters(_json.name);
 
   const SocialUser = {
     username: usernamestring.getUsername(profile.username),
     firstname: names,
     image,
-    bio: _json.description,
-    provider: _json.provider,
+    bio: _json.description || _json.bio,
+    provider: _json.provider || profile.provider,
     provideruserid: _json.id.toString()
   };
   done(null, SocialUser);
 };
 export {
   GetSocial,
-  GetSocialTwitter
+  GetSocialTwitterGithub
 };

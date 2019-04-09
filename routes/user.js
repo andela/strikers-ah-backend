@@ -15,5 +15,8 @@ router.get('/auth/facebook/callback', passport.authenticate('facebook', { sessio
 // passport.authenticate twitter
 router.get('/auth/twitter', passport.authenticate('twitter'));
 router.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/auth/twitter' }), user.socialLogin);
+// passport.authenticate github
+router.get('/auth/github', passport.authenticate('github'));
+router.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/auth/github' }), user.socialLogin);
 
 export default router;

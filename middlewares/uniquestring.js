@@ -35,7 +35,7 @@ class Generate {
      * @param { String } image
      * @returns { String } string
      */
-  generateLargeTwitterProfile(image) {
+  largeTwitterImage(image) {
     return image.replace('_normal', '');
   }
 }
