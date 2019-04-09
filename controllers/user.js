@@ -22,7 +22,7 @@ class User {
       const data = req.body;
       const newUser = {
         ...data,
-        password: await helper.hashPassword(data.password),
+        // password: await helper.hashPassword(data.password),
       };
       // check if the user does not already exist
       const emailUsed = await UserModel.findOne({ where: { email: newUser.email } });
@@ -38,7 +38,7 @@ class User {
       }
       return res.status(400).json({ error: uniqueEmailUsername });
     } catch (error) {
-      return res.status(500).json({ error: `${error}` });
+      return res.status(400).send(error);
     }
   }
 
@@ -50,7 +50,11 @@ class User {
   static async loginWithEmail(req, res) {
     const { email, password } = req.body;
     try {
-      const user = await UserModel.findOne({ where: { [Op.or]: [{ email }, { username: email }] } });
+      const user = await UserModel.findOne({
+        where: {
+          [Op.or]: [{ email }, { username: email }]
+        }
+      });
       // verify password
       if (user && helper.comparePassword(password, user.password)) {
         // return user and token
@@ -60,7 +64,8 @@ class User {
       }
       return res.status(401).json({ error: 'Invalid username or password' });
     } catch (error) {
-      return res.status(500).json({ error: `Server Error: ${error}` });
+      const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
+      return res.status(status).json({ error: `${error.message}` });
     }
   }
 

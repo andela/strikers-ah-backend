@@ -1,14 +1,12 @@
 import express from 'express';
 import passport from 'passport';
 import user from '../controllers/user';
-import validations from '../middlewares/validations';
-import schema from '../helpers/schema';
 
 const router = express.Router();
 
-router.post('/login', validations.validate(schema.loginSchema, schema.options), user.loginWithEmail);
+router.post('/login', user.loginWithEmail);
 
-router.post('/', validations.validate(schema.signUpSchema, schema.options), user.signUpWithEmail);
+router.post('/', user.signUpWithEmail);
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
 

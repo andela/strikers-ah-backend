@@ -7,7 +7,7 @@ chai.should();
 /**
  * test username generator class
  */
-describe('/ GET all meetups', () => {
+describe('/ TEST Middleware', () => {
   it('it should generate random username', (done) => {
     const strings = new usernameGenerator('myusername');
     const result = strings.getUsername();

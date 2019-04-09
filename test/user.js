@@ -4,9 +4,9 @@ import debug from 'debug';
 import app from '../index';
 import models from '../models/index';
 
-const User = models.user;
-
 const logError = debug('app:*');
+
+const User = models.user;
 
 chai.use(chaiHttp);
 chai.should();

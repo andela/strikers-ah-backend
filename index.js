@@ -4,9 +4,9 @@ import bodyParser from 'body-parser';
 import passport from 'passport';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
-// import routes from './routes/routes';
+import routes from './routes/routes';
 import user from './routes/user';
-// import Strategy from './middlewares/auth';
+import Strategy from './middlewares/auth';
 
 const swaggerDocument = YAML.load('./swagger.yaml');
 
@@ -23,12 +23,12 @@ const port = process.env.PORT || 3000;
 
 app.listen(port);
 app.use(passport.initialize());
-// const strategy = new Strategy();
+const strategy = new Strategy();
 app.use('/api/v1/login', user);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', (req, res) => {
-  res.send("Welcome");
+  res.send('Welcome');
 });
 
 
