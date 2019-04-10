@@ -31,6 +31,7 @@
     "express-jwt": "^5.3.1",
     "express-session": "^1.15.6",
     "joi": "^14.3.1",
+    "faker": "^4.1.0",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.11",
     "method-override": "^2.3.10",

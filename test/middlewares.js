@@ -1,4 +1,5 @@
 import chai from 'chai';
+import faker from 'faker';
 import usernameGenerator from '../middlewares/uniquestring';
 
 process.env.NODE_ENV = 'test';
@@ -18,8 +19,9 @@ describe('/ TEST Middleware', () => {
 });
 describe('/ Should generate a unique username', () => {
   it('it should return a username', (done) => {
-    const result = uniusername.getUsername('myusername');
-    result.should.contain('myusername');
+    const userName = faker.internet.userName().toLowerCase();
+    const result = uniusername.getUsername(userName);
+    result.should.contain(userName);
     done();
   });
 });
@@ -30,8 +32,9 @@ describe('/ Should generate a unique username', () => {
  */
 describe('/ Should remove special character from strings', () => {
   it('it should return a non special character string', (done) => {
-    const result = uniusername.removeSpecialCharacters('@myusername$');
-    result.should.contain('myusername');
+    const userName = faker.name.lastName();
+    const result = uniusername.removeSpecialCharacters(`@${userName}$`);
+    result.should.contain(userName);
     result.should.not.contain('@');
     result.should.not.contain('$');
     done();
@@ -44,8 +47,9 @@ describe('/ Should remove special character from strings', () => {
  */
 describe('/ Should make twitter image large', () => {
   it('it should remove _normal from the image URL', (done) => {
-    const result = uniusername.largeTwitterImage('_normalthisisimage.jpg');
-    result.should.be.eql('thisisimage.jpg');
+    const image = 'thisisimage.jpg';
+    const result = uniusername.largeTwitterImage(`${image}_normal`);
+    result.should.be.eql(image);
     done();
   });
 });

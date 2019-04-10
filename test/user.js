@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import debug from 'debug';
+import faker from 'faker';
 import app from '../index';
 import userController from '../controllers/user';
 import model from '../models/index';
@@ -58,12 +59,48 @@ describe('Test User', () => {
           .catch(error => logError(error));
       });
     });
+    describe('should be able to create a user', () => {
+      it('return user object', (done) => {
+        const providerList = [
+          'facebook',
+          'google',
+          'twitter',
+          'github',
+          '',
+        ];
+
+        const provider = providerList[Math.floor(Math.random() * providerList.length)];
+        const userObj = {
+          user: {
+            username: faker.internet.userName(),
+            email: faker.internet.email(),
+            firstname: faker.name.firstName(),
+            lastname: faker.name.lastName(),
+            bio: faker.lorem.sentence(),
+            image: faker.image.avatar(),
+            provider,
+            provideruserid: faker.random.number().toString()
+          }
+        };
+
+        userController.socialLogin(userObj)
+          .then(() => {
+            UserModel.findAll({
+              limit: 1, order: [['createdAt', 'DESC']]
+            }).then((res) => {
+              res.should.be.a('array');
+            });
+          });
+        done();
+      });
+    });
   });
   describe('Test User  Login', () => {
     describe('POST /users/login', () => {
       it('Should be able to login into user account', (done) => {
         user.email = 'email@tes.com';
-        chai.request(app).post('/api/users/login').send({ email: user.email, password: user.password }).then((res) => {
+        user.password = 'P@ssword1';
+        chai.request(app).post('/api/users/login').send(user).then((res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('user');
@@ -71,36 +108,8 @@ describe('Test User', () => {
           res.body.user.should.have.property('email').eql('email@tes.com');
           done();
         })
-          .catch(error => logError(error));
+          .catch(error => logError(`error${error}`));
       });
-    });
-  });
-
-  describe('should be able to create a user', () => {
-    it('return user object', (done) => {
-      const userObj = {
-        user: {
-          username: 'john',
-          email: 'john@gmail.com',
-          firstname: 'makenga',
-          lastname: 'mwarimu',
-          bio: 'major genereal',
-          image: 'majorjohn.jpg',
-          provider: 'andela',
-          provideruserid: '453948387878'
-        }
-      };
-
-      userController.socialLogin(userObj)
-        .then(() => {
-          UserModel.findAll({
-            limit: 1, order: [['createdAt', 'DESC']]
-          }).then((res) => {
-            res.should.be.a('array');
-          });
-        });
-      // result.should.have.status(200);
-      done();
     });
   });
 });
