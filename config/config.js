@@ -12,7 +12,7 @@ module.exports = {
   },
   test: {
     username: process.env.DBUSERNAME,
-    password: process.env.PDBPASSWORD,
+    password: process.env.DBPASSWORD,
     database: process.env.TESTDBNAME,
     host: process.env.DBHOST,
     dialect: 'postgres'

@@ -5,8 +5,13 @@ node_js:
 install:
   - npm i
 script:
+  - npm run migrate
   - npm run test
 after_success:
   - npm run coverage
 notifications:
   email: false
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres

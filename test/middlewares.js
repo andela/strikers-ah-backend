@@ -7,8 +7,8 @@ chai.should();
 /**
  * test username generator class
  */
-describe('/ GET all meetups', () => {
-  it('it should GET all the meetups', (done) => {
+describe('/ TEST Middleware', () => {
+  it('it should generate random username', (done) => {
     const strings = new usernameGenerator('myusername');
     const result = strings.getUsername();
     result.should.contain('myusername');
