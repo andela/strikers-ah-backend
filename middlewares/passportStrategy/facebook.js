@@ -6,7 +6,7 @@ import { GetSocial } from '../callbackHandler';
  */
 const Facebook = new FacebookStrategy(
   {
-    callbackURL: process.env.FacebookCallback_URL,
+    callbackURL: `${process.env.APP_URL}/api/v1/login/auth/facebook/callback`,
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
     profileFields: ['email', 'displayName', 'picture']

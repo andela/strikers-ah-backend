@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
 /**
  * @author frank harerimana
- * Generate unique username
+ * userHandler unique username
  */
-class Generate {
+class userHandler {
   /**
    * @author frank harerimana
    */
@@ -39,4 +39,4 @@ class Generate {
     return image.replace('_normal', '');
   }
 }
-export default Generate;
+export default userHandler;

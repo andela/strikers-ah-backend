@@ -1,18 +1,18 @@
 import chai from 'chai';
 import faker from 'faker';
-import usernameGenerator from '../helpers/userHandler';
+import userHandler from '../helpers/userHandler';
 
 process.env.NODE_ENV = 'test';
 chai.should();
 
-const uniusername = new usernameGenerator();
+const handleUser = new userHandler();
 /**
  *  @author frank harerimana
  * test username generator class
  */
 describe('/ TEST Middleware', () => {
   it('it should generate random username', (done) => {
-    const result = uniusername.getUsername('myusername');
+    const result = handleUser.getUsername('myusername');
     result.should.contain('myusername');
     done();
   });
@@ -20,7 +20,7 @@ describe('/ TEST Middleware', () => {
 describe('/ Should generate a unique username', () => {
   it('it should return a username', (done) => {
     const userName = faker.internet.userName().toLowerCase();
-    const result = uniusername.getUsername(userName);
+    const result = handleUser.getUsername(userName);
     result.should.contain(userName);
     done();
   });
@@ -33,7 +33,7 @@ describe('/ Should generate a unique username', () => {
 describe('/ Should remove special character from strings', () => {
   it('it should return a non special character string', (done) => {
     const userName = faker.name.lastName();
-    const result = uniusername.removeSpecialCharacters(`@${userName}$`);
+    const result = handleUser.removeSpecialCharacters(`@${userName}$`);
     result.should.contain(userName);
     result.should.not.contain('@');
     result.should.not.contain('$');
@@ -48,7 +48,7 @@ describe('/ Should remove special character from strings', () => {
 describe('/ Should make twitter image large', () => {
   it('it should remove _normal from the image URL', (done) => {
     const image = 'thisisimage.jpg';
-    const result = uniusername.largeTwitterImage(`${image}_normal`);
+    const result = handleUser.largeTwitterImage(`${image}_normal`);
     result.should.be.eql(image);
     done();
   });

@@ -20,7 +20,6 @@ class User {
   static async signUpWithEmail(req, res) {
     try {
       const data = req.body;
-      console.log(data);
       const newUser = {
         ...data,
         // password: await helper.hashPassword(data.password),

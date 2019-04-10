@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
-import usernameGenerator from '../helpers/userHandler';
+import userHandler from '../helpers/userHandler';
 
-const usernamestring = new usernameGenerator();
+const handleUser = new userHandler();
 /**
  * @author frank harerimana
  * @param {*} accessToken
@@ -17,7 +17,7 @@ const GetSocial = async (accessToken, refreshToken, profile, done) => {
 
   const SocialUser = {
     email: profile._json.email,
-    username: usernamestring.getUsername(profile.displayName),
+    username: handleUser.getUsername(profile.displayName),
     firstname: profile.name.familyName,
     lastname: profile.name.givenName,
     image: profile.photos[0].value,
@@ -38,11 +38,11 @@ const GetSocial = async (accessToken, refreshToken, profile, done) => {
  */
 const GetSocialTwitterGithub = async (token, tokenSecret, profile, done) => {
   const { _json } = profile;
-  const image = _json.avatar_url || usernamestring.largeTwitterImage(_json.profile_image_url);
-  const names = usernamestring.removeSpecialCharacters(_json.name);
+  const image = _json.avatar_url || handleUser.largeTwitterImage(_json.profile_image_url);
+  const names = handleUser.removeSpecialCharacters(_json.name);
 
   const SocialUser = {
-    username: usernamestring.getUsername(profile.username),
+    username: handleUser.getUsername(profile.username),
     firstname: names,
     image,
     bio: _json.description || _json.bio,

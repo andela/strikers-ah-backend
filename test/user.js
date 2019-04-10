@@ -111,5 +111,40 @@ describe('Test User', () => {
           .catch(error => logError(`error${error}`));
       });
     });
+    describe('should be able to create a user', () => {
+      it('return user object', (done) => {
+        const providerList = [
+          'facebook',
+          'google',
+          'twitter',
+          'github',
+          '',
+        ];
+
+        const provider = providerList[Math.floor(Math.random() * providerList.length)];
+        const userObj = {
+          user: {
+            username: faker.internet.userName(),
+            email: faker.internet.email(),
+            firstname: faker.name.firstName(),
+            lastname: faker.name.lastName(),
+            bio: faker.lorem.sentence(),
+            image: faker.image.avatar(),
+            provider,
+            provideruserid: faker.random.number().toString()
+          }
+        };
+
+        userController.socialLogin(userObj)
+          .then(() => {
+            UserModel.findOne({
+              order: [['createdAt', 'DESC']]
+            }).then((res) => {
+              res.should.be.a('array');
+            });
+          });
+        done();
+      });
+    });
   });
 });
