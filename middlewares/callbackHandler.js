@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import usernameGenerator from './uniquestring';
+import usernameGenerator from '../helpers/userHandler';
 
 const usernamestring = new usernameGenerator();
 /**

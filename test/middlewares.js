@@ -1,6 +1,6 @@
 import chai from 'chai';
 import faker from 'faker';
-import usernameGenerator from '../middlewares/uniquestring';
+import usernameGenerator from '../helpers/userHandler';
 
 process.env.NODE_ENV = 'test';
 chai.should();
