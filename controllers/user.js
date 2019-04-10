@@ -1,12 +1,15 @@
 import select from 'lodash';
 import Sequelize from 'sequelize';
-import helper from '../helpers/helper';
-/* eslint-disable class-methods-use-this */
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import model from '../models/index';
-
-const { user: UserModel } = model;
+import helper from '../helpers/helper';
+import Mailer from '../helpers/mailer';
+import mailLinkMaker from '../helpers/mailLinkMaker';
 
 const { Op } = Sequelize;
+dotenv.config();
+const { user: UserModel, resetpassword: resetPassword } = model;
 /**
  * @param { class } User -- User }
  */
@@ -85,11 +88,46 @@ class User {
       provider: req.user.provider,
       provideruserid: req.user.provideruserid
     };
-    const result = await new UserModel().socialUsers(ruser);
+    const result = await UserModel.socialUsers(ruser);
     let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
     const token = helper.generateToken(userAccount);
     userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
     return helper.authenticationResponse(res, token, userAccount);
   }
+
+  /**
+ * @author frank harerimana
+ * @param {*} req email
+ * @param {*} res reset password link
+ * @returns {*} result
+ */
+  static async passwordreset(req, res) {
+    const { email } = req.body;
+    // check email existance
+    const search = await UserModel.checkEmail(email);
+    if (search === null || undefined) {
+      res.status(401).json({ message: 'no account related to such email', email });
+    } else {
+      // generate token
+      const token = jwt.sign({ data: email }, process.env.SECRETKEY);
+      // store token and userID
+      await resetPassword.recordNewReset(search.dataValues.id, token);
+      // Generate link and send it in email
+      const link = await new mailLinkMaker(`${search.dataValues.id}`, `${token}`);
+      // Mailing the link
+      const resetLink = await link.resetPasswordLink();
+      const result = await new Mailer(email, 'Password reset', resetLink).sender();
+      res.status(202).json({
+        message: result, email
+      });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} update password
+   */
 }
 export default User;

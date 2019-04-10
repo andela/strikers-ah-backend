@@ -36,7 +36,8 @@ const UserModel = (Sequelize, DataTypes) => {
     provider: { type: DataTypes.STRING, allowNull: true, defaultValue: '' },
     provideruserid: { type: DataTypes.STRING, allowNull: true, }
   });
-  User.prototype.socialUsers = async (userProfile) => {
+
+  User.socialUsers = async (userProfile) => {
     const result = await User.findOrCreate({
       where: { provideruserid: userProfile.provideruserid },
       defaults: userProfile
@@ -48,6 +49,8 @@ const UserModel = (Sequelize, DataTypes) => {
       foreignKey: 'authorid', onDelete: 'CASCADE'
     });
   };
+  User.checkEmail = email => User.findOne({ where: { email } });
+  User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
   return User;
 };
 export default UserModel;
