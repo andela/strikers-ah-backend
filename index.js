@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import express from 'express';
+import path from 'path';
 import bodyParser from 'body-parser';
 import passport from 'passport';
 import swaggerUi from 'swagger-ui-express';
@@ -28,7 +29,7 @@ app.use('/api/v1/login', user);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', (req, res) => {
-  res.send('Welcome');
+  res.sendFile('index.html', { root: path.join(__dirname, '/view/') });
 });
 
 
