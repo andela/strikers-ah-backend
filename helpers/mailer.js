@@ -19,6 +19,14 @@ class Mailer {
     this.to = _to;
     this.subject = _subject;
     this.link = _link;
+    this.formatt();
+  }
+
+  /**
+ * @author frank harerimana
+ * @returns {*} message template
+ */
+  async formatt() {
     this.msg = {
       to: this.to,
       from: 'harfrank2@gmail.com',
@@ -30,6 +38,7 @@ class Mailer {
        Click <a href="${this.link}"> here </a> to Reset your password
        </div>`,
     };
+    return this.msg;
   }
 
   /**

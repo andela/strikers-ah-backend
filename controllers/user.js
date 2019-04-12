@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import model from '../models/index';
 import helper from '../helpers/helper';
 import Mailer from '../helpers/mailer';
-import encripter from '../helpers/encrypt';
 import mailLinkMaker from '../helpers/mailLinkMaker';
 
 const { Op } = Sequelize;
@@ -100,7 +99,7 @@ class User {
  * @author frank harerimana
  * @param {*} req email
  * @param {*} res reset password link
- * @returns {*} mailed link
+ * @returns {*} result
  */
   static async passwordreset(req, res) {
     const { email } = req.body;
@@ -110,11 +109,11 @@ class User {
       res.status(401).json({ message: 'no account related to such email', email });
     } else {
       // generate token
-      const token = jwt.sign({ id: search.dataValues.id }, process.env.SECRETKEY);
+      const token = jwt.sign({ data: email }, process.env.SECRETKEY);
       // store token and userID
-      await resetPassword.recordNewReset(search.dataValues.id, `${token}`);
+      await resetPassword.recordNewReset(search.dataValues.id, token);
       // Generate link and send it in email
-      const link = await new mailLinkMaker(`${token}`);
+      const link = await new mailLinkMaker(`${search.dataValues.id}`, `${token}`);
       // Mailing the link
       const resetLink = await link.resetPasswordLink();
       const result = await new Mailer(email, 'Password reset', resetLink).sender();
@@ -130,26 +129,5 @@ class User {
    * @param {*} res
    * @returns {*} update password
    */
-  static async resetpassword(req, res) {
-    const { token } = req.params;
-    const check = await resetPassword.checkToken(token);
-    // get id from token
-    const decode = jwt.verify(token, process.env.SECRETKEY);
-    // validate the token not to be above 10 min
-    const seconds = (new Date().getTime() - check.dataValues.createdAt.getTime()) / 1000;
-    // check the token
-    if (check === null || check === undefined || seconds > 600) {
-      res.status(404).json({ message: 'invalid token' });
-    } else {
-      // get password and encrypt it
-      const { password } = req.body;
-      const encryptPassword = await new encripter(password).encrypt();
-      // update user password
-      const result = await UserModel.resetpassword(encryptPassword, decode.id);
-      res.status(201).json({
-        data: result
-      });
-    }
-  }
 }
 export default User;

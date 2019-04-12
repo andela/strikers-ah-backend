@@ -17,6 +17,6 @@ router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'
 router.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/auth/facebook' }), user.socialLogin);
 
 router.post('/forgetpassword', user.passwordreset);
-router.post('/resetpassword/:token', user.resetpassword);
+router.put('/resetpassword/:token', user.resetpassword);
 
 export default router;
