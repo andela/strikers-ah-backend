@@ -1,13 +1,10 @@
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('resetpassword', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('resetpasswords', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER
-    },
-    userId: {
       type: Sequelize.INTEGER
     },
     token: {
@@ -23,5 +20,5 @@ module.exports = {
     }
   }),
   // eslint-disable-next-line no-unused-vars
-  down: (queryInterface, Sequelize) => Promise.all([queryInterface.dropTable('resetpassword')])
+  down: (queryInterface, Sequelize) => Promise.all([queryInterface.dropTable('resetpasswords')])
 };

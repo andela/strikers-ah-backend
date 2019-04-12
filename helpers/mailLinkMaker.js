@@ -1,19 +1,16 @@
 import dotenv from 'dotenv';
-import Encrypt from './encrypt';
 
 dotenv.config();
 /**
+ * @author frank harerimana
  * Mailing link maker
  */
 class MailLinkMaker {
   /**
-     * @param {*} _identifier
      * @param {*} _token
      */
-  constructor(_identifier, _token) {
-    this.identifier = _identifier;
+  constructor(_token) {
     this.token = _token;
-    this.encr = new Encrypt(this.identifier);
   }
 
   /**
@@ -22,7 +19,7 @@ class MailLinkMaker {
  * @return {*} link
  */
   async resetPasswordLink() {
-    return `${process.env.APP_URL}/api/v1/login/resetpassword/${this.token}/${this.encr.encrypt()}`;
+    return `${process.env.APP_URL}/api/v1/login/resetpassword/${this.token}`;
   }
 }
 
