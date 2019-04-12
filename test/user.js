@@ -39,6 +39,21 @@ describe('Test User', () => {
         })
           .catch(error => logError(error));
       });
+      describe('POST /users/login', () => {
+        it('Should be able to login into user account', (done) => {
+          user.email = 'email@tes.com';
+          user.password = 'P@ssword1';
+          chai.request(app).post('/api/users/login').send(user).then((res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('user');
+            res.body.user.should.have.property('token');
+            res.body.user.should.have.property('email').eql('email@tes.com');
+            done();
+          })
+            .catch(error => logError(`error${error}`));
+        });
+      });
 
       it('Should not create user if both email and username are taken', (done) => {
         chai.request(app).post('/api/users').send(user).then((res) => {
@@ -87,58 +102,6 @@ describe('Test User', () => {
           .then(() => {
             UserModel.findAll({
               limit: 1, order: [['createdAt', 'DESC']]
-            }).then((res) => {
-              res.should.be.a('array');
-            });
-          });
-        done();
-      });
-    });
-  });
-  describe('Test User  Login', () => {
-    describe('POST /users/login', () => {
-      it('Should be able to login into user account', (done) => {
-        user.email = 'email@tes.com';
-        user.password = 'P@ssword1';
-        chai.request(app).post('/api/users/login').send(user).then((res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          res.body.should.have.property('user');
-          res.body.user.should.have.property('token');
-          res.body.user.should.have.property('email').eql('email@tes.com');
-          done();
-        })
-          .catch(error => logError(`error${error}`));
-      });
-    });
-    describe('should be able to create a user', () => {
-      it('return user object', (done) => {
-        const providerList = [
-          'facebook',
-          'google',
-          'twitter',
-          'github',
-          '',
-        ];
-
-        const provider = providerList[Math.floor(Math.random() * providerList.length)];
-        const userObj = {
-          user: {
-            username: faker.internet.userName(),
-            email: faker.internet.email(),
-            firstname: faker.name.firstName(),
-            lastname: faker.name.lastName(),
-            bio: faker.lorem.sentence(),
-            image: faker.image.avatar(),
-            provider,
-            provideruserid: faker.random.number().toString()
-          }
-        };
-
-        userController.socialLogin(userObj)
-          .then(() => {
-            UserModel.findOne({
-              order: [['createdAt', 'DESC']]
             }).then((res) => {
               res.should.be.a('array');
             });
