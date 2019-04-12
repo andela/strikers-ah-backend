@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import userHandler from '../helpers/userHandler';
 
-const handleUser = new userHandler();
 /**
  * @author frank harerimana
  * @param {*} accessToken
@@ -15,6 +14,7 @@ const GetSocial = async (accessToken, refreshToken, profile, done) => {
    * get unique formatted username
    */
 
+  const handleUser = new userHandler();
   const SocialUser = {
     email: profile._json.email,
     username: handleUser.getUsername(profile.displayName),
@@ -37,6 +37,7 @@ const GetSocial = async (accessToken, refreshToken, profile, done) => {
  * @returns { Object } user
  */
 const GetSocialTwitterGithub = async (token, tokenSecret, profile, done) => {
+  const handleUser = new userHandler();
   const { _json } = profile;
   const image = _json.avatar_url || handleUser.largeTwitterImage(_json.profile_image_url);
   const names = handleUser.removeSpecialCharacters(_json.name);

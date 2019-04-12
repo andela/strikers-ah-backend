@@ -31,7 +31,7 @@ describe('Test User', () => {
     describe('POST /api/auth/signup', () => {
       it('Should create new User account', (done) => {
         chai.request(app).post('/api/auth/signup').send(user).then((res) => {
-          res.should.have.status(201);
+          res.should.have.status(200);
           res.body.user.should.be.a('object');
           res.body.user.should.have.property('username').eql('username');
           res.body.user.should.have.property('email').eql('email@tes.com');
