@@ -8,7 +8,7 @@ const Twitter = new TwitterStrategy(
   {
     consumerKey: process.env.TWITTER_CONSUMER_KEY,
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-    callbackURL: `${process.env.APP_URL}/api/v1/login/auth/twitter/callback`
+    callbackURL: `${process.env.APP_URL}/api/auth/twitter/callback`
   },
   async (token, tokenSecret, profile, done) => {
     GetSocialTwitterGithub(

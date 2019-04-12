@@ -28,9 +28,9 @@ describe('Test User', () => {
     await UserModel.destroy({ where: { email: user.email } });
   });
   describe('Test User Sign up', () => {
-    describe('POST /api/users', () => {
+    describe('POST /api/auth/signup', () => {
       it('Should create new User account', (done) => {
-        chai.request(app).post('/api/users').send(user).then((res) => {
+        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
           res.should.have.status(201);
           res.body.user.should.be.a('object');
           res.body.user.should.have.property('username').eql('username');
@@ -39,24 +39,9 @@ describe('Test User', () => {
         })
           .catch(error => logError(error));
       });
-      describe('POST /users/login', () => {
-        it('Should be able to login into user account', (done) => {
-          user.email = 'email@tes.com';
-          user.password = 'P@ssword1';
-          chai.request(app).post('/api/users/login').send(user).then((res) => {
-            res.should.have.status(200);
-            res.body.should.be.a('object');
-            res.body.should.have.property('user');
-            res.body.user.should.have.property('token');
-            res.body.user.should.have.property('email').eql('email@tes.com');
-            done();
-          })
-            .catch(error => logError(`error${error}`));
-        });
-      });
 
       it('Should not create user if both email and username are taken', (done) => {
-        chai.request(app).post('/api/users').send(user).then((res) => {
+        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
           res.should.have.status(400);
           res.should.have.property('error');
           done();
@@ -66,12 +51,27 @@ describe('Test User', () => {
 
       it('Should not create user if username is taken', (done) => {
         user.email = 'email@tes1.com';
-        chai.request(app).post('/api/users').send(user).then((res) => {
+        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
           res.should.have.status(400);
           res.should.have.property('error');
           done();
         })
           .catch(error => logError(error));
+      });
+    });
+    describe('POST /api/auth/login', () => {
+      it('Should be able to login into user account', (done) => {
+        user.email = 'email@tes.com';
+        user.password = 'P@ssword1';
+        chai.request(app).post('/api/auth/login').send(user).then((res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('user');
+          res.body.user.should.have.property('token');
+          res.body.user.should.have.property('email').eql('email@tes.com');
+          done();
+        })
+          .catch(error => logError(`error${error}`));
       });
     });
     describe('should be able to create a user', () => {
