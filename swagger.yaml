@@ -36,4 +36,119 @@ paths:
             description: Route not found
           # responses may fall through to errors
           default:
-            description: Unexpected Error
+            description: Unexpected Error,
+  /api/users:
+    # returns a jwt token after registration
+   post:
+    description: Returns a json web token after a Successfull registration
+    parameters:
+    - name: New user
+      in: body
+      required: true
+      description: The User json You want to create
+      schema:
+        type: object
+        properties:
+         firtsname:
+          type: 'String'
+          example: 'Firtsname'
+         lastname:
+          type: 'String'
+          example: 'Lastname'
+         email:
+          type: 'String'
+          example: 'email@host.com'
+         username:
+          type: 'String'
+          example: 'username'
+         password:
+          type: 'String'
+          example: '!23Secret'
+    responses:
+      '201':
+        description: created
+        schema:
+          type: object
+          properties:
+            user:
+              type: 'object'
+              properties:
+                firtsname:
+                  type: 'String'
+                  example: 'Firtsname'
+                lastname:
+                  type: 'String'
+                  example: 'Lastname'
+                email:
+                  type: 'String'
+                  example: 'email@host.com'
+                username:
+                  type: 'String'
+                  example: 'username'
+                bio:
+                 type: 'String'
+                 example: 'i like programming'
+                image:
+                 type: 'String'
+                 example: 'image1.png'
+
+                token:
+                 type: 'String'
+                 example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW0yM2hpMjMxYXNmOSIsImVtYWlsIjoibWVAZ21haWwuY29zaGEiLCJmaXJzdG5hbWUiOiJGcmllZCIsImxhc3RuYW1lIjoiTWlrZWxyaCIsImlhdCI6MTU1NTA1OTc0NX0.NfmPq_sMaD9vmdA7VH0CV2ts_6_q4eql0TiqXQVoS0w'
+      '400':
+        description: Bad request
+      default:
+        description: Unecpected Error
+  /api/users/login:
+  # returns a jwt token after registration
+   post:
+    description: Returns a json web token after a Successfull registration
+    parameters:
+    - name: New user
+      in: body
+      required: true
+      description: The User json You want to create
+      schema:
+        type: object
+        properties:
+         email:
+          type: 'String'
+          example: 'email@host.com'
+         password:
+          type: 'String'
+          example: '!23Secret'
+    responses:
+      '200':
+        description: Ok
+        schema:
+          type: object
+          properties:
+            user:
+              type: 'object'
+              properties:
+                firtsname:
+                 type: 'String'
+                 example: 'Firtsname'
+                lastname:
+                 type: 'String'
+                 example: 'Lastname'
+                email:
+                 type: 'String'
+                 example: 'email@host.com'
+                username:
+                 type: 'String'
+                 example: 'username'
+                bio:
+                 type: 'String'
+                 example: 'i like programming'
+                image:
+                 type: 'String'
+                 example: 'image1.png'
+
+                token:
+                  type: 'String'
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW0yM2hpMjMxYXNmOSIsImVtYWlsIjoibWVAZ21haWwuY29zaGEiLCJmaXJzdG5hbWUiOiJGcmllZCIsImxhc3RuYW1lIjoiTWlrZWxyaCIsImlhdCI6MTU1NTA1OTc0NX0.NfmPq_sMaD9vmdA7VH0CV2ts_6_q4eql0TiqXQVoS0w'
+      '400':
+        description: Bad request
+      default:
+        description: Unecpected Error
