@@ -2,7 +2,7 @@ import faker from 'faker';
 
 module.exports = {
   title: faker.random.words(),
-  description: faker.lorem.sentences(),
-  body: faker.lorem.sentences(),
+  description: faker.lorem.paragraphs(),
+  body: faker.lorem.paragraphs(),
   authorid: faker.random.number(),
 };
