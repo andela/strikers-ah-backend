@@ -22,19 +22,17 @@ class User {
       const data = req.body;
       const newUser = {
         ...data,
-        // password: await helper.hashPassword(data.password),
       };
       // check if the user does not already exist
       const emailUsed = await UserModel.findOne({ where: { email: newUser.email } });
       const userNameUsed = await UserModel.findOne({ where: { username: newUser.username } });
       const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
       if (uniqueEmailUsername === true) {
-        const insertedUser = select.pick(await UserModel.create(newUser), ['username', 'email', 'firstname', 'lastname']);
-        const token = helper.generateToken(insertedUser);
-        return res.header('x-auth-token', token).status(201).json({
-          user: { ...insertedUser },
-          token
-        });
+        const result = await UserModel.create(newUser);
+        let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+        const token = helper.generateToken(userAccount);
+        userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
+        return helper.authenticationResponse(res, token, userAccount);
       }
       return res.status(400).json({ error: uniqueEmailUsername });
     } catch (error) {
@@ -58,9 +56,10 @@ class User {
       // verify password
       if (user && helper.comparePassword(password, user.password)) {
         // return user and token
-        const userAccount = select.pick(user, ['firstname', 'lastname', 'username', 'email', 'bio', 'image']);
+        let userAccount = select.pick(user, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
         const token = helper.generateToken(userAccount);
-        return res.header('x-auth-token', token).status(200).json({ user: { ...userAccount, token } });
+        userAccount = select.pick(user, ['username', 'email', 'bio', 'image']);
+        return helper.authenticationResponse(res, token, userAccount);
       }
       return res.status(401).json({ error: 'Invalid username or password' });
     } catch (error) {
@@ -81,18 +80,16 @@ class User {
       email: req.user.email,
       firstname: req.user.firstname,
       lastname: req.user.lastname,
+      bio: req.user.bio,
       image: req.user.image,
       provider: req.user.provider,
       provideruserid: req.user.provideruserid
     };
     const result = await new UserModel().socialUsers(ruser);
-    return res.status(200).json({
-      username: result.username,
-      email: result.email,
-      bio: result.bio,
-      image: result.image,
-      createAt: result.createAt,
-    });
+    let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+    const token = helper.generateToken(userAccount);
+    userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
+    return helper.authenticationResponse(res, token, userAccount);
   }
 }
 export default User;

@@ -1,17 +1,55 @@
 import chai from 'chai';
-import usernameGenerator from '../middlewares/uniquestring';
+import faker from 'faker';
+import userHandler from '../helpers/userHandler';
 
 process.env.NODE_ENV = 'test';
 chai.should();
 
+const handleUser = new userHandler();
 /**
+ *  @author frank harerimana
  * test username generator class
  */
 describe('/ TEST Middleware', () => {
   it('it should generate random username', (done) => {
-    const strings = new usernameGenerator('myusername');
-    const result = strings.getUsername();
+    const result = handleUser.getUsername('myusername');
     result.should.contain('myusername');
+    done();
+  });
+});
+describe('/ Should generate a unique username', () => {
+  it('it should return a username', (done) => {
+    const userName = faker.internet.userName().toLowerCase();
+    const result = handleUser.getUsername(userName);
+    result.should.contain(userName);
+    done();
+  });
+});
+
+/**
+ * @author jacques nyilinkindi
+ * test remove special character from generator class
+ */
+describe('/ Should remove special character from strings', () => {
+  it('it should return a non special character string', (done) => {
+    const userName = faker.name.lastName();
+    const result = handleUser.removeSpecialCharacters(`@${userName}$`);
+    result.should.contain(userName);
+    result.should.not.contain('@');
+    result.should.not.contain('$');
+    done();
+  });
+});
+
+/**
+ * @author jacques nyilinkindi
+ * test remove special character from generator class
+ */
+describe('/ Should make twitter image large', () => {
+  it('it should remove _normal from the image URL', (done) => {
+    const image = 'thisisimage.jpg';
+    const result = handleUser.largeTwitterImage(`${image}_normal`);
+    result.should.be.eql(image);
     done();
   });
 });
