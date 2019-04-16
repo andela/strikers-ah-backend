@@ -101,5 +101,43 @@ class User {
     userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
     return helper.authenticationResponse(res, token, userAccount);
   }
+
+  /**
+   * @author Jacques Nyilinkindi
+   * @param {*} req
+   * @param {*} res
+   * @returns { object } response
+   */
+  static async verifyUser(req, res) {
+    const { hash } = req.params;
+    try {
+      const verify = await UserVerificationModel.findOne({
+        where: {
+          hash,
+          status: 'Pending'
+        }
+      });
+      // verification
+      if (verify) {
+        // verify user
+        const { id } = verify;
+        await UserModel.update({
+          verified: true,
+        }, {
+          where: { id }
+        });
+        await UserVerificationModel.update({
+          status: 'Used',
+        }, {
+          where: { hash, userid: id }
+        });
+        return res.status(401).json({ message: 'Account verified' });
+      }
+      return res.status(401).json({ error: 'Verification token not found' });
+    } catch (error) {
+      const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
+      return res.status(status).json({ error: `${error.message}` });
+    }
+  }
 }
 export default User;

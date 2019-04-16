@@ -24,4 +24,6 @@ router.get('/twitter/callback', passport.authenticate('twitter', { failureRedire
 router.get('/github', passport.authenticate('github'));
 router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/auth/github' }), user.socialLogin);
 
+router.get('/verify/:hash', user.verifyUser);
+
 export default router;
