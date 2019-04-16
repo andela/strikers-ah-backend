@@ -43,6 +43,11 @@ const UserModel = (Sequelize, DataTypes) => {
     });
     return result[0].dataValues;
   };
+  User.associate = (models) => {
+    User.hasMany(models.article, {
+      foreignKey: 'authorid', onDelete: 'CASCADE'
+    });
+  };
   return User;
 };
 export default UserModel;

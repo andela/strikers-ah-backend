@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
     description: { type: DataTypes.TEXT, allowNull: true },
     authorid: { type: DataTypes.INTEGER, allowNull: false }
   }, {});
-
+  Article.associate = (models) => {
+    Article.belongsTo(models.user, {
+      foreignKey: 'authorid', onDelete: 'CASCADE'
+    });
+  };
   return Article;
 };
