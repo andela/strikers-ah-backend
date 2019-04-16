@@ -2,6 +2,7 @@ import helper from '../helpers/helper';
 
 const UserModel = (Sequelize, DataTypes) => {
   const User = Sequelize.define('user', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     firstname: { type: DataTypes.STRING, allowNull: true },
     lastname: { type: DataTypes.STRING, allowNull: true },
     username: { type: DataTypes.STRING, allowNull: false },
@@ -42,6 +43,11 @@ const UserModel = (Sequelize, DataTypes) => {
       defaults: userProfile
     });
     return result[0].dataValues;
+  };
+  User.associate = (models) => {
+    User.hasMany(models.article, {
+      foreignKey: 'authorid', onDelete: 'CASCADE'
+    });
   };
   return User;
 };

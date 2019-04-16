@@ -6,6 +6,7 @@ import fakeData from './mockData/articleMockData';
 import index from '../index';
 
 const articleModel = db.article;
+const userModel = db.user;
 
 chai.should();
 chai.use(chaiHttp);
@@ -15,12 +16,29 @@ chai.use(chaiHttp);
  * @description: tests related to article
  */
 
-before('Cleaning the database first', (done) => {
-  articleModel.destroy({ truncate: true, cascade: true });
-  done();
+before('Cleaning the database first', async () => {
+  await articleModel.destroy({ truncate: true, cascade: true });
+  await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+});
+const user = {
+  id: 1,
+  username: 'nkunziinnocent',
+  email: 'nkunzi@gmail.com',
+  password: '@Nkunzi1234',
+};
+describe('Create a user to be used in in creating article', () => {
+  it('should create a user', (done) => {
+    chai.request(index).post('/api/users').send(user).then((res) => {
+      res.should.have.status(201);
+      res.body.user.should.be.a('object');
+      res.body.user.should.have.property('username');
+      done();
+    })
+      .catch(err => err);
+  });
 });
 describe('Create an article', () => {
-  it('It should create an article', (done) => {
+  it('should create an article', (done) => {
     chai.request(index).post('/api/articles').send(fakeData).then((res) => {
       res.should.have.status(201);
       res.body.should.have.property('article');

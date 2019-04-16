@@ -7,7 +7,7 @@ module.exports = {
     description: { type: Sequelize.TEXT, allowNull: true },
     body: { type: Sequelize.TEXT, required: true },
     taglist: { type: Sequelize.ARRAY(Sequelize.STRING), defaultValue: [] },
-    authorid: { type: Sequelize.INTEGER, allowNull: false },
+    authorid: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'users', key: 'id', onDelete: 'CASCADE' } },
     createdAt: { allowNull: false, type: Sequelize.DATE },
     updatedAt: { allowNull: false, type: Sequelize.DATE },
   }),
