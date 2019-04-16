@@ -1,5 +1,5 @@
 import GoogleStrategy from 'passport-google-oauth20';
-import GetSocial from '../callbackHandler';
+import { GetSocial } from '../callbackHandler';
 
 /**
  * @author frank harerimana
@@ -7,7 +7,7 @@ import GetSocial from '../callbackHandler';
  */
 const Google = new GoogleStrategy(
   {
-    callbackURL: process.env.CallbackURL,
+    callbackURL: `${process.env.APP_URL}/api/auth/google/callback`,
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },

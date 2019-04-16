@@ -1,12 +1,12 @@
 import FacebookStrategy from 'passport-facebook';
-import GetSocial from '../callbackHandler';
+import { GetSocial } from '../callbackHandler';
 /**
  * @author frank harerimana
  * @returns Facebook strategy
  */
 const Facebook = new FacebookStrategy(
   {
-    callbackURL: process.env.FacebookCallback_URL,
+    callbackURL: `${process.env.APP_URL}/api/auth/facebook/callback`,
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
     profileFields: ['email', 'displayName', 'picture']

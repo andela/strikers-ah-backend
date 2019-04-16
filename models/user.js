@@ -20,7 +20,7 @@ const UserModel = (Sequelize, DataTypes) => {
     image: { type: DataTypes.TEXT, allowNull: true },
     password: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       validate: {
         validation() {
           if (!(this.provider)) {
