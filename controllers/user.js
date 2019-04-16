@@ -2,10 +2,10 @@ import select from 'lodash';
 import Sequelize from 'sequelize';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import mailLinkMaker from '../helpers/mailLinkMaker';
 import model from '../models/index';
 import helper from '../helpers/helper';
 import Mailer from '../helpers/mailer';
-import mailLinkMaker from '../helpers/mailLinkMaker';
 
 const { Op } = Sequelize;
 dotenv.config();
@@ -99,21 +99,21 @@ class User {
  * @author frank harerimana
  * @param {*} req email
  * @param {*} res reset password link
- * @returns {*} result
+ * @returns {*} mailed link
  */
   static async passwordreset(req, res) {
     const { email } = req.body;
     // check email existance
     const search = await UserModel.checkEmail(email);
     if (search === null || undefined) {
-      res.status(401).json({ message: 'no account related to such email', email });
+      res.status(404).json({ message: 'no account related to such email', email });
     } else {
       // generate token
-      const token = jwt.sign({ data: email }, process.env.SECRETKEY);
+      const token = jwt.sign({ id: search.dataValues.id }, process.env.SECRETKEY);
       // store token and userID
-      await resetPassword.recordNewReset(search.dataValues.id, token);
+      await resetPassword.recordNewReset(`${token}`);
       // Generate link and send it in email
-      const link = await new mailLinkMaker(`${search.dataValues.id}`, `${token}`);
+      const link = await new mailLinkMaker(`${token}`);
       // Mailing the link
       const resetLink = await link.resetPasswordLink();
       const result = await new Mailer(email, 'Password reset', resetLink).sender();
@@ -129,5 +129,20 @@ class User {
    * @param {*} res
    * @returns {*} update password
    */
+  static async resetpassword(req, res) {
+    const { token } = req.params;
+    const check = await resetPassword.checkToken(token);
+    if (!check) { return res.status(400).json({ message: 'invalid token' }); }
+    try {
+      const decode = jwt.verify(token, process.env.SECRETKEY);
+      const second = (new Date().getTime() - check.dataValues.createdAt.getTime()) / 1000;
+      if (second > 600) { return res.status(400).json({ message: 'token has expired' }); }
+      const { password } = req.body;
+      const result = await UserModel.resetpassword(password, decode.id);
+      res.status(201).json({
+        data: result
+      });
+    } catch (error) { return res.status(400).json({ message: error.message }); }
+  }
 }
 export default User;
