@@ -1,8 +1,13 @@
 import express from 'express';
 import passport from 'passport';
-import user from '../controllers/user';
+import user from '../../controllers/user';
+import Strategy from '../../middlewares/auth';
 
 const router = express.Router();
+
+
+// eslint-disable-next-line no-unused-vars
+const strategy = new Strategy();
 
 router.post('/login', user.loginWithEmail);
 router.post('/signup', user.signUpWithEmail);

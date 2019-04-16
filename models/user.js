@@ -2,6 +2,7 @@ import helper from '../helpers/helper';
 
 const UserModel = (Sequelize, DataTypes) => {
   const User = Sequelize.define('user', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     firstname: { type: DataTypes.STRING, allowNull: true },
     lastname: { type: DataTypes.STRING, allowNull: true },
     username: { type: DataTypes.STRING, allowNull: false },
