@@ -21,9 +21,7 @@ class User {
   static async signUpWithEmail(req, res) {
     try {
       const data = req.body;
-      const newUser = {
-        ...data,
-      };
+      const newUser = { ...data };
       // check if the user does not already exist
       const emailUsed = await UserModel.findOne({ where: { email: newUser.email } });
       const userNameUsed = await UserModel.findOne({ where: { username: newUser.username } });
@@ -38,7 +36,7 @@ class User {
           status: 'Pending'
         };
         await UserVerificationModel.create(verification);
-
+        //
         let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
         const token = helper.generateToken(userAccount);
         userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
