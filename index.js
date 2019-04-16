@@ -8,12 +8,9 @@ import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import dotenv from 'dotenv';
 import routes from './routes/routes';
-import Strategy from './middlewares/auth';
-import articleRoutes from './routes/articles';
 
 dotenv.config();
 
-const strategy = new Strategy();
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 const app = express();
@@ -31,15 +28,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-app.use('/api/articles', articleRoutes);
-app.use('/api/users', user);
 app.use('/api', routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.static(path.resolve(__dirname, 'view/')));
-app.use('/', (req, res) => {
-});
 
 const port = process.env.PORT || 3000;
 
