@@ -8,6 +8,7 @@ import YAML from 'yamljs';
 import dotenv from 'dotenv';
 import routes from './routes/routes';
 import Strategy from './middlewares/auth';
+import articleRoutes from './routes/articles';
 
 dotenv.config();
 
@@ -25,14 +26,20 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+app.use('/api/articles', articleRoutes);
+app.use('/api/users', user);
 app.use('/api', routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', (req, res) => {
-  res.send('Welcome');
+  res.status(200).json({
+    message: 'Welcome to Author Haven'
+  });
 });
 
 const port = process.env.PORT || 3000;
