@@ -111,26 +111,13 @@ class User {
   static async verifyUser(req, res) {
     const { hash } = req.params;
     try {
-      const verify = await UserVerificationModel.findOne({
-        where: {
-          hash,
-          status: 'Pending'
-        }
-      });
+      const verify = await UserVerificationModel.findOne({ where: { hash, status: 'Pending' } });
       // verification
       if (verify) {
         // verify user
         const { id } = verify;
-        await UserModel.update({
-          verified: true,
-        }, {
-          where: { id }
-        });
-        await UserVerificationModel.update({
-          status: 'Used',
-        }, {
-          where: { hash, userid: id }
-        });
+        await UserModel.update({ verified: true }, { where: { id } });
+        await UserVerificationModel.update({ status: 'Used' }, { where: { hash, userid: id } });
         return res.status(401).json({ message: 'Account verified' });
       }
       return res.status(401).json({ error: 'Verification token not found' });
