@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import express from 'express';
+import path from 'path';
 import bodyParser from 'body-parser';
 import passport from 'passport';
 import session from 'express-session';
@@ -36,10 +37,8 @@ app.use('/api/users', user);
 app.use('/api', routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.use(express.static(path.resolve(__dirname, 'view/')));
 app.use('/', (req, res) => {
-  res.status(200).json({
-    message: 'Welcome to Author Haven'
-  });
 });
 
 const port = process.env.PORT || 3000;
