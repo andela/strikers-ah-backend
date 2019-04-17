@@ -51,17 +51,17 @@ paths:
       responses:
         '200':
           description: Returns an object with data from twitter
-  /api/auth/facebook:
+  /api/auth/github:
     # binds a127 app logic to a route
     get:
-      description: Login with Facebook
+      description: Login with Github
       responses:
         '200':
-          description: Redirects to Facebook
-  /api/auth/facebook/callback:
+          description: Redirects to Github
+  /api/auth/github/callback:
     # binds a127 app logic to a route
     get:
-      description: Login with Facebook Callback
+      description: Login with Github Callback
       responses:
         '200':
-          description: Returns an object with data from Facebook
+          description: Returns an object with data from Github
