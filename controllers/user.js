@@ -55,12 +55,9 @@ class User {
    */
   static async loginWithEmail(req, res) {
     const { email, password } = req.body;
+    const { email: username } = req.body;
     try {
-      const user = await UserModel.findOne({
-        where: {
-          [Op.or]: [{ email }, { username: email }]
-        }
-      });
+      const user = await UserModel.findOne({ where: { [Op.or]: [{ email }, { username }] } });
       // verify password
       if (user && helper.comparePassword(password, user.password)) {
         // return user and token
