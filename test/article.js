@@ -115,3 +115,57 @@ describe('Test the title', () => {
       .catch(err => err);
   });
 });
+
+describe('Test description', () => {
+  const newArticle = {
+    title: faker.random.words(),
+    body: faker.lorem.paragraphs(),
+  };
+  it('should provide a description if not provided', (done) => {
+    chai.request(index).post('/api/articles').send(newArticle).then((res) => {
+      res.should.have.status(201);
+      res.body.should.have.property('article');
+      res.body.article.should.have.property('description');
+      done();
+    })
+      .catch(err => err);
+  });
+});
+
+describe('Tests for get article', () => {
+  let newSlug;
+  const newArticle = {
+    title: 'hello world',
+    description: faker.lorem.paragraph(),
+    body: faker.lorem.paragraphs(),
+  };
+  it('should create an article to be used in get', (done) => {
+    chai.request(index).post('/api/articles/').send(newArticle).then((res) => {
+      res.should.have.status(201);
+      res.body.should.have.property('article');
+      newSlug = res.body.article.slug;
+      done();
+    })
+      .catch(err => err);
+  });
+  it('should return an article created', (done) => {
+    chai.request(index).get(`/api/articles/${newSlug}`).then((res) => {
+      res.should.have.status(200);
+      res.body.should.be.a('object');
+      res.body.should.have.property('article');
+      res.body.article.should.have.property('slug').eql(newSlug);
+      done();
+    }).catch(res => res);
+  });
+});
+describe('Get article errors', () => {
+  const invalid = 'jkfaljfalj';
+  it('should not return an article if the article slug is not in the database', (done) => {
+    chai.request(index).get(`/api/articles/${invalid}`).then((res) => {
+      res.should.have.status(404);
+      res.body.should.be.a('object');
+      res.body.should.have.property('error').eql('No article found with the slug provided');
+      done();
+    }).catch(res => res);
+  });
+});
