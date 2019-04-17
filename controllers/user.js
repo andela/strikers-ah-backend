@@ -1,7 +1,7 @@
 import select from 'lodash';
 import Sequelize from 'sequelize';
 import helper from '../helpers/helper';
-import mailingHelper from '../helpers/mailing';
+import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 /* eslint-disable class-methods-use-this */
 import model from '../models/index';
 

@@ -41,4 +41,8 @@ const sendAccountVerification = (userEmail, names) => {
   sgMail.send(msg);
   return hash;
 };
-export default sendAccountVerification;
+export {
+  hashEmail,
+  getVerificationEmail,
+  sendAccountVerification
+};
