@@ -3,7 +3,7 @@ info:
   version: '0.0.1'
   title: Author Haven
 # during dev, should point to your local machine
-host: localhost:10010
+host: localhost:3000
 # basePath prefixes all resource paths
 basePath: /
 #
@@ -37,3 +37,17 @@ paths:
           # responses may fall through to errors
           default:
             description: Unexpected Error
+  /api/auth/twitter:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Twitter
+      responses:
+        '200':
+          description: Redirects to twitter
+  /api/auth/twitter/callback:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Twitter Callback
+      responses:
+        '200':
+          description: Returns an object with data from twitter
