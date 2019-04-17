@@ -110,10 +110,10 @@ class User {
       // verification
       if (verify) {
         // verify user
-        const { id } = verify;
+        const { userid: id } = verify;
         await UserModel.update({ verified: true }, { where: { id } });
         await UserVerificationModel.update({ status: 'Used' }, { where: { hash, userid: id } });
-        return res.status(401).json({ message: 'Account verified' });
+        return res.status(200).json({ message: 'Account verified' });
       }
       return res.status(401).json({ error: 'Verification token not found' });
     } catch (error) {
