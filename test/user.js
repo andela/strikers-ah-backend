@@ -38,7 +38,7 @@ describe('Test User', () => {
           done();
         })
           .catch(error => logError(error));
-      });
+      }).timeout(15000);
 
       it('Should not create user if both email and username are taken', (done) => {
         chai.request(app).post('/api/auth/signup').send(user).then((res) => {
@@ -47,7 +47,7 @@ describe('Test User', () => {
           done();
         })
           .catch(error => logError(error));
-      });
+      }).timeout(15000);
 
       it('Should not create user if username is taken', (done) => {
         user.email = 'email@tes1.com';

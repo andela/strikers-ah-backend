@@ -69,3 +69,31 @@ paths:
               error:
                 type: 'Object'
                 example: 'Verification token not found'
+  /api/auth/twitter:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Twitter
+      responses:
+        '200':
+          description: Redirects to twitter
+  /api/auth/twitter/callback:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Twitter Callback
+      responses:
+        '200':
+          description: Returns an object with data from twitter
+  /api/auth/github:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Github
+      responses:
+        '200':
+          description: Redirects to Github
+  /api/auth/github/callback:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Github Callback
+      responses:
+        '200':
+          description: Returns an object with data from Github
