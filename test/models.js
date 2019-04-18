@@ -1,10 +1,11 @@
 import chaiHttp from 'chai-http';
 import assert, { AssertionError } from 'assert';
 import chai from 'chai';
+import faker from 'faker';
 import models from '../models/index';
+import modelsuserverification from '../models/userverification';
 
-const User = models.user;
-// const logError = debug('app:*');
+const { user: User, userverification } = models;
 
 chai.use(chaiHttp);
 chai.should();
@@ -14,6 +15,11 @@ const user = {
   lastname: 'lastname',
   email: 'email',
   password: 'password'
+};
+const verification = {
+  userid: faker.random.number(),
+  hash: faker.random.uuid(),
+  status: 'Pending',
 };
 describe('TEST MODELS', () => {
   describe('TEST USER MODEL', () => {
@@ -27,6 +33,20 @@ describe('TEST MODELS', () => {
         }
         assert.equal(error.name, 'SequelizeValidationError');
       }
+    });
+  });
+  describe('TEST  VERIFICAION MODEL', () => {
+    it('Should save new verification', async () => {
+      const verify = await userverification.create(verification);
+      verify.should.be.a('object');
+      verify.should.have.property('userid').eql(verification.userid);
+      verify.should.have.property('hash').eql(verification.hash);
+      verify.should.have.property('status').eql(verification.status);
+    });
+  });
+  describe('TEST  VERIFICAION MODEL CREATE', () => {
+    it('Should be a function', async () => {
+      modelsuserverification.should.be.a('function');
     });
   });
 });

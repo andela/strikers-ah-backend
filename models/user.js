@@ -2,6 +2,7 @@ import helper from '../helpers/helper';
 
 const UserModel = (Sequelize, DataTypes) => {
   const User = Sequelize.define('user', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     firstname: { type: DataTypes.STRING, allowNull: true },
     lastname: { type: DataTypes.STRING, allowNull: true },
     username: { type: DataTypes.STRING, allowNull: false },
@@ -20,7 +21,7 @@ const UserModel = (Sequelize, DataTypes) => {
     image: { type: DataTypes.TEXT, allowNull: true },
     password: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       validate: {
         validation() {
           if (!(this.provider)) {
@@ -34,7 +35,8 @@ const UserModel = (Sequelize, DataTypes) => {
       },
     },
     provider: { type: DataTypes.STRING, allowNull: true, defaultValue: '' },
-    provideruserid: { type: DataTypes.STRING, allowNull: true, }
+    provideruserid: { type: DataTypes.STRING, allowNull: true, },
+    verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
   });
   User.prototype.socialUsers = async (userProfile) => {
     const result = await User.findOrCreate({
@@ -42,6 +44,11 @@ const UserModel = (Sequelize, DataTypes) => {
       defaults: userProfile
     });
     return result[0].dataValues;
+  };
+  User.associate = (models) => {
+    User.hasMany(models.article, {
+      foreignKey: 'authorid', onDelete: 'CASCADE'
+    });
   };
   return User;
 };

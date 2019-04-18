@@ -1,4 +1,10 @@
 import express from 'express';
+import articleRoutes from './api/articles';
+import authentication from './api/authentication';
 
-const router = express.Router();
-export default router;
+const app = express();
+
+app.use('/auth', authentication);
+app.use('/articles', articleRoutes);
+
+export default app;

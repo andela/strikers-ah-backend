@@ -1,12 +1,16 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import debug from 'debug';
+import faker from 'faker';
 import app from '../index';
-import models from '../models/index';
+import userController from '../controllers/user';
+import model from '../models/index';
+
+process.env.NODE_ENV = 'test';
+
+const { user: UserModel } = model;
 
 const logError = debug('app:*');
-
-const User = models.user;
 
 chai.use(chaiHttp);
 chai.should();
@@ -21,33 +25,33 @@ const user = {
 describe('Test User', () => {
   before(async () => {
     // clear data in the table
-    await User.destroy({ where: { email: user.email } });
+    await UserModel.destroy({ where: { email: user.email } });
   });
   describe('Test User Sign up', () => {
-    describe('POST /api/users', () => {
+    describe('POST /api/auth/signup', () => {
       it('Should create new User account', (done) => {
-        chai.request(app).post('/api/users').send(user).then((res) => {
-          res.should.have.status(201);
+        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
+          res.should.have.status(200);
           res.body.user.should.be.a('object');
           res.body.user.should.have.property('username').eql('username');
           res.body.user.should.have.property('email').eql('email@tes.com');
           done();
         })
           .catch(error => logError(error));
-      });
+      }).timeout(15000);
 
       it('Should not create user if both email and username are taken', (done) => {
-        chai.request(app).post('/api/users').send(user).then((res) => {
+        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
           res.should.have.status(400);
           res.should.have.property('error');
           done();
         })
           .catch(error => logError(error));
-      });
+      }).timeout(15000);
 
       it('Should not create user if username is taken', (done) => {
         user.email = 'email@tes1.com';
-        chai.request(app).post('/api/users').send(user).then((res) => {
+        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
           res.should.have.status(400);
           res.should.have.property('error');
           done();
@@ -55,12 +59,11 @@ describe('Test User', () => {
           .catch(error => logError(error));
       });
     });
-  });
-  describe('Test User  Login', () => {
-    describe('POST /users/login', () => {
+    describe('POST /api/auth/login', () => {
       it('Should be able to login into user account', (done) => {
         user.email = 'email@tes.com';
-        chai.request(app).post('/api/users/login').send({ email: user.email, password: user.password }).then((res) => {
+        user.password = 'P@ssword1';
+        chai.request(app).post('/api/auth/login').send(user).then((res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('user');
@@ -68,7 +71,54 @@ describe('Test User', () => {
           res.body.user.should.have.property('email').eql('email@tes.com');
           done();
         })
-          .catch(error => logError(error));
+          .catch(error => logError(`error${error}`));
+      });
+    });
+    describe('should be able to create a user', () => {
+      it('return user object', (done) => {
+        const providerList = [
+          'facebook',
+          'google',
+          'twitter',
+          'github',
+          '',
+        ];
+
+        const provider = providerList[Math.floor(Math.random() * providerList.length)];
+        const userObj = {
+          user: {
+            username: faker.internet.userName(),
+            email: faker.internet.email(),
+            firstname: faker.name.firstName(),
+            lastname: faker.name.lastName(),
+            bio: faker.lorem.sentence(),
+            image: faker.image.avatar(),
+            provider,
+            provideruserid: faker.random.number().toString()
+          }
+        };
+
+        userController.socialLogin(userObj)
+          .then(() => {
+            UserModel.findAll({
+              limit: 1, order: [['createdAt', 'DESC']]
+            }).then((res) => {
+              res.should.be.a('array');
+            });
+          });
+        done();
+      });
+    });
+    describe('GET /api/auth/verify/:hash', () => {
+      it('Should be able to verify account signed up', (done) => {
+        const hash = faker.random.uuid();
+        chai.request(app).get(`/api/auth/verify/${hash}`).then((res) => {
+          res.should.have.status(401);
+          res.body.should.be.a('object');
+          res.body.should.have.property('error').eql('Verification token not found');
+          done();
+        })
+          .catch(error => logError(`error${error}`));
       });
     });
   });

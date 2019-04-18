@@ -1,7 +1,7 @@
 sudo: false
 language: node_js
 node_js:
-  - "stable"
+  - 'stable'
 install:
   - npm i
 script:

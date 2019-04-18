@@ -3,7 +3,7 @@ info:
   version: '0.0.1'
   title: Author Haven
 # during dev, should point to your local machine
-host: localhost:10010
+host: localhost:3000
 # basePath prefixes all resource paths
 basePath: /
 #
@@ -98,7 +98,7 @@ paths:
       '400':
         description: Bad request
       default:
-        description: Unecpected Error
+        description: Unexpected Error
   /api/users/login:
   # returns a jwt token after registration
    post:
@@ -151,4 +151,64 @@ paths:
       '400':
         description: Bad request
       default:
-        description: Unecpected Error
+        description: Unexpected Error
+  /api/auth/verify/{path}:
+    # binds a127 app logic to a route
+    get:
+      description: Returns an object message
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: hash
+          description: Verification Hash
+          required: true
+          type: string
+          example: 373b609f199159befdfsdsd79394df7cba76d9937824ad0b8b30228b6900878ac4832da0dff1682a48099b565dfs6d45
+      responses:
+        '200':
+          description: Verified account successfully
+          schema:
+            # a pointer to a definition
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Account verified'
+        '401':
+          description: Verification token not found
+          schema:
+            # a pointer to a definition
+            type: object
+            properties:
+              error:
+                type: 'Object'
+                example: 'Verification token not found'
+  /api/auth/twitter:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Twitter
+      responses:
+        '200':
+          description: Redirects to twitter
+  /api/auth/twitter/callback:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Twitter Callback
+      responses:
+        '200':
+          description: Returns an object with data from twitter
+  /api/auth/github:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Github
+      responses:
+        '200':
+          description: Redirects to Github
+  /api/auth/github/callback:
+    # binds a127 app logic to a route
+    get:
+      description: Login with Github Callback
+      responses:
+        '200':
+          description: Returns an object with data from Github
