@@ -31,6 +31,7 @@ app.use(passport.session());
 app.use('/api', routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+
 app.use(express.static(path.resolve(__dirname, 'view/')));
 
 const port = process.env.PORT || 3000;

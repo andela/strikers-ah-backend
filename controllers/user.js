@@ -6,14 +6,14 @@ import mailLinkMaker from '../helpers/mailLinkMaker';
 import model from '../models/index';
 import Mailer from '../helpers/mailer';
 import helper from '../helpers/helper';
+import blacklist from '../helpers/redis';
 import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
-/* eslint-disable class-methods-use-this */
-
 
 const { Op } = Sequelize;
 dotenv.config();
 
-const { user: UserModel, userverification: UserVerificationModel, resetpassword: resetPassword } = model;
+const { user: UserModel, userverification: UserVerificationModel } = model;
+const { resetpassword: resetPassword } = model;
 
 /**
  * @param { class } User -- User }
@@ -78,6 +78,28 @@ class User {
       const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
       return res.status(status).json({ error: `${error.message}` });
     }
+  }
+
+  /**
+   * @author: Clet Mwunguzi
+   * @param {Object} req -- request object
+   * @param {Object} res  -- response object
+   * @returns { Middleware } -- returns nothing
+   */
+  static async logout(req, res) {
+    const token = req.headers['x-access-token'] || req.headers.authorization;
+    await blacklist(res, token);
+  }
+
+
+  /**
+   * @author: Clet Mwunguzi
+   * @param {Object} req -- request object
+   * @param {Object} res  -- response object
+   * @returns { Middleware } -- returns nothing
+   */
+  static welcomeUser(req, res) {
+    return res.status(200).send('Welcome');
   }
 
   /**
@@ -152,9 +174,8 @@ class User {
         data: result
       });
     } catch (error) { return res.status(400).json({ message: error.message }); }
-
   }
-   
+
   /**
    * @author Jacques Nyilinkindi
    * @param {*} req
