@@ -1,20 +1,20 @@
 import select from 'lodash';
 import Sequelize from 'sequelize';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import mailLinkMaker from '../helpers/mailLinkMaker';
 import model from '../models/index';
 import Mailer from '../helpers/mailer';
 import helper from '../helpers/helper';
-import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
-/* eslint-disable class-methods-use-this */
 
+// const debugLogger = debug('app:*');
 
-const { Op } = Sequelize;
-dotenv.config();
+const {
+  user: UserModel
+} = model;
 
-const { user: UserModel, userverification: UserVerificationModel, resetpassword: resetPassword } = model;
-
+const {
+  Op
+} = Sequelize;
 /**
  * @param { class } User -- User }
  */
@@ -26,58 +26,65 @@ class User {
    * @returns { Middleware } -- returns nothing
    */
   static async signUpWithEmail(req, res) {
-    try {
-      const data = req.body;
-      const newUser = { ...data };
-      // check if the user does not already exist
-      const emailUsed = await UserModel.findOne({ where: { email: newUser.email } });
-      const userNameUsed = await UserModel.findOne({ where: { username: newUser.username } });
-      const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
-      if (uniqueEmailUsername === true) {
-        const result = await UserModel.create(newUser);
-        // Email verification
-        const verificationHash = mailingHelper(result.email, `${result.firstname} ${result.lastname}`);
-        const verification = {
-          userid: result.id,
-          hash: verificationHash,
-          status: 'Pending'
-        };
-        await UserVerificationModel.create(verification);
-        //
-        let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
-        const token = helper.generateToken(userAccount);
-        userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
-        return helper.authenticationResponse(res, token, userAccount);
+    const data = req.body;
+    const newUser = {
+      ...data,
+    };
+    // check if the user does not already exist
+    const emailUsed = await UserModel.findOne({
+      where: {
+        email: newUser.email
       }
-      return res.status(400).json({ error: uniqueEmailUsername });
-    } catch (error) {
-      return res.status(400).send(error);
+    });
+    const userNameUsed = await UserModel.findOne({
+      where: {
+        username: newUser.username
+      }
+    });
+    const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
+    if (uniqueEmailUsername === true) {
+      const result = await UserModel.create(newUser);
+      let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+      const token = helper.generateToken(userAccount);
+      userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
+      return helper.authenticationResponse(res, token, userAccount);
     }
+    return res.status(400).json({
+      error: uniqueEmailUsername
+    });
   }
 
   /**
+   * @author Mwibutsa Floribert
    * @param {Object} req
    * @param {Object} res
    * @returns { null } --
    */
   static async loginWithEmail(req, res) {
-    const { email, password } = req.body;
-    const { email: username } = req.body;
-    try {
-      const user = await UserModel.findOne({ where: { [Op.or]: [{ email }, { username }] } });
-      // verify password
-      if (user && helper.comparePassword(password, user.password)) {
-        // return user and token
-        let userAccount = select.pick(user, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
-        const token = helper.generateToken(userAccount);
-        userAccount = select.pick(user, ['username', 'email', 'bio', 'image']);
-        return helper.authenticationResponse(res, token, userAccount);
+    const {
+      email,
+      password
+    } = req.body;
+    const user = await UserModel.findOne({
+      where: {
+        [Op.or]: [{
+          email
+        }, {
+          username: email
+        }]
       }
-      return res.status(401).json({ error: 'Invalid username or password' });
-    } catch (error) {
-      const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
-      return res.status(status).json({ error: `${error.message}` });
+    });
+    // verify password
+    if (user && helper.comparePassword(password, user.password)) {
+      // return user and token
+      let userAccount = select.pick(user, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+      const token = helper.generateToken(userAccount);
+      userAccount = select.pick(user, ['username', 'email', 'bio', 'image']);
+      return helper.authenticationResponse(res, token, userAccount);
     }
+    return res.status(401).json({
+      error: 'Invalid username or password'
+    });
   }
 
   /**
@@ -152,9 +159,8 @@ class User {
         data: result
       });
     } catch (error) { return res.status(400).json({ message: error.message }); }
-
   }
-   
+
   /**
    * @author Jacques Nyilinkindi
    * @param {*} req
@@ -178,6 +184,38 @@ class User {
       const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
       return res.status(status).json({ error: `${error.message}` });
     }
+  }
+
+  /** @author Mwibutsa Floribert
+   * @param {Object} req request containing new user details
+   * @param {Object} res response containing edit user details
+   * @returns { Object } updated user details
+   */
+  static async editProfile(req, res) {
+    const {
+      body: data
+    } = req;
+    const {
+      id,
+      email,
+      username
+    } = helper.decodeToken(req);
+    const userProfileImage = await helper.uploadImage(req);
+    const updatedUser = await UserModel
+      .update({
+        ...data,
+        email: (email.length) ? email : data.email,
+        username: (username.length) ? username : data.username,
+        image: userProfileImage
+      }, {
+        where: {
+          id
+        },
+        returning: true
+      });
+    res.status(202).json(
+      select.pick(updatedUser[1][0], ['firstname', 'lastname', 'email', 'username', 'bio', 'image'])
+    );
   }
 }
 export default User;
