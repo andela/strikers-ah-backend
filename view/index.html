@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width-device=width initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="./css/index-style.css">
     <title>Author's Haven</title>
@@ -14,21 +15,37 @@
                 <img src="./img/icon/icon.svg" alt="icon" class="icon">
                 <a href="index.html" class="brand">Author's Haven</a>
             </div>
-            <div class="categories">
-                <ul>
-                    <li>HOME</li>
-                    <li>SPORT</li>
-                    <li>CULTURE</li>
-                    <li>ECONOMICS</li>
-                    <li>ENTERTAINMENT</li>
-                    <li>TECH</li>
-                    <li>HEALTH</li>
-                    <li>POLITICS</li>
-                    <li>BUSINESS</li>
-                </ul>
-            </div>
             <a href="#" class="login">Log In</a>
             <a href="#" class="getStarted">Get Started</a>
+            <div onclick = "showMenu()"> <img class = "drop-menu" id="drop-menu" src="./img/pic/menu.png"> </div>
+        </div>
+        <div class = "popup-menu" id = "popup-menu">
+        <ul>
+                <li>HOME</li>
+                <li>SPORT</li>
+                <li>CULTURE</li>
+                <li>ECONOMICS</li>
+                <li>ENTERTAINMENT</li>
+                <li>TECH</li>
+                <li>HEALTH</li>
+                <li>POLITICS</li>
+                <li>BUSINESS</li>
+        </ul>
+        </div>
+        <div class="categories">
+        <div class = "categories-wrapper">
+        <ul>
+                <li>HOME</li>
+                <li>SPORT</li>
+                <li>CULTURE</li>
+                <li>ECONOMICS</li>
+                <li>ENTERTAINMENT</li>
+                <li>TECH</li>
+                <li>HEALTH</li>
+                <li>POLITICS</li>
+                <li>BUSINESS</li>
+        </ul>
+        </div>
         </div>
     </header>
     <div class="slider">
@@ -55,15 +72,16 @@
 
         <a class="prev-slide" onclick="displaySlide(-1)">&#10094;</a>
         <a class="next-slide" onclick="displaySlide(1)">&#10095;</a>
-       
-    </div>
 
-    <div class="bottom-dot">
+        <div class="bottom-dot">
         <span class="big-dot" onclick="thisSlide(1)"></span>
         <span class="big-dot" onclick="thisSlide(2)"></span>
         <span class="big-dot" onclick="thisSlide(3)"></span>
         <span class="big-dot" onclick="thisSlide(4)"></span>
+        </div>
+       
     </div>
+
     <div class="container">
     <div class="other-articles">
         <div class="reading-history grid-element">
@@ -81,9 +99,11 @@
                         <span class="article-time time-style">  |  Mar 14</span>
                         <span class="read-time time-style">  .   4 min Read</span>
                     </div>
-                    <div class="article-excerpt time-style">
-                        Ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.  Read more...
-                    </div>
+                        <div class="article-excerpt time-style">
+                          
+                        Ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse. Read more...
+                    
+                        </div>
                 </div>
             </div>
             <div class="article"> 
@@ -99,8 +119,10 @@
                             <span class="article-time time-style">  |  Mar 14</span>
                             <span class="read-time time-style">  .   4 min Read</span>
                         </div> 
-                        <div class="article-excerpt time-style">
-                            Ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.  Read more...
+                         <div class="article-excerpt time-style">
+                          
+                        Ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse. Read more...
+                    
                         </div>
                     </div>
             </div>
@@ -118,7 +140,9 @@
                             <span class="read-time time-style">  .   4 min Read</span>
                         </div> 
                         <div class="article-excerpt time-style">
-                            Ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.  Read more...
+                          
+                        Ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse. Read more...
+                    
                         </div>
             </div>
             
@@ -137,7 +161,9 @@
                             <span class="read-time time-style">  .   4 min Read</span>
                         </div> 
                         <div class="article-excerpt time-style">
-                            Ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.  Read more...
+                          
+                        Ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse. Read more...
+                    
                         </div>
                 </div>
             </div>
@@ -150,7 +176,7 @@
                 <hr class="h-line">
                 <div class="side-article">
                 <div class="side-article-head">
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+                        Sed ut perspiciatis unde omnis iste natus error sit.
                 </div>
                 <div class="side-article-mark">
                         <span class="author-name side-author-name">Sergey Brot</span>
@@ -160,7 +186,7 @@
             </div>
             <div class="side-article">
                     <div class="side-article-head">
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+                            Sed ut perspiciatis unde omnis istes lusem.
                     </div>
                     <div class="side-article-mark">
                             <span class="author-name side-author-name">Sergey Brot</span>
@@ -170,7 +196,7 @@
             </div>
             <div class="side-article">
                     <div class="side-article-head">
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+                            Sed ut perspiciatis unde omnis iste. 
                     </div>
                     <div class="side-article-mark">
                             <span class="author-name side-author-name">Sergey Brot</span>
@@ -180,7 +206,7 @@
             </div>
             <div class="side-article">
                     <div class="side-article-head">
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+                            Sed ut perspiciatis unde omnis iste natus yuit rtee.
                     </div>
                     <div class="side-article-mark">
                             <span class="author-name side-author-name">Sergey Brot</span>
@@ -190,7 +216,7 @@
             </div>
             <div class="side-article">
                     <div class="side-article-head">
-                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+                            Sed ut perspiciatis unde omnis iste natus error. 
                     </div>
                     <div class="side-article-mark">
                             <span class="author-name side-author-name">Sergey Brot</span>
@@ -260,6 +286,17 @@
     </div>
 
     <script>
+    function showMenu(){
+        var popup = document.getElementById("popup-menu").style;
+
+        if (popup.display === "block") {
+                popup.display = "none";
+        }
+        else{ 
+          popup.display = "block";
+        }
+       
+    }
     var slideIndex = 1;
     showSlides(slideIndex);
 
