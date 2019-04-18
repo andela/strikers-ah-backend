@@ -26,5 +26,6 @@ router.get('/github/callback', passport.authenticate('github', { failureRedirect
 
 router.post('/forgetpassword', user.passwordreset);
 router.put('/resetpassword/:token', user.resetpassword);
+router.get('/verify/:hash', user.verifyUser);
 
 export default router;

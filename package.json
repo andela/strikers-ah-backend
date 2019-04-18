@@ -4,7 +4,7 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test npm run migrate && nyc --reporter=html --reporter=text mocha --require @babel/polyfill --require @babel/register ./test/*.js --exit",
+    "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --require @babel/polyfill --require @babel/register ./test/*.js --exit",
     "start": "babel-node ./index.js",
     "migrate": "node_modules/.bin/sequelize db:migrate:undo:all && node_modules/.bin/sequelize db:migrate",
     "dev": "nodemon --exec babel-node ./index.js ",
@@ -48,6 +48,7 @@
     "request": "^2.87.0",
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",
+    "sequelize-transforms": "^2.0.0",
     "slug": "^1.0.0",
     "slugify": "^1.3.4",
     "swagger-ui-express": "^4.0.2",

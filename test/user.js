@@ -43,7 +43,7 @@ describe('Test User', () => {
           done();
         })
           .catch(error => logError(error));
-      });
+      }).timeout(15000);
 
       it('Should not create user if both email and username are taken', (done) => {
         chai.request(app).post('/api/auth/signup').send(user).then((res) => {
@@ -52,7 +52,7 @@ describe('Test User', () => {
           done();
         })
           .catch(error => logError(error));
-      });
+      }).timeout(15000);
 
       it('Should not create user if username is taken', (done) => {
         user.email = 'email@tes1.com';
@@ -112,6 +112,18 @@ describe('Test User', () => {
             });
           });
         done();
+      });
+    });
+    describe('GET /api/auth/verify/:hash', () => {
+      it('Should be able to verify account signed up', (done) => {
+        const hash = faker.random.uuid();
+        chai.request(app).get(`/api/auth/verify/${hash}`).then((res) => {
+          res.should.have.status(401);
+          res.body.should.be.a('object');
+          res.body.should.have.property('error').eql('Verification token not found');
+          done();
+        })
+          .catch(error => logError(`error${error}`));
       });
     });
   });
