@@ -19,11 +19,13 @@ const { Op } = Sequelize;
 dotenv.config();
 
 const {
-  user: UserModel, userverification: UserVerificationModel,
-  resetpassword: resetPassword, following: followingModel,
-  followers: followersModel, notification: notificationModel
+  user: UserModel,
+  userverification: UserVerificationModel,
+  resetpassword: resetPassword,
+  following: followingModel,
+  followers: followersModel,
+  notification: notificationModel
 } = model;
-
 /**
  * @param { class } User -- User }
  */
@@ -35,58 +37,79 @@ class User {
    * @returns { Middleware } -- returns nothing
    */
   static async signUpWithEmail(req, res) {
-    try {
-      const data = req.body;
-      const newUser = { ...data };
-      // check if the user does not already exist
-      const emailUsed = await UserModel.findOne({ where: { email: newUser.email } });
-      const userNameUsed = await UserModel.findOne({ where: { username: newUser.username } });
-      const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
-      if (uniqueEmailUsername === true) {
-        const result = await UserModel.create(newUser);
-        // Email verification
-        const verificationHash = mailingHelper(result.email, `${result.firstname} ${result.lastname}`);
-        const verification = {
-          userid: result.id,
-          hash: verificationHash,
-          status: 'Pending'
-        };
-        await UserVerificationModel.create(verification);
-        //
-        let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
-        const token = helper.generateToken(userAccount);
-        userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
-        return helper.authenticationResponse(res, token, userAccount);
+    const data = req.body;
+    const newUser = {
+      ...data
+    };
+    // check if the user does not already exist
+    const emailUsed = await UserModel.findOne({
+      where: {
+        email: newUser.email
       }
-      return res.status(400).json({ error: uniqueEmailUsername });
-    } catch (error) {
-      return res.status(400).send(error);
+    });
+    const userNameUsed = await UserModel.findOne({
+      where: {
+        username: newUser.username
+      }
+    });
+    const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
+    if (uniqueEmailUsername === true) {
+      const result = await UserModel.create(newUser);
+      let userAccount = select.pick(result, [
+        'id',
+        'firstname',
+        'lastname',
+        'username',
+        'email',
+        'image'
+      ]);
+      const token = helper.generateToken(userAccount);
+      userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
+      return helper.authenticationResponse(res, token, userAccount);
     }
+    return res.status(400).json({
+      error: uniqueEmailUsername
+    });
   }
 
   /**
+   * @author Mwibutsa Floribert
    * @param {Object} req
    * @param {Object} res
    * @returns { null } --
    */
   static async loginWithEmail(req, res) {
     const { email, password } = req.body;
-    const { email: username } = req.body;
-    try {
-      const user = await UserModel.findOne({ where: { [Op.or]: [{ email }, { username }] } });
-      // verify password
-      if (user && helper.comparePassword(password, user.password)) {
-        // return user and token
-        let userAccount = select.pick(user, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
-        const token = helper.generateToken(userAccount);
-        userAccount = select.pick(user, ['username', 'email', 'bio', 'image']);
-        return helper.authenticationResponse(res, token, userAccount);
+    const user = await UserModel.findOne({
+      where: {
+        [Op.or]: [
+          {
+            email
+          },
+          {
+            username: email
+          }
+        ]
       }
-      return res.status(401).json({ error: 'Invalid username or password' });
-    } catch (error) {
-      const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
-      return res.status(status).json({ error: `${error.message}` });
+    });
+    // verify password
+    if (user && helper.comparePassword(password, user.password)) {
+      // return user and token
+      let userAccount = select.pick(user, [
+        'id',
+        'firstname',
+        'lastname',
+        'username',
+        'email',
+        'image'
+      ]);
+      const token = helper.generateToken(userAccount);
+      userAccount = select.pick(user, ['username', 'email', 'bio', 'image']);
+      return helper.authenticationResponse(res, token, userAccount);
     }
+    return res.status(401).json({
+      error: 'Invalid username or password'
+    });
   }
 
   /**
@@ -109,7 +132,6 @@ class User {
       error: 'Something went wrong'
     });
   }
-
 
   /**
    * @author: Clet Mwunguzi
@@ -139,18 +161,25 @@ class User {
       provideruserid: req.user.provideruserid
     };
     const result = await UserModel.socialUsers(ruser);
-    let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+    let userAccount = select.pick(result, [
+      'id',
+      'firstname',
+      'lastname',
+      'username',
+      'email',
+      'image'
+    ]);
     const token = helper.generateToken(userAccount);
     userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
     return helper.authenticationResponse(res, token, userAccount);
   }
 
   /**
- * @author frank harerimana
- * @param {*} req email
- * @param {*} res reset password link
- * @returns {*} mailed link
- */
+   * @author frank harerimana
+   * @param {*} req email
+   * @param {*} res reset password link
+   * @returns {*} mailed link
+   */
   static async passwordreset(req, res) {
     const { email } = req.body;
     // check email existance
@@ -168,7 +197,8 @@ class User {
       const resetLink = await link.resetPasswordLink();
       const result = await new Mailer(email, 'Password reset', resetLink).sender();
       res.status(202).json({
-        message: result, email
+        message: result,
+        email
       });
     }
   }
@@ -182,18 +212,24 @@ class User {
   static async resetpassword(req, res) {
     const { token } = req.params;
     const check = await resetPassword.checkToken(token);
-    if (!check) { return res.status(400).json({ message: 'invalid token' }); }
+    if (!check) {
+      return res.status(400).json({ message: 'invalid token' });
+    }
     try {
       const decode = jwt.verify(token, process.env.secretKey);
       const second = (new Date().getTime() - check.dataValues.createdAt.getTime()) / 1000;
-      if (second > 600) { return res.status(400).json({ message: 'token has expired' }); }
+      if (second > 600) {
+        return res.status(400).json({ message: 'token has expired' });
+      }
       const { password } = req.body;
       const result = await UserModel.resetpassword(password, decode.id);
       notify.emit('resetpassword', decode.id);
       res.status(201).json({
         data: result
       });
-    } catch (error) { return res.status(400).json({ message: error.message }); }
+    } catch (error) {
+      return res.status(400).json({ message: error.message });
+    }
   }
 
   /**
@@ -217,7 +253,7 @@ class User {
       }
       return res.status(401).json({ error: 'Verification token not found' });
     } catch (error) {
-      const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
+      const status = error.name === 'SequelizeValidationError' ? 400 : 500;
       return res.status(status).json({ error: `${error.message}` });
     }
   }
@@ -246,7 +282,7 @@ class User {
       } else {
         res.status(409).json({
           status: 409,
-          message: 'you can\'t follow you self',
+          message: "you can't follow you self"
         });
       }
     } catch (error) {
@@ -278,7 +314,7 @@ class User {
       } else {
         res.status(409).json({
           status: 409,
-          message: 'you can\'t unfollow you self',
+          message: "you can't unfollow you self"
         });
       }
     } catch (error) {
@@ -403,6 +439,43 @@ class User {
         error: 'incorrent profile'
       });
     }
+  }
+
+  /** @author Mwibutsa Floribert
+   * @param {Object} req request containing new user details
+   * @param {Object} res response containing edit user details
+   * @returns { Object } updated user details
+   */
+  static async editProfile(req, res) {
+    const { body: data } = req;
+    const { id, email, username } = helper.decodeToken(req);
+    const userProfileImage = await helper.uploadImage(req);
+    const updatedUser = await UserModel.update(
+      {
+        ...data,
+        email: email.length ? email : data.email,
+        username: username.length ? username : data.username,
+        image: userProfileImage
+      },
+      {
+        where: {
+          id
+        },
+        returning: true
+      }
+    );
+    res
+      .status(202)
+      .json(
+        select.pick(updatedUser[1][0], [
+          'firstname',
+          'lastname',
+          'email',
+          'username',
+          'bio',
+          'image'
+        ])
+      );
   }
 }
 export default User;
