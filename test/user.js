@@ -290,6 +290,7 @@ describe('reset password with an unexisting email', () => {
       .catch(error => logError(error));
   });
 });
+<<<<<<< HEAD
 
 describe('reset password with an existing email', () => {
   it('it should return error', (done) => {
@@ -483,3 +484,5 @@ describe('delete follower record', () => {
     }
   });
 });
+=======
+>>>>>>> Feature(article): Get article

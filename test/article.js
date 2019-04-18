@@ -14,7 +14,6 @@ chai.should();
 chai.use(chaiHttp);
 
 const logError = debug('app:*');
-
 /**
  * @author: Innocent Nkunzi
  * @description: tests related to article
@@ -52,7 +51,7 @@ describe('Create a user to be used in in creating article', () => {
       userToken = res.body.user.token;
       done();
     })
-      .catch(error => console.log(error));
+      .catch(error => logError(error));
   });
 
   it('should create another user to test article ownsershp', () => {
@@ -88,6 +87,7 @@ describe('It checks title errors', () => {
       title: '',
       description: faker.lorem.paragraph(),
       body: faker.lorem.paragraphs(),
+      authorid: 100
     };
     chai.request(index).post('/api/articles').set('x-access-token', `${userToken}`).send(newArticle)
       .then((res) => {

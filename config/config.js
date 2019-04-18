@@ -9,6 +9,10 @@ module.exports = {
     database: process.env.DBNAME,
     host: process.env.DBHOST,
     dialect: 'postgres',
+<<<<<<< HEAD
+=======
+    logging: false
+>>>>>>> Feature(article): Get article
   },
   test: {
     username: process.env.DBUSERNAME,
@@ -16,6 +20,10 @@ module.exports = {
     database: process.env.TESTDBNAME,
     host: process.env.DBHOST,
     dialect: 'postgres',
+<<<<<<< HEAD
+=======
+    logging: false
+>>>>>>> Feature(article): Get article
   },
   production: {
     username: process.env.DBUSERNAME,
@@ -23,5 +31,9 @@ module.exports = {
     database: process.env.DBNAME,
     host: process.env.DBHOST,
     dialect: 'postgres',
+<<<<<<< HEAD
+=======
+    logging: false
+>>>>>>> Feature(article): Get article
   }
 };
