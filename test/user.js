@@ -1,14 +1,19 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import debug from 'debug';
+import dotenv from 'dotenv';
 import faker from 'faker';
 import app from '../index';
 import userController from '../controllers/user';
-import model from '../models/index';
+import models from '../models/index';
 
+/**
+ * @author frank harerimana
+ */
+const { user: UserModel, resetpassword: resetPassword } = models;
+
+dotenv.config();
 process.env.NODE_ENV = 'test';
-
-const { user: UserModel } = model;
 
 const logError = debug('app:*');
 
@@ -25,7 +30,7 @@ const user = {
 describe('Test User', () => {
   before(async () => {
     // clear data in the table
-    await UserModel.destroy({ where: { email: user.email } });
+    // await UserModel.destroy({ where: { email: user.email } });
   });
   describe('Test User Sign up', () => {
     describe('POST /api/auth/signup', () => {
@@ -121,5 +126,143 @@ describe('Test User', () => {
           .catch(error => logError(`error${error}`));
       });
     });
+  });
+});
+
+/**
+ * @author frank harerimana
+ * defining a faker obj
+ */
+const ruser = {
+  username: faker.name.findName(),
+  email: faker.internet.email(),
+  firstname: faker.name.firstName(),
+  lastname: faker.name.lastName(),
+  image: faker.image.avatar(),
+  provider: faker.name.findName(),
+  password: faker.internet.password(),
+  provideruserid: `${faker.random.number()}`
+};
+/**
+ * @author frank harerimana
+ * testing the user model
+ */
+describe('/ find or create a user', () => {
+  it('it should be able to create a user ', (done) => {
+    UserModel.socialUsers(ruser)
+      .then((result) => {
+        result.should.be.a('object');
+        done();
+      });
+  });
+});
+/**
+  * @author frank harerimana
+  * checkEmail user model method
+  */
+describe('/ check user by email', () => {
+  it('it should be able find the email ', async () => {
+    const result = await UserModel.checkEmail(ruser.email);
+    result.should.be.a('object');
+    result.dataValues.email.should.contain('@');
+  });
+});
+
+/**
+ * @author frank harerimana
+ * update password user model method
+ */
+describe('/ update password', () => {
+  it('it should be able to update password ', async () => {
+    const result = await UserModel.resetpassword('P@ssword1', ruser.provideruserid);
+    result.should.be.a('array');
+  });
+});
+
+/**
+ * @author frank harerimana
+ * testing the reset password model
+ */
+describe('/ creating a new token record', () => {
+  it('it should be able create a resetpassword token', async () => {
+    try {
+      const result = await resetPassword.recordNewReset(ruser.firstname);
+      result.dataValues.should.be.a('object');
+    } catch (error) {
+      return error;
+    }
+  });
+});
+
+/**
+ * @author frank harerimana
+ * testing get token user controller
+ */
+describe('/ checking a token', () => {
+  it('it should be able return a token from DB', async () => {
+    try {
+      const result = await resetPassword.checkToken(ruser.firstname);
+      result.dataValues.should.be.a('object');
+    } catch (error) {
+      return error;
+    }
+  });
+});
+
+/**
+ * @author frank harerimana
+ * testing forget password user controller
+ */
+describe('requesting a reset password link', () => {
+  it('should be able to return not found email', async () => {
+    try {
+      const result = await chai.request(app)
+        .post('/api/v1/login/forgetpassword')
+        .send(ruser.email);
+      result.should.have.status(404);
+      result.should.be.a('object');
+    } catch (error) {
+      return error;
+    }
+  });
+});
+
+/**
+ * @author frank harerimana
+ * testing forget password user controller
+ */
+describe('requesting a reset password link', () => {
+  it('should be able to return not found email', async () => {
+    try {
+      const result = await chai.request(app)
+        .post('/api/v1/login/forgetpassword')
+        .send(ruser.email);
+      result.should.have.status(404);
+      result.should.be.a('object');
+    } catch (error) {
+      return error;
+    }
+  });
+});
+
+describe('reset password with an unexisting email', () => {
+  it('it should return error', (done) => {
+    chai.request(app).post('/api/auth/forgetpassword').send(`${faker.internet.email}`)
+      .then((result) => {
+        result.should.have.status(404);
+        done();
+      })
+      .catch(error => logError(error));
+  });
+});
+
+describe('reset password with an existing email', () => {
+  it('it should return error', (done) => {
+    chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email })
+      .then((result) => {
+        result.should.have.status(202);
+        done();
+      })
+      .catch(error => logError(error));
   });
 });

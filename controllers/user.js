@@ -1,13 +1,20 @@
 import select from 'lodash';
 import Sequelize from 'sequelize';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import mailLinkMaker from '../helpers/mailLinkMaker';
+import model from '../models/index';
+import Mailer from '../helpers/mailer';
 import helper from '../helpers/helper';
 import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 /* eslint-disable class-methods-use-this */
-import model from '../models/index';
 
-const { user: UserModel, userverification: UserVerificationModel } = model;
 
 const { Op } = Sequelize;
+dotenv.config();
+
+const { user: UserModel, userverification: UserVerificationModel, resetpassword: resetPassword } = model;
+
 /**
  * @param { class } User -- User }
  */
@@ -90,13 +97,64 @@ class User {
       provider: req.user.provider,
       provideruserid: req.user.provideruserid
     };
-    const result = await new UserModel().socialUsers(ruser);
+    const result = await UserModel.socialUsers(ruser);
     let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
     const token = helper.generateToken(userAccount);
     userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
     return helper.authenticationResponse(res, token, userAccount);
   }
 
+  /**
+ * @author frank harerimana
+ * @param {*} req email
+ * @param {*} res reset password link
+ * @returns {*} mailed link
+ */
+  static async passwordreset(req, res) {
+    const { email } = req.body;
+    // check email existance
+    const search = await UserModel.checkEmail(email);
+    if (search === null || undefined) {
+      res.status(404).json({ message: 'no account related to such email', email });
+    } else {
+      // generate token
+      const token = jwt.sign({ id: search.dataValues.id }, process.env.SECRETKEY);
+      // store token and userID
+      await resetPassword.recordNewReset(`${token}`);
+      // Generate link and send it in email
+      const link = await new mailLinkMaker(`${token}`);
+      // Mailing the link
+      const resetLink = await link.resetPasswordLink();
+      const result = await new Mailer(email, 'Password reset', resetLink).sender();
+      res.status(202).json({
+        message: result, email
+      });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} update password
+   */
+  static async resetpassword(req, res) {
+    const { token } = req.params;
+    const check = await resetPassword.checkToken(token);
+    if (!check) { return res.status(400).json({ message: 'invalid token' }); }
+    try {
+      const decode = jwt.verify(token, process.env.SECRETKEY);
+      const second = (new Date().getTime() - check.dataValues.createdAt.getTime()) / 1000;
+      if (second > 600) { return res.status(400).json({ message: 'token has expired' }); }
+      const { password } = req.body;
+      const result = await UserModel.resetpassword(password, decode.id);
+      res.status(201).json({
+        data: result
+      });
+    } catch (error) { return res.status(400).json({ message: error.message }); }
+
+  }
+   
   /**
    * @author Jacques Nyilinkindi
    * @param {*} req
