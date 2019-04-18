@@ -7,6 +7,7 @@ import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import dotenv from 'dotenv';
+import fileUpload from 'express-fileupload';
 import routes from './routes/routes';
 
 dotenv.config();
@@ -15,10 +16,12 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(bodyParser.json());
 app.use((express.json()));
-
+app.use(fileUpload());
 app.use(session({
   secret: process.env.SECRETKEY,
   resave: false,

@@ -237,7 +237,7 @@ class User {
         },
         returning: true
       });
-    res.status(202).json(
+    res.status(201).json(
       select.pick(updatedUser[1][0], ['firstname', 'lastname', 'email', 'username', 'bio', 'image'])
     );
   }
