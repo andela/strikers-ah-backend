@@ -37,6 +37,38 @@ paths:
           # responses may fall through to errors
           default:
             description: Unexpected Error
+  /api/auth/verify/{path}:
+    # binds a127 app logic to a route
+    get:
+      description: Returns an object message
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: hash
+          description: Verification Hash
+          required: true
+          type: string
+          example: 373b609f199159befdfsdsd79394df7cba76d9937824ad0b8b30228b6900878ac4832da0dff1682a48099b565dfs6d45
+      responses:
+        '200':
+          description: Verified account successfully
+          schema:
+            # a pointer to a definition
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Account verified'
+        '401':
+          description: Verification token not found
+          schema:
+            # a pointer to a definition
+            type: object
+            properties:
+              error:
+                type: 'Object'
+                example: 'Verification token not found'
   /api/auth/twitter:
     # binds a127 app logic to a route
     get:
