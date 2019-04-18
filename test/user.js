@@ -27,48 +27,89 @@ const user = {
   email: 'email@tes.com',
   password: 'P@ssword1'
 };
+let userToken;
 describe('Test User', () => {
   before(async () => {
     // clear data in the table
     // await UserModel.destroy({ where: { email: user.email } });
   });
-  describe('Test User Sign up', () => {
-    describe('POST /api/auth/signup', () => {
-      it('Should create new User account', (done) => {
-        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
+  describe('POST /api/auth/signup', () => {
+    it('Should create new User account', (done) => {
+      chai
+        .request(app)
+        .post('/api/auth/signup')
+        .send(user)
+        .then((res) => {
           res.should.have.status(200);
           res.body.user.should.be.a('object');
           res.body.user.should.have.property('username').eql('username');
           res.body.user.should.have.property('email').eql('email@tes.com');
           done();
         })
-          .catch(error => logError(error));
-      }).timeout(15000);
+        .catch(error => logError(error));
+    }).timeout(15000);
 
-      it('Should not create user if both email and username are taken', (done) => {
-        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
+    it('Should not create user if both email and username are taken', (done) => {
+      chai
+        .request(app)
+        .post('/api/auth/signup')
+        .send(user)
+        .then((res) => {
           res.should.have.status(400);
           res.should.have.property('error');
           done();
         })
-          .catch(error => logError(error));
-      }).timeout(15000);
+        .catch(error => logError(error));
+    }).timeout(15000);
 
-      it('Should not create user if username is taken', (done) => {
-        user.email = 'email@tes1.com';
-        chai.request(app).post('/api/auth/signup').send(user).then((res) => {
+    it('Should not create user if username is taken', (done) => {
+      user.email = 'email@tes1.com';
+      chai
+        .request(app)
+        .post('/api/auth/signup')
+        .send(user)
+        .then((res) => {
           res.should.have.status(400);
           res.should.have.property('error');
           done();
         })
-          .catch(error => logError(error));
-      });
+        .catch(error => logError(error));
     });
-    describe('POST /api/auth/login', () => {
-      it('Should be able to login into user account', (done) => {
-        user.email = 'email@tes.com';
-        user.password = 'P@ssword1';
-        chai.request(app).post('/api/auth/login').send(user).then((res) => {
+  });
+  describe('User Profile', () => {
+    before((done) => {
+      chai.request(app).post('/api/auth/login').send({ email: 'email@tes.com', password: user.password }).then((res) => {
+        const { token } = res.body.user;
+        userToken = token;
+        done();
+      })
+        .catch(error => logError(error));
+    });
+    it('Should edit user profile', (done) => {
+      user.firstname = 'firstnameEdited';
+      user.lastname = 'lastnameEdited';
+      user.bio = 'test bio';
+      chai.request(app).post('/api/auth/profile').set('x-auth-token', userToken).send(user)
+        .then((res) => {
+          res.should.have.status(201);
+          const { firstname, lastname, bio } = res.body;
+          firstname.should.eql('firstnameEdited');
+          lastname.should.eql('lastnameEdited');
+          bio.should.eql('test bio');
+          done();
+        })
+        .catch(error => logError(error));
+    });
+  });
+  describe('POST /api/auth/login', () => {
+    it('Should be able to login into user account', (done) => {
+      user.email = 'email@tes.com';
+      user.password = 'P@ssword1';
+      chai
+        .request(app)
+        .post('/api/auth/login')
+        .send(user)
+        .then((res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('user');
@@ -76,43 +117,35 @@ describe('Test User', () => {
           res.body.user.should.have.property('email').eql('email@tes.com');
           done();
         })
-          .catch(error => logError(`error${error}`));
-      });
+        .catch(error => logError(`error${error}`));
     });
-    describe('should be able to create a user', () => {
-      it('return user object', (done) => {
-        const providerList = [
-          'facebook',
-          'google',
-          'twitter',
-          'github',
-          '',
-        ];
+  });
+  describe('should be able to create a user', () => {
+    it('return user object', (done) => {
+      const providerList = ['facebook', 'google', 'twitter', 'github', ''];
 
-        const provider = providerList[Math.floor(Math.random() * providerList.length)];
-        const userObj = {
-          user: {
-            username: faker.internet.userName(),
-            email: faker.internet.email(),
-            firstname: faker.name.firstName(),
-            lastname: faker.name.lastName(),
-            bio: faker.lorem.sentence(),
-            image: faker.image.avatar(),
-            provider,
-            provideruserid: faker.random.number().toString()
-          }
-        };
-
-        userController.socialLogin(userObj)
-          .then(() => {
-            UserModel.findAll({
-              limit: 1, order: [['createdAt', 'DESC']]
-            }).then((res) => {
-              res.should.be.a('array');
-            });
-          });
-        done();
+      const provider = providerList[Math.floor(Math.random() * providerList.length)];
+      const userObj = {
+        user: {
+          username: faker.internet.userName(),
+          email: faker.internet.email(),
+          firstname: faker.name.firstName(),
+          lastname: faker.name.lastName(),
+          bio: faker.lorem.sentence(),
+          image: faker.image.avatar(),
+          provider,
+          provideruserid: faker.random.number().toString()
+        }
+      };
+      userController.socialLogin(userObj).then(() => {
+        UserModel.findAll({
+          limit: 1,
+          order: [['createdAt', 'DESC']]
+        }).then((res) => {
+          res.should.be.a('array');
+        });
       });
+      done();
     });
     describe('GET /api/auth/verify/:hash', () => {
       it('Should be able to verify account signed up', (done) => {

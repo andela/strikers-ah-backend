@@ -29,9 +29,11 @@ const generateToken = (user) => {
 const handleUsed = (emailUsed, userNameUsed) => {
   if (emailUsed && userNameUsed) {
     return 'Both email and username are in use';
-  } if (emailUsed) {
+  }
+  if (emailUsed) {
     return 'email is already in use';
-  } if (userNameUsed) {
+  }
+  if (userNameUsed) {
     return 'username is not available';
   }
   return true;
@@ -55,13 +57,45 @@ const validatePassword = (password) => {
   return (message === '') ? true : message;
 };
 
-const authenticationResponse = (res, token, userData) => res.header('x-auth-token', token).status(200).json({ user: { ...userData, token } });
+const authenticationResponse = (res, token, userData) => res.header('x-auth-token', token).status(200).json({
+  user: {
+    ...userData,
+    token
+  }
+});
 
+const uploadImage = async req => new Promise((resolve, reject) => {
+  let fileName = '';
+  if (req.files) {
+    const avatarIMage = req.files.image;
+    fileName = `images/profile-images/${(new Date()).getTime()}-${avatarIMage.name}`;
+    avatarIMage.mv(fileName, (error) => {
+      if (error) {
+        reject(new Error('The intended Image was not uploaded'));
+      }
+    });
+  }
+  resolve(fileName);
+});
+const asyncHandler = callBackFunction => async (req, res, next) => {
+  try {
+    await callBackFunction(req, res, next);
+  } catch (error) {
+    const statusCode = error.name === 'SequelizeValidationError' ? 400 : 500;
+    res.status(statusCode).json({
+      error
+    });
+  }
+};
+const decodeToken = req => jwt.verify(req.header('x-auth-token'), process.env.SECRETKEY);
 export default {
   hashPassword,
   comparePassword,
   generateToken,
   handleUsed,
   validatePassword,
-  authenticationResponse
+  authenticationResponse,
+  decodeToken,
+  uploadImage,
+  asyncHandler
 };
