@@ -3,28 +3,19 @@
     margin:0;
 }
 .head{
-position: absolute;
-width: 1440px;
-height: 162px;
-left: 0px;
-top: 0px;
+width: 100%;
+height: 10%;
 box-shadow: 0px 5px 0px rgba(229, 229, 229, 0.5);
 }
 
 .nav{
-    position: absolute;
-    left: 4.4%;
-    right: 2%;
-    top: 21%;
-    bottom: 16%;
+   margin: auto;
+   max-width: 1050px;
+   height: 70px;
 }
 
 .categories{
-position: absolute;    
-left: 7%;
-right: 12.36%;
-top: 72.22%;
-bottom: 16.04%;
+    margin-left: 11%;
 }
 
 .categories ul{
@@ -43,8 +34,7 @@ color: #8A8585;
 }
 
 .getStarted{
-    position: absolute;
-    right: 13%;
+    float:right;
     text-decoration:none;
     font-family: Georgia;
     font-style: normal;
@@ -59,9 +49,9 @@ color: #8A8585;
 }
 
 .login{
+    margin-left: 2%;
     text-decoration: none;
-    position: absolute;
-    left: 70%;
+    float: right;
     font-family: Georgia;
     font-style: normal;
     font-weight: bold;
@@ -76,24 +66,16 @@ color: #8A8585;
 }
 
 .logo{
-    position: absolute;
-    left: 8%;
-    right: 70.77%;
-    top: 15%;
-    bottom: 56.17%;
+    float:left;
 }
 
 .icon{
-position: absolute;
-left: 11.83%;
-top: 12.5%;
+float: left;
 color: #00AEF9;
 }
 
 .brand{
 text-decoration: none;    
-position: absolute;
-left: 23%;
 font-family: Georgia;
 font-style: normal;
 font-weight: bold;
@@ -105,7 +87,7 @@ width:210px;
 
 .slider{
     position: relative;
-    top:180px;
+    top: 40px;
     margin: auto;
     width: 73%;
 }
@@ -123,7 +105,7 @@ width:210px;
 .bottom-dot{
     text-align: center;
     position: absolute;
-    top: 75%;
+    top: 93%;
     left: 46%;
 }
 
@@ -149,6 +131,10 @@ width:210px;
 
 .prev-slide:hover, .next-slide:hover {
     background-color: rgba(0,0,0,0.8);
+}
+
+.drop-menu{
+    display:none;
 }
 
 .article-title{
@@ -211,7 +197,7 @@ width:210px;
     top: 80%;
     width:73%;
     margin: auto;
-    margin-top: 15%;
+    margin-top: 6%;
 }
 .other-articles{
     display: grid;
@@ -278,6 +264,11 @@ width:210px;
     font-size: 12px;
 }
 
+.popup-menu{
+    display: none;
+
+}
+
 .article-excerpt{
     font-size: 14px;
     color: #7A7474;
@@ -325,4 +316,131 @@ width:210px;
 .h-line{
     border: 1px solid #E5E5E5;
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+@media screen and (max-width: 768px){
+    .login{
+        display: none;
+    }
+
+    /* .container{
+        display: none;
+    } */
+
+    .getStarted{
+        display:none;
+    }
+    
+    .categories{
+        display: none;
+    }
+    .slider{
+        position: relative;
+        top: 40px;
+        margin: auto;
+        width: 90%;
+    }
+    .slides img {
+      height: 300px;
+   }
+   .article-title{
+       bottom: 7%;
+       width: 88%;
+   }
+
+    .nav{
+       height: 50px;
+    }
+
+    .drop-menu{
+        display: block;
+        float: right;
+        margin: 10px 16px 0px 0px;
+    }
+
+    .logo{
+        margin-top:10px;
+        margin-left: 16px;
+    }
+
+   .brand{
+      font-size: 18px;
+   }
+
+   .bottom-dot{
+    top: 93%;
+    left: 38%;
+   }
+
+   .popup-menu{
+       position: absolute;
+       right: 20px;
+       height: 100%;
+       background-color: white;
+       opacity: 0.9;
+       z-index: 3;
+   }
+
+   .popup-menu li{
+       list-style-type: none;
+       margin-bottom: 14px;
+       color: #00AEF9;
+       font-size: 15px;
+       font-weight: bold;
+   }
+
+   .container{
+       width: 90%;
+       margin-top: 9%;
+   }
+
+   .other-articles {
+    grid-template-columns: auto;
+    grid-gap: 0;
+   }
+
+   .article-picture{
+       height: 80%;
+       border-radius: 0px;
+   }
+   
+   .article-head{
+       font-size: 10px;
+   }
+   .article-mark {
+    margin-bottom: 0px;
+    margin-top: -13px;
+   }
+
+   .author-name {
+    font-size: 10px;
+   }
+   .time-style {
+    font-size: 10px;
+   }
+
+   .article{
+    padding: 20px 0px 0px 5px;
+    margin-bottom: 10px;
+    box-shadow: 0px 0px 0px;
+   }
+
+   .article-header{
+        font-size: 13px;
+        margin: 0px;
+   }
+
+   .h-line{
+    box-shadow: 0px 0px 0px;
+    margin: 7px 0px;
+   }
+
+   .side-article-head {
+    font-size: 12px;
+   }
+
+   .side-article-mark {
+    margin-top: -13px;
+    margin-bottom: 8px;
+   }
 }
