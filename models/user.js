@@ -5,10 +5,11 @@ const UserModel = (Sequelize, DataTypes) => {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     firstname: { type: DataTypes.STRING, allowNull: true },
     lastname: { type: DataTypes.STRING, allowNull: true },
-    username: { type: DataTypes.STRING, allowNull: false },
+    username: { type: DataTypes.STRING, allowNull: false, unique: true },
     email: {
       type: DataTypes.STRING,
       allowNull: true,
+      unique: true,
       validate: {
         validation() {
           if (!(this.provider)) {
@@ -38,20 +39,15 @@ const UserModel = (Sequelize, DataTypes) => {
     provideruserid: { type: DataTypes.STRING, allowNull: true, },
     verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
   });
-  User.socialUsers = async (userProfile) => {
-    const result = await User.findOrCreate({
-      where: { provideruserid: userProfile.provideruserid },
-      defaults: userProfile
-    });
-    return result[0].dataValues;
-  };
+  User.so = us => User.findOrCreate({ where: { provideruserid: us.provideruserid }, defaults: us });
   User.associate = (models) => {
     User.hasMany(models.article, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
     });
   };
-  User.checkEmail = async email => User.findOne({ where: { email } });
-  User.resetpassword = async (password, id) => User.update({ password }, { where: { id } });
+  User.checkEmail = email => User.findOne({ where: { email } });
+  User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
+  User.checkUser = id => User.findOne({ where: { id } });
   return User;
 };
 export default UserModel;
