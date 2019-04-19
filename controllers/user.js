@@ -6,6 +6,7 @@ import mailLinkMaker from '../helpers/mailLinkMaker';
 import model from '../models/index';
 import Mailer from '../helpers/mailer';
 import helper from '../helpers/helper';
+import LoggedInUser from '../helpers/LoggedInUser';
 import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 /* eslint-disable class-methods-use-this */
 
@@ -13,7 +14,10 @@ import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 const { Op } = Sequelize;
 dotenv.config();
 
-const { user: UserModel, userverification: UserVerificationModel, resetpassword: resetPassword } = model;
+const {
+  user: UserModel, userverification: UserVerificationModel,
+  resetpassword: resetPassword, following: followingModel,
+} = model;
 
 /**
  * @param { class } User -- User }
@@ -97,10 +101,10 @@ class User {
       provider: req.user.provider,
       provideruserid: req.user.provideruserid
     };
-    const result = await UserModel.socialUsers(ruser);
-    let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+    const result = await UserModel.so(ruser);
+    let userAccount = select.pick(result[0].dataValues, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
     const token = helper.generateToken(userAccount);
-    userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
+    userAccount = select.pick(result[0].dataValues, ['username', 'email', 'bio', 'image']);
     return helper.authenticationResponse(res, token, userAccount);
   }
 
@@ -115,7 +119,7 @@ class User {
     // check email existance
     const search = await UserModel.checkEmail(email);
     if (search === null || undefined) {
-      res.status(404).json({ message: 'no account related to such email', email });
+      res.status(404).json({ status: 4040, message: 'no account related to such email', email });
     } else {
       // generate token
       const token = jwt.sign({ id: search.dataValues.id }, process.env.SECRETKEY);
@@ -127,7 +131,9 @@ class User {
       const resetLink = await link.resetPasswordLink();
       const result = await new Mailer(email, 'Password reset', resetLink).sender();
       res.status(202).json({
-        message: result, email
+        status: 202,
+        message: result,
+        email
       });
     }
   }
@@ -141,7 +147,7 @@ class User {
   static async resetpassword(req, res) {
     const { token } = req.params;
     const check = await resetPassword.checkToken(token);
-    if (!check) { return res.status(400).json({ message: 'invalid token' }); }
+    if (!check) { return res.status(400).json({ status: 400, message: 'invalid token' }); }
     try {
       const decode = jwt.verify(token, process.env.SECRETKEY);
       const second = (new Date().getTime() - check.dataValues.createdAt.getTime()) / 1000;
@@ -149,12 +155,12 @@ class User {
       const { password } = req.body;
       const result = await UserModel.resetpassword(password, decode.id);
       res.status(201).json({
+        status: 201,
         data: result
       });
-    } catch (error) { return res.status(400).json({ message: error.message }); }
-
+    } catch (error) { return res.status(400).json({ status: 400, message: error.message }); }
   }
-   
+
   /**
    * @author Jacques Nyilinkindi
    * @param {*} req
@@ -177,6 +183,36 @@ class User {
     } catch (error) {
       const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
       return res.status(status).json({ error: `${error.message}` });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} success
+   */
+  static async follow(req, res) {
+    const bearerHeader = req.headers.authorization;
+    if (!bearerHeader) { return res.status(401).json({ status: 401, message: 'authorization required' }); }
+    try {
+      const { follower } = req.params;
+      const followedUser = await UserModel.checkUser(follower);
+      const followee = await new LoggedInUser(bearerHeader).user();
+      const followeeid = followee.id;
+      const checker = await followingModel.fi(followeeid, follower);
+      if (!checker) {
+        await followingModel.newRecord(followee.id, follower);
+      } else {
+        await followingModel.De(followee.id, follower);
+      }
+      res.status(201).json({
+        status: 200,
+        message: !checker ? 'followed' : 'unfollowed',
+        follower: followedUser.username
+      });
+    } catch (error) {
+      res.status(400).json({ status: 400, error: 'bad request' });
     }
   }
 }
