@@ -47,7 +47,7 @@ const UserModel = (Sequelize, DataTypes) => {
   };
   User.checkEmail = email => User.findOne({ where: { email } });
   User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
-  User.checkUser = id => User.findOne({ where: { id } });
+  User.checkUser = username => User.findOne({ where: { username } });
   return User;
 };
 export default UserModel;

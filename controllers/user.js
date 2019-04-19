@@ -196,18 +196,17 @@ class User {
     const bearerHeader = req.headers.authorization;
     if (!bearerHeader) { return res.status(401).json({ status: 401, message: 'authorization required' }); }
     try {
-      const { follower } = req.params;
-      const followedUser = await UserModel.checkUser(follower);
+      const { username } = req.params;
+      const followedUser = await UserModel.checkUser(username);
       const followee = await new LoggedInUser(bearerHeader).user();
-      const followeeid = followee.id;
-      const checker = await followingModel.fi(followeeid, follower);
+      const checker = await followingModel.fi(followee.id, followedUser.id);
       if (!checker) {
-        await followingModel.newRecord(followee.id, follower);
+        await followingModel.newRecord(followee.id, followedUser.id);
       } else {
-        await followingModel.De(followee.id, follower);
+        await followingModel.De(followee.id, followedUser.id);
       }
       res.status(201).json({
-        status: 200,
+        status: 201,
         message: !checker ? 'followed' : 'unfollowed',
         follower: followedUser.username
       });

@@ -3,6 +3,6 @@ import user from '../../controllers/user';
 
 const router = express.Router();
 
-router.get('/:follower(\\d+)', user.follow);
+router.post('/:username/follow', user.follow);
 
 export default router;

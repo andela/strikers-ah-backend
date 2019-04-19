@@ -318,15 +318,13 @@ describe('delete follow record', () => {
 });
 
 describe('user Following each other', () => {
-  it('it unothourized', (done) => {
-    chai.request(app).get('/api/user/follow/1')
-      .then((result) => {
-        result.should.have.status(401);
-        done();
-      })
-      .catch((error) => {
-        logError(error);
-      });
+  it('it should return unothourized', async () => {
+    try {
+      const result = await chai.request(app).post(`api/profiles/${ruser.username}/follow`);
+      result.should.have.status(401);
+    } catch (error) {
+      logError(error);
+    }
   });
 });
 

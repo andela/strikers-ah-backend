@@ -7,6 +7,6 @@ const app = express();
 
 app.use('/auth', authentication);
 app.use('/articles', articleRoutes);
-app.use('/user/follow', follwingRoute);
+app.use('/profiles', follwingRoute);
 
 export default app;
