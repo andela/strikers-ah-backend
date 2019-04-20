@@ -39,7 +39,6 @@ class User {
       const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
       if (uniqueEmailUsername === true) {
         const result = await UserModel.create(newUser);
-        // Email verification
         const verificationHash = mailingHelper(result.email, `${result.firstname} ${result.lastname}`);
         const verification = {
           userid: result.id,
@@ -47,11 +46,12 @@ class User {
           status: 'Pending'
         };
         await UserVerificationModel.create(verification);
-        //
+        const following = await followingModel.followings(result.id);
+        const followers = await followingModel.followers(result.id);
         let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
         const token = helper.generateToken(userAccount);
         userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
-        return helper.authenticationResponse(res, token, userAccount);
+        return helper.authenticationResponse(res, token, userAccount, following, followers);
       }
       return res.status(400).json({ error: uniqueEmailUsername });
     } catch (error) {
@@ -75,7 +75,9 @@ class User {
         let userAccount = select.pick(user, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
         const token = helper.generateToken(userAccount);
         userAccount = select.pick(user, ['username', 'email', 'bio', 'image']);
-        return helper.authenticationResponse(res, token, userAccount);
+        const following = await followingModel.followings(user.dataValues.id);
+        const followers = await followingModel.followers(user.dataValues.id);
+        return helper.authenticationResponse(res, token, userAccount, following, followers);
       }
       return res.status(401).json({ error: 'Invalid username or password' });
     } catch (error) {
@@ -104,8 +106,10 @@ class User {
     const result = await UserModel.so(ruser);
     let userAccount = select.pick(result[0].dataValues, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
     const token = helper.generateToken(userAccount);
+    const following = await followingModel.followings(result[0].dataValues.id);
+    const followers = await followingModel.followers(result[0].dataValues.id);
     userAccount = select.pick(result[0].dataValues, ['username', 'email', 'bio', 'image']);
-    return helper.authenticationResponse(res, token, userAccount);
+    return helper.authenticationResponse(res, token, userAccount, followers, following);
   }
 
   /**
@@ -199,11 +203,11 @@ class User {
       const { username } = req.params;
       const followedUser = await UserModel.checkUser(username);
       const followee = await new LoggedInUser(bearerHeader).user();
-      const checker = await followingModel.fi(followee.id, followedUser.id);
+      const checker = await followingModel.finder(followee.id, followedUser.id);
       if (!checker) {
         await followingModel.newRecord(followee.id, followedUser.id);
       } else {
-        await followingModel.De(followee.id, followedUser.id);
+        await followingModel.DeleteRe(followee.id, followedUser.id);
       }
       res.status(201).json({
         status: 201,
