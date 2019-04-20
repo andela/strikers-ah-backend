@@ -58,7 +58,6 @@ class Article {
   * @returns {object} it returns an object of articles
   */
   static async getAllArticles(req, res) {
-    try {
       const getAll = await ArticleModel.getAll();
       if (getAll.length === 0) {
         res.status(404).json({
@@ -69,8 +68,27 @@ class Article {
           article: getAll
         });
       }
-    } catch (err) {
-      return res.status(400).json({ message: err.errors[0].message });
+  }
+
+  /**
+   *@author: Innocent Nkunzi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Article
+   */
+  static async deleteArticle(req, res) {
+    const { slug } = req.params;
+    const authorid = req.user;
+    const findArticle = await ArticleModel.findArticleSlug(authorid, slug);
+    if (!findArticle) {
+      return res.status(404).json({ error: 'No article found for you to delete' });
+    }
+    const articleId = findArticle.id;
+    const deleteArticle = await ArticleModel.deleteArticle(articleId);
+    if (deleteArticle.length !== 0) {
+      res.status(200).json({
+        message: 'Article deleted'
+      });
     }
   }
 }

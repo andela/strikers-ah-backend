@@ -37,9 +37,10 @@ const user = {
 describe('Test User', () => {
   before(async () => {
     // clear data in the table
-    // await UserModel.destroy({ where: { email: user.email } });
+    await UserModel.destroy({ where: { email: user.email } });
+    });
   });
-  describe('Test User Sign up', () => {
+  describe('Test User Sign up', () =>{
     describe('POST /api/auth/signup', () => {
       it('Should create new User account', (done) => {
         chai.request(app).post('/api/auth/signup').send(user).then((res) => {
@@ -158,8 +159,6 @@ describe('Test User', () => {
           .catch(error => logError(`error${error}`));
       });
     });
-  });
-});
 
 /**
  * @author frank harerimana
@@ -484,3 +483,4 @@ describe('delete follower record', () => {
     }
   });
 });
+  }

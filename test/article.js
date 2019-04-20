@@ -112,7 +112,7 @@ describe('Test the body', () => {
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title: faker.random.words(),
+      title: 'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
       body: faker.lorem.paragraphs(),
       description: faker.lorem.paragraph(),
     };
@@ -130,7 +130,6 @@ describe('Test description', () => {
   const newArticle = {
     title: faker.lorem.sentence(),
     body: faker.lorem.paragraphs(),
-    authorid: 100
   };
   it('should provide a description if not provided', (done) => {
     chai.request(index).post('/api/articles').send(newArticle).set('x-access-token', `${userToken}`)
@@ -140,18 +139,17 @@ describe('Test description', () => {
         res.body.article.should.have.property('description');
         done();
       })
-      .catch(error => error);
+      .catch(error => logError(error));
   });
 });
+
 describe('Test all articles', () => {
   it('should return all the articles', () => {
     chai.request(index).get('/api/articles').then((res) => {
       res.should.have.status(200);
       res.body.should.be.a('object');
     })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(error => logError(error));
   });
   it('should return an error message if there is no article', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
@@ -159,8 +157,6 @@ describe('Test all articles', () => {
       res.should.have.status(404);
       res.body.should.have.property('error').eql('Not article found for now');
     })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(error => logError(error));
   });
 });
