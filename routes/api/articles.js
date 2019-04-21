@@ -9,6 +9,6 @@ router.get('/all', errorHandler(articleController.getAllArticles));
 router.post('/', AuthToken, errorHandler(articleController.createArticle));
 router.get('/:slug', errorHandler(articleController.getArticle));
 router.delete('/:slug', AuthToken, errorHandler(articleController.deleteArticle));
-router.put('/:slug');
+router.put('/:slug', AuthToken, errorHandler(articleController.updateArticle));
 
 export default router;
