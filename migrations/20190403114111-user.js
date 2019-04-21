@@ -48,6 +48,14 @@ module.exports = {
       type: Sequelize.BOOLEAN,
       defaultValue: false
     },
+    inapp: {
+      type: Sequelize.BOOLEAN,
+      default: true
+    },
+    emailnotify: {
+      type: Sequelize.BOOLEAN,
+      default: true
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,

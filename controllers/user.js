@@ -7,6 +7,7 @@ import model from '../models/index';
 import Mailer from '../helpers/mailer';
 import helper from '../helpers/helper';
 import LoggedInUser from '../helpers/LoggedInUser';
+import Notification from '../helpers/notificationManager';
 import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 /* eslint-disable class-methods-use-this */
 
@@ -16,7 +17,7 @@ dotenv.config();
 
 const {
   user: UserModel, userverification: UserVerificationModel,
-  resetpassword: resetPassword, following: followingModel,
+  resetpassword: resetPassword, following: followingModel, notification: NotificationModel
 } = model;
 
 /**
@@ -205,6 +206,8 @@ class User {
       const followee = await new LoggedInUser(bearerHeader).user();
       const checker = await followingModel.finder(followee.id, followedUser.id);
       if (!checker) {
+        const notify = await new Notification(followedUser.dataValues).follow();
+        const followerNotsett = await NotificationModel.user(followedUser.id);
         await followingModel.newRecord(followee.id, followedUser.id);
       } else {
         await followingModel.DeleteRe(followee.id, followedUser.id);
