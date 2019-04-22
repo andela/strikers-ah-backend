@@ -1,10 +1,44 @@
+$fonts: 'Arial',
+'Helvetica',
+'sans-serif';
+
+$colors: (headerColor: #FFFFFF,
+brandNameColor: #00AEF9,
+contentBackGround: #E5E5E5,
+buttonColor: #808e9b);
+
+@mixin textArea {
+    align-content: center;
+    margin-top: 0%;
+    width: 100%;
+    height: auto;
+    border: none;
+    outline: none;
+    padding: 30px;
+    font-size: 30px;
+    font-weight: 400px;
+    font-family: $fonts;
+    border-radius: 3px;
+    line-height: 1.5em;
+    color: #1e272e;
+    margin-right: 10%;
+}
+
+$mobileView: 768px;
+
+@mixin mobile {
+    @media (max-width: #{$mobileView}) {
+        @content;
+    }
+}
+
 html {
     height: 100%;
     margin: 0;
 }
 
 body {
-    font-family: "Arial", "Helvetica", "sans-serif";
+    font-family: $fonts;
     font-size: 15px;
     margin: 0;
     padding: 0;
@@ -16,16 +50,14 @@ body {
     width: 80%;
     margin: auto;
     overflow: hidden;
-}
 
-@media (max-width: 768px) {
-    .container {
-        width: 100%;
+    @include mobile {
+        width: 100%
     }
 }
 
 header {
-    background-color: #FFFFFF;
+    background-color: map-get($map: $colors, $key: headerColor);
     padding-top: 10px;
     min-height: 70px;
     border-bottom: #E5E5E5 3px solid;
@@ -42,27 +74,23 @@ header .icons ul {
     padding: 0;
 }
 
+// header .icons ul li{
+//     float: left;
+//     display: inline;
+//     padding: 0 20px 0 20px;
+// }
 header .icons ul li i {
     color: grey;
 }
 
 header .icons {
     margin-top: 10px;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: row;
     flex-direction: row;
-    -webkit-box-pack: end;
-    -ms-flex-pack: end;
     justify-content: flex-end;
-}
 
-@media (max-width: 768px) {
-    header .icons {
-        display: none;
+    @include mobile {
+        display: none
     }
 }
 
@@ -77,15 +105,12 @@ header .icons {
 }
 
 .content {
-    background-color: #E5E5E5;
-    -ms-flex-line-pack: center;
+    background-color: map-get($map: $colors, $key: contentBackGround);
     align-content: center;
     margin-right: 100px;
     margin-left: 100px;
-}
 
-@media (max-width: 768px) {
-    .content {
+    @include mobile {
         margin: auto;
         margin-right: 5%;
         margin-left: 5%;
@@ -96,16 +121,13 @@ header .icons {
     margin-top: 10px;
     margin-left: 80px;
     margin-right: 80px;
-    background-color: #FFFFFF;
+    background-color: map-get($map: $colors, $key: headerColor);
     border-radius: 8px;
-    -webkit-box-shadow: 0px 4px 4px #C4C4C4;
     box-shadow: 0px 4px 4px #C4C4C4;
     padding: 10px;
-    /* position: absolute; */
-}
 
-@media (max-width: 768px) {
-    .content .editor-tools .container .bar-tool {
+    /* position: absolute; */
+    @include mobile {
         margin: auto;
         padding: 5px;
     }
@@ -114,17 +136,14 @@ header .icons {
 .content .editor-tools .container .bar-tool i {
     margin: auto;
     padding: 0 15px 0 15px;
-}
 
-@media (max-width: 768px) {
-    .content .editor-tools .container .bar-tool i {
+    @include mobile {
         padding: 0 5px 0 5px;
     }
 }
 
 .content .editor-tools .container .bar-tool #border {
     border: 1px solid #C4C4C4;
-    -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
 }
 
@@ -133,45 +152,17 @@ header .icons {
 }
 
 .content .text-area .form #title {
-    -ms-flex-line-pack: center;
-    align-content: center;
-    margin-top: 0%;
-    width: 100%;
-    height: auto;
-    border: none;
-    outline: none;
-    padding: 30px;
-    font-size: 30px;
-    font-weight: 400px;
-    font-family: "Arial", "Helvetica", "sans-serif";
-    border-radius: 3px;
-    line-height: 1.5em;
-    color: #1e272e;
-    margin-right: 10%;
+    @include textArea;
 }
 
 .content .text-area .form #body {
-    -ms-flex-line-pack: center;
-    align-content: center;
-    margin-top: 0%;
-    width: 100%;
-    height: auto;
-    border: none;
-    outline: none;
-    padding: 30px;
-    font-size: 30px;
-    font-weight: 400px;
-    font-family: "Arial", "Helvetica", "sans-serif";
-    border-radius: 3px;
-    line-height: 1.5em;
-    color: #1e272e;
-    margin-right: 10%;
+    @include textArea;
     min-height: 800px;
 }
 
 .content .text-area .form #publish {
     border: none;
-    background: #808e9b;
+    background: map-get($map: $colors, $key: buttonColor);
     font-size: 16px;
     padding: 15px 32px;
     display: inline-block;
@@ -201,5 +192,3 @@ nav.icons div.search input[type=text] {
 nav.icons div.search #search-button {
     margin-right: 10px;
 }
-
-/*# sourceMappingURL=article.css.map */

@@ -72,5 +72,13 @@ function search() {
         section.style.display = "none";
     }
 }
+var textarea = document.getElementById("title");
+var limit = 200;
+
+textarea.oninput = function() {
+  textarea.style.height = "";
+  textarea.style.height = Math.min(textarea.scrollHeight, 500) + "px";
+};
+
 </script>
 </html>
