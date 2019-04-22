@@ -38,8 +38,7 @@ const UserModel = (Sequelize, DataTypes) => {
     provider: { type: DataTypes.STRING, allowNull: true, defaultValue: '' },
     provideruserid: { type: DataTypes.STRING, allowNull: true, },
     verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
-    inapp: { type: DataTypes.BOOLEAN, default: true },
-    emailnotify: { type: DataTypes.BOOLEAN, default: true }
+    emailnotify: { type: DataTypes.BOOLEAN, defaultValue: true }
   });
   User.so = us => User.findOrCreate({ where: { provideruserid: us.provideruserid }, defaults: us });
   User.associate = (models) => {

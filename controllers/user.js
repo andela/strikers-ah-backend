@@ -7,9 +7,8 @@ import model from '../models/index';
 import Mailer from '../helpers/mailer';
 import helper from '../helpers/helper';
 import LoggedInUser from '../helpers/LoggedInUser';
-import Notification from '../helpers/notificationManager';
+import Notification from '../helpers/notifications';
 import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
-/* eslint-disable class-methods-use-this */
 
 
 const { Op } = Sequelize;
@@ -205,12 +204,14 @@ class User {
       const followedUser = await UserModel.checkUser(username);
       const followee = await new LoggedInUser(bearerHeader).user();
       const checker = await followingModel.finder(followee.id, followedUser.id);
+      const link = await new mailLinkMaker(followee.username).profile();
+      await new Notification(followedUser.dataValues, followee.username, link).follow();
       if (!checker) {
-        const notify = await new Notification(followedUser.dataValues).follow();
-        const followerNotsett = await NotificationModel.user(followedUser.id);
         await followingModel.newRecord(followee.id, followedUser.id);
+        await NotificationModel.notify(followedUser.id, `${followee.username} has started following you`, link);
       } else {
         await followingModel.DeleteRe(followee.id, followedUser.id);
+        await NotificationModel.notify(followedUser.id, `${followee.username} unfollowed you`, link);
       }
       res.status(201).json({
         status: 201,
@@ -218,7 +219,7 @@ class User {
         follower: followedUser.username
       });
     } catch (error) {
-      res.status(400).json({ status: 400, error: 'bad request' });
+      res.status(400).json({ status: 400, message: 'bad request' });
     }
   }
 }

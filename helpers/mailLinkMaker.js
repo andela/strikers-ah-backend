@@ -7,10 +7,10 @@ dotenv.config();
  */
 class MailLinkMaker {
   /**
-     * @param {*} _token
+     * @param {*} value
      */
-  constructor(_token) {
-    this.token = _token;
+  constructor(value) {
+    this.value = value;
   }
 
   /**
@@ -19,7 +19,15 @@ class MailLinkMaker {
  * @return {*} link
  */
   async resetPasswordLink() {
-    return `${process.env.APP_URL}/api/auth/resetpassword/${this.token}`;
+    return `${process.env.APP_URL}/api/auth/resetpassword/${this.value}`;
+  }
+
+  /**
+ * @author frank harerimana
+ * @returns {*} profile link
+ */
+  async profile() {
+    return `${process.env.APP_URL}/api/users/profile/${this.value}`;
   }
 }
 

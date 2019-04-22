@@ -20,9 +20,10 @@ class Article {
     const descriptData = req.body.description || `${req.body.body.substring(0, 100)}...`;
     try {
       const {
-        title, body, taglist, authorid
+        title, body, taglist
       } = req.body;
       const slug = slugInstance.returnSlug(title);
+      const authorid = 100;
       const newArticle = {
         title, body, description: descriptData, slug, authorid, taglist
       };
