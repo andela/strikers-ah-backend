@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Create article</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='./css/article.css'>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <script src='main.js'></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="brand">
+                <img src="./img/icon/icon.svg" alt="logo" class="brandLogo"><a href="createArticle.html" class="brandName">Author Haven</a>
+            </div>
+                <nav class="icons">
+                    <div class="search">
+                        <input type="text" name="search" class="search-text" placeholder="Search..."></div><div id="search-button"><i class="fas fa-search" onclick="search()"></i></div>
+                    <div class="bell"><a href=""><i class="far fa-bell"></a></i></div>
+                    <div class="user-circle"><a href=""><i class="fas fa-user-circle"></i></a></div>
+                </nav>
+        </div>
+    </header>
+    <div class="content">
+        <section class="editor-tools">
+            <div class="container">
+                <div class="bar-tool">
+                        14
+                        <span id="border"></span>
+                        <i class="fas fa-bold"></i>
+                        <i class="fal fa-italic"></i>
+                        <i class="fas fa-underline"></i>
+                        <i class="fas fa-strikethrough"></i>
+                        <span id="border"></span>
+                        <i class="fas fa-align-left"></i>
+                        <i class="fas fa-align-center"></i>
+                        <i class="fas fa-align-right"></i>
+                        <i class="fas fa-align-justify"></i>
+                        <span id="border"></span>
+                        <i class="fas fa-list-ul"></i>
+                        <i class="fas fa-list-ol"></i>
+                        <span id="border"></span>
+                        <i class="fas fa-marker"></i>
+                        <i class="fas fa-font"></i>
+                        <span id="border"></span>
+                        <i class="fas fa-quote-left"></i>
+                        <i class="fas fa-quote-right"></i>
+                </div>
+            </div>
+        </section>
+        <section class="text-area">
+            <div class="container">
+                    <form class="form">
+                        <p><textarea id="title" placeholder="Title goes here..."></textarea>
+                        <textarea id="body" placeholder="body goes here..."></textarea></p>
+                        <p><button id="publish">Publish</button></p>
+                    </form>
+            </div>
+        </section>
+    </div>
+</body>
+<script>
+const section = document.getElementsByClassName("search-text")[0];
+section.style.display = "none";
+function search() {
+    if (section.style.display === "none") {
+        section.style.display = "block";
+        document.getElementsByClassName("search-text")[0].focus();
+    } else {
+        section.style.display = "none";
+    }
+}
+</script>
+</html>
