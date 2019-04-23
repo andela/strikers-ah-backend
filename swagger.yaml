@@ -212,3 +212,37 @@ paths:
       responses:
         '200':
           description: Returns an object with data from Github
+  /api/profiles/{username}/follow:
+  # returns a jwt token after registration
+   post:
+    description: Returns the follow or unfollow based of the current state N-B authentication required
+    parameters:
+    - name: username
+      in: path
+      required: true
+      description: The user you what to follow
+      schema:
+        type: string
+        properties:
+         params:
+          type: 'String'
+          example: 'frank'
+    responses:
+      '201':
+        description: Ok
+        schema:
+          type: object
+          properties:
+            user:
+              type: 'object'
+              properties:
+                message:
+                 type: 'String'
+                 example: 'followed'
+                follower:
+                 type: 'String'
+                 example: 'franklin'
+      '400':
+        description: Bad request
+      default:
+        description: Unexpected Error
