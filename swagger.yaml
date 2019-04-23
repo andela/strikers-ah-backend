@@ -346,3 +346,141 @@ paths:
                 type: 'integer'
               error:
                 type: 'string'
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Lorem Ipsum is simply dummy text
+                body:
+                  type: string
+                  example: Lorem Ipsum is simply dummy text
+                description: 
+                  type: string
+                  example: 'Lorem Ipsum is simply dummy text of the printing   and typesetting industry. Lorem Ipsum has been the industry'
+                tagList: 
+                  items:
+                    type: string
+                    example: Sport
+      responses:
+        201:
+          description: article updated
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties: 
+                    article:
+                      type: object
+                      properties:
+                        id: 
+                          type: integer
+                          example: 1
+                        title: 
+                          type: string
+                          example: Lorem Ipsum is simply dummy text
+                        slug: 
+                          type: string
+                          example: world-class-devs-77f5d72
+                        body:
+                          type: string
+                          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                        createdAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+                        updatedAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+  /api/articles/all:
+    get:
+      tags:
+        - Articles
+      description: get all article
+      responses:
+        200:
+          description: list of articles
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties: 
+                    article:
+                      type: object
+                      properties:
+                        id: 
+                          type: integer
+                          example: 1
+                        title: 
+                          type: string
+                          example: Lorem Ipsum is simply dummy text
+                        slug: 
+                          type: string
+                          example: world-class-devs-77f5d72
+                        body:
+                          type: string
+                          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                        createdAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+                        updatedAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+        404:
+          description: No article found with the specified slug       
+  
+  /api/auth/profile:
+    # edit user profile
+    post:
+      description: Edit user profile
+      parameters:
+      - name: New user
+        in: body
+        description: The User json You want to create
+        schema:
+          type: object
+          properties:
+            firtsname:
+              type: 'String'
+              example: 'Firtsname'
+            lastname:
+              type: 'String'
+              example: 'Lastname'
+            email:
+              type: 'String'
+              example: 'email@host.com'
+            username:
+              type: 'String'
+              example: 'username'
+            password:
+              type: 'String'
+              example: '!23Secret'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: 'object'
+            properties:
+              firtsname:
+                type: 'String'
+                example: 'Firtsname'
+              lastname:
+                type: 'String'
+                example: 'Lastname'
+              email:
+                type: 'String'
+                example: 'email@host.com'
+              username:
+                type: 'String'
+                example: 'username'
+              bio:
+                type: 'String'
+                example: 'i like programming'
+              image:
+                type: 'String'
+                example: 'image1.png'
+
