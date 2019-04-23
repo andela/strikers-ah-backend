@@ -212,3 +212,54 @@ paths:
       responses:
         '200':
           description: Returns an object with data from Github
+  /api/auth/profile:
+    # edit user profile
+    post:
+      description: Edit user profile
+      parameters:
+      - name: New user
+        in: body
+        description: The User json You want to create
+        schema:
+          type: object
+          properties:
+            firtsname:
+              type: 'String'
+              example: 'Firtsname'
+            lastname:
+              type: 'String'
+              example: 'Lastname'
+            email:
+              type: 'String'
+              example: 'email@host.com'
+            username:
+              type: 'String'
+              example: 'username'
+            password:
+              type: 'String'
+              example: '!23Secret'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: 'object'
+            properties:
+              firtsname:
+                type: 'String'
+                example: 'Firtsname'
+              lastname:
+                type: 'String'
+                example: 'Lastname'
+              email:
+                type: 'String'
+                example: 'email@host.com'
+              username:
+                type: 'String'
+                example: 'username'
+              bio:
+                type: 'String'
+                example: 'i like programming'
+              image:
+                type: 'String'
+                example: 'image1.png'
+
