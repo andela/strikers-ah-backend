@@ -243,6 +243,17 @@ paths:
           description: Returns an object with data from Github
   /api/articles/{articleSlug}/rate/{rating}:
     # binds a127 app logic to a route
+           description: Returns an object with data from Github
+             username: 'String'
+             emial: 'abc@XZY.com'
+             bio: 'problem solver'
+             token: '....'
+             image: '....jpg'
+        '404':
+          description: Route not found
+            # responses may fall through to errors
+  /api/auth/forgetpassword:
+    # social user login
     post:
       description: Returns an object with user who rated, title of a rated article, and rating of an article
       produces:
