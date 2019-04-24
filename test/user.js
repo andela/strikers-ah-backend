@@ -2,18 +2,19 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import debug from 'debug';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 import faker from 'faker';
 import app from '../index';
 import helper from '../helpers/helper';
 import userController from '../controllers/user';
-import loggedInUser from '../helpers/LoggedInUser';
 import models from '../models/index';
 
 /**
  * @author frank harerimana
  */
-const { user: UserModel, resetpassword: resetPassword, following: followingModel } = models;
+const {
+  user: UserModel, resetpassword: resetPassword, following: followingModel,
+  followers: followersModel
+} = models;
 
 dotenv.config();
 process.env.NODE_ENV = 'test';
@@ -149,11 +150,6 @@ const ruser = {
 };
 
 /**
- * generate token
- */
-
-const token = jwt.sign({ id: 1 }, process.env.SECRETKEY);
-/**
  * @author frank harerimana
  * testing the user model
  */
@@ -161,7 +157,7 @@ describe('/ find or create a user', () => {
   it('it should be able to create a user ', (done) => {
     UserModel.socialUsers(ruser)
       .then((result) => {
-        result[0].dataValues.should.be.a('object');
+        result.should.be.a('object');
         done();
       });
   });
@@ -237,13 +233,28 @@ describe('record a new user follow', () => {
 describe('find user by id', () => {
   it('it should be able return a user', async () => {
     try {
-      const result = await UserModel.checkUser(1);
+      const result = await UserModel.checkUser(user.username);
       result.should.be.a('object');
     } catch (error) {
       logError(error);
     }
   });
 });
+
+describe('create follow record', () => {
+  it('should be able return the record', async () => {
+    try {
+      const result = await followingModel.newRecord(1, 1);
+      result.should.be.a('object');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * check following status following model method
+ */
 describe('find follow record', () => {
   it('should be able return the record', async () => {
     try {
@@ -254,46 +265,29 @@ describe('find follow record', () => {
     }
   });
 });
-describe('delete follow record', () => {
-  it('it should be able delete follow record', async () => {
+
+const newtoken = helper.generateToken(user);
+describe('follow the user who does not exist', () => {
+  it('should return bad request', async () => {
     try {
-      const result = await followingModel.unfollow(1, 1);
-      result.should.have.status(201);
+      const res = await chai.request(app).post('/api/profiles/mimi/follow').set('Authorization', `Bearer ${newtoken}`);
+      res.should.have.status(400);
+      res.should.be.a('object');
     } catch (error) {
       logError(error);
     }
   });
 });
 
-describe('check logged in user', () => {
-  it('it should be to return the user', async () => {
-    const result = await new loggedInUser(`Bearer ${token}`).user();
-    result.should.be.a('object');
-  });
-});
-
-const newtoken = helper.generateToken(user);
-describe('follow the user who does not exist', () => {
-  it('should return bad request', (done) => {
-    chai.request(app).post('/api/profiles/mimi/follow').set('Authorization', `Bearer ${newtoken}`)
-      .then((res) => {
-        res.should.have.status(400);
-        res.should.be.a('object');
-        done();
-      })
-      .catch(error => logError(error));
-  });
-});
-
 describe('user should not follow himself', () => {
-  it('should return conflict', (done) => {
-    chai.request(app).post(`/api/profiles/${user.username}/follow`).set('Authorization', `Bearer ${newtoken}`)
-      .then((res) => {
-        res.should.have.status(409);
-        res.should.be.a('object');
-        done();
-      })
-      .catch(error => logError(error));
+  it('should return conflict', async () => {
+    try {
+      const res = chai.request(app).post(`/api/profiles/${user.username}/follow`).set('Authorization', `Bearer ${newtoken}`);
+      res.should.have.status(409);
+      res.should.be.a('object');
+    } catch (error) {
+      logError(error);
+    }
   });
 });
 
@@ -306,6 +300,19 @@ describe('user should follow another', () => {
         done();
       })
       .catch(error => logError(error));
+  });
+});
+
+/**
+ * follow user following model
+ */
+describe('follow user', () => {
+  it('it should be able follow user', async () => {
+    try {
+      await followersModel.newRecord(1, 1);
+    } catch (error) {
+      logError(error);
+    }
   });
 });
 
@@ -367,19 +374,31 @@ describe('follow user with invalid token', () => {
   });
 });
 
-describe('request reset password link', () => {
-  it('it should return error', (done) => {
-    chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email })
-      .then((result) => {
-        result.should.have.status(202);
-        done();
-      })
-      .catch((error) => {
-        logError(error);
-      });
+/**
+ * delete followers model
+ */
+describe('delete follower record', () => {
+  it('it should be able delete follow record', async () => {
+    try {
+      await followersModel.unfollow(1, 1);
+    } catch (error) {
+      logError(error);
+    }
   });
 });
 
+/**
+ * delete following model
+ */
+describe('delete follower record', () => {
+  it('it should be able delete follow record', async () => {
+    try {
+      await followingModel.unfollow(1, 1);
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
 /**
  * @author frank harerimana
  * testing forget password user controller
@@ -389,7 +408,7 @@ describe('requesting a reset password link', () => {
     try {
       const result = await chai.request(app)
         .post('/api/v1/login/forgetpassword')
-        .send(ruser.email);
+        .send(user.email);
       result.should.have.status(404);
       result.should.be.a('object');
     } catch (error) {
@@ -421,6 +440,18 @@ describe('reset password with an unexisting email', () => {
     chai.request(app).post('/api/auth/forgetpassword').send(`${faker.internet.email}`)
       .then((result) => {
         result.should.have.status(404);
+        done();
+      })
+      .catch(error => logError(error));
+  });
+});
+
+describe('request a reset password link', () => {
+  it('should sent token', (done) => {
+    chai.request(app).post('/api/auth/forgetpassword')
+      .send(user)
+      .then((res) => {
+        res.should.have.status(202);
         done();
       })
       .catch(error => logError(error));

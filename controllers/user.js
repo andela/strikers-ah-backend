@@ -36,8 +36,8 @@ class User {
       const userNameUsed = await UserModel.findOne({ where: { username: newUser.username } });
       const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
       if (uniqueEmailUsername === true) {
-        // Email verification
         const result = await UserModel.create(newUser);
+        // Email verification
         const verificationHash = mailingHelper(result.email, `${result.firstname} ${result.lastname}`);
         const verification = {
           userid: result.id,
@@ -56,6 +56,7 @@ class User {
       return res.status(400).send(error);
     }
   }
+
 
   /**
    * @param {Object} req
@@ -100,9 +101,9 @@ class User {
       provideruserid: req.user.provideruserid
     };
     const result = await UserModel.socialUsers(ruser);
-    let userAccount = select.pick(result[0].dataValues, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+    let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
     const token = helper.generateToken(userAccount);
-    userAccount = select.pick(result[0].dataValues, ['username', 'email', 'bio', 'image']);
+    userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
     return helper.authenticationResponse(res, token, userAccount);
   }
 
@@ -117,11 +118,8 @@ class User {
     // check email existance
     const search = await UserModel.checkEmail(email);
     if (search === null || undefined) {
-      res.status(404).json({
-        status: 404,
-        message: 'no account related to such email',
-        email
-      });
+      res.status(404).json({ message: 'no account related to such email', email });
+    } else {
       // generate token
       const token = jwt.sign({ id: search.dataValues.id }, process.env.SECRETKEY);
       // store token and userID
@@ -132,9 +130,7 @@ class User {
       const resetLink = await link.resetPasswordLink();
       const result = await new Mailer(email, 'Password reset', resetLink).sender();
       res.status(202).json({
-        status: 202,
-        message: result,
-        email
+        message: result, email
       });
     }
   }
@@ -148,7 +144,7 @@ class User {
   static async resetpassword(req, res) {
     const { token } = req.params;
     const check = await resetPassword.checkToken(token);
-    if (!check) { return res.status(400).json({ status: 400, message: 'invalid token' }); }
+    if (!check) { return res.status(400).json({ message: 'invalid token' }); }
     try {
       const decode = jwt.verify(token, process.env.SECRETKEY);
       const second = (new Date().getTime() - check.dataValues.createdAt.getTime()) / 1000;
@@ -156,10 +152,9 @@ class User {
       const { password } = req.body;
       const result = await UserModel.resetpassword(password, decode.id);
       res.status(201).json({
-        status: 201,
         data: result
       });
-    } catch (error) { return res.status(400).json({ status: 400, message: error.message }); }
+    } catch (error) { return res.status(400).json({ message: error.message }); }
   }
 
   /**
@@ -215,10 +210,7 @@ class User {
         });
       }
     } catch (error) {
-      res.status(400).json({
-        status: 400,
-        error: 'bad request'
-      });
+      res.status(400).json({ status: 400, error: 'bad request' });
     }
   }
 
@@ -250,10 +242,7 @@ class User {
         });
       }
     } catch (error) {
-      res.status(400).json({
-        status: 400,
-        error: 'bad request'
-      });
+      res.status(400).json({ status: 400, error: 'bad request' });
     }
   }
 }

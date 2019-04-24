@@ -39,12 +39,13 @@ const UserModel = (Sequelize, DataTypes) => {
     provideruserid: { type: DataTypes.STRING, allowNull: true, },
     verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
   });
-  User.socialUsers = user => User.findOrCreate({
-    where: {
-      provideruserid: user.provideruserid
-    },
-    defaults: user
-  });
+  User.socialUsers = async (userProfile) => {
+    const result = await User.findOrCreate({
+      where: { provideruserid: userProfile.provideruserid },
+      defaults: userProfile
+    });
+    return result[0].dataValues;
+  };
   User.associate = (models) => {
     User.hasMany(models.article, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
