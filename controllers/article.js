@@ -1,3 +1,5 @@
+// import debug from 'debug';
+import select from 'lodash';
 import models from '../models';
 import Slug from '../helpers/slug';
 import Description from '../helpers/makeDescription';
@@ -348,6 +350,34 @@ class Article {
       who_rated: rows,
       UsersCount: count
     });
+  }
+    /*
+   * @author Mwibutsa Floribert
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @returns {object} -
+   */
+  static async likeArticle(req, res) {
+    const { slug, likeState } = req.params;
+    if (`${likeState}` !== 'like' && `${likeState}` !== 'dislike') {
+      return res.status(404).json({ error: 'Page not found' });
+    }
+    const { id: userId } = helper.decodeToken(req);
+
+    // check if the article exists
+    const article = await ArticleModel.findOne({ where: { slug } });
+    let data;
+    if (article) {
+      data = { user_id: userId, article_id: article.id };
+      await ArticleLikesModel.saveLike(data, `${likeState}`);
+      // get article likes count
+      const { count: likes } = await ArticleLikesModel.findAndCountAll({ where: { article_id: article.id, like_value: 'like' } });
+      // get article dislikes count
+      const { count: dislikes } = await ArticleLikesModel.findAndCountAll({ where: { article_id: article.id, like_value: 'dislike' } });
+      // combine likes and dislikes with article into one object
+      const articleWithVotes = select.pick(article, ['id', 'slug', 'taglist', 'title', 'body', 'description', 'authorid', 'createdAt', 'updatedAt']);
+      res.json({ ...articleWithVotes, userVotes: { likes, dislikes } });
+    }
   }
 }
 export default Article;

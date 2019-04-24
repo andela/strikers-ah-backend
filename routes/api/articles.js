@@ -2,6 +2,8 @@ import express from 'express';
 import articleController from '../../controllers/article';
 import AuthToken from '../../middlewares/tokenValidation';
 import errorHandler from '../../middlewares/errorHandler';
+import Strategy from '../../middlewares/auth';
+import helper from '../../helpers/helper';
 
 const router = express.Router();
 
@@ -14,5 +16,14 @@ router.post('/:slug/bookmark', AuthToken, errorHandler(articleController.bookmar
 router.get('/', errorHandler(articleController.articlePagination));
 router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.get('/:slug/rates', AuthToken, articleController.fetchArticleRating);
+router.post('/', articleController.createArticle);
+router.get('/');
+router.delete('/:slug');
+router.put('/:slug');
+router.patch(
+  '/:slug/:likeState',
+  Strategy.verifyToken,
+  helper.asyncHandler(articleController.likeArticle)
+);
 
 export default router;
