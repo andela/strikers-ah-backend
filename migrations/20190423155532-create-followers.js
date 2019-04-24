@@ -1,7 +1,7 @@
 
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('followings', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('followers', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -14,7 +14,7 @@ module.exports = {
         model: 'users', key: 'id', onDelete: 'CASCADE'
       }
     },
-    following: {
+    follower: {
       type: Sequelize.INTEGER,
       references: {
         model: 'users', key: 'id', onDelete: 'CASCADE'
@@ -30,5 +30,5 @@ module.exports = {
     }
   }),
   // eslint-disable-next-line no-unused-vars
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('followings')
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('followers')
 };

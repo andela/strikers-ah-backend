@@ -1,18 +1,21 @@
-
-
 const followingModel = (sequelize, DataTypes) => {
   const Following = sequelize.define('following', {
-    followee: { type: DataTypes.INTEGER, allowNull: false },
-    follower: { type: DataTypes.INTEGER, allowNull: false }
+    userid: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    following: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   });
-  Following.newRecord = (followee, follower) => Following.create({ followee, follower });
-  Following.finder = (followee, follower) => Following.findOne({ where: { followee, follower } });
-  Following.followings = followee => Following.count({ where: { followee } });
-  Following.DeleteRe = (followee, follower) => Following.destroy({ where: { followee, follower } });
-  Following.followers = follower => Following.count({ where: { follower } });
-  // Following.associate = function (models) {
-  //   // associations can be defined here
-  // };
+  Following.associate = (models) => {
+    Following.belongsTo(models.user, { foreignKey: 'userid', onDelete: 'CASCADE' });
+    Following.belongsTo(models.user, { foreignKey: 'following', onDelete: 'CASCADE' });
+  };
+  Following.newRecord = (userid, following) => Following.create({ userid, following });
+  Following.findRecord = (userid, following) => Following.findOne({ where: { userid, following } });
+  Following.unfollow = (userid, following) => Following.destroy({ where: { userid, following } });
   return Following;
 };
 export default followingModel;

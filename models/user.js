@@ -39,10 +39,21 @@ const UserModel = (Sequelize, DataTypes) => {
     provideruserid: { type: DataTypes.STRING, allowNull: true, },
     verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
   });
-  User.so = us => User.findOrCreate({ where: { provideruserid: us.provideruserid }, defaults: us });
+  User.socialUsers = user => User.findOrCreate({
+    where: {
+      provideruserid: user.provideruserid
+    },
+    defaults: user
+  });
   User.associate = (models) => {
     User.hasMany(models.article, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
+    });
+    User.hasMany(models.followers, {
+      foreignKey: 'userid', onDelete: 'CASCADE'
+    });
+    User.hasMany(models.followers, {
+      foreignKey: 'userid', onDelete: 'CASCADE'
     });
   };
   User.checkEmail = email => User.findOne({ where: { email } });
