@@ -7,7 +7,20 @@ import index from '../index';
 
 const articleModel = db.article;
 const userModel = db.user;
-
+let userToken;
+let slug;
+let userId;
+const user = {
+  id: 100,
+  username: 'nkunziinnocent',
+  email: 'nkunzi@gmail.com',
+  password: '@Nkunzi1234',
+};
+const newArticle1 = {
+  title: faker.random.words(),
+  description: faker.lorem.paragraph(),
+  body: ''
+};
 chai.should();
 chai.use(chaiHttp);
 
@@ -20,12 +33,6 @@ before('Cleaning the database first', async () => {
   await articleModel.destroy({ truncate: true, cascade: true });
   await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
 });
-const user = {
-  id: 100,
-  username: 'nkunziinnocent',
-  email: 'nkunzi@gmail.com',
-  password: '@Nkunzi1234',
-};
 describe('Create a user to be used in in creating article', () => {
   it('should create a user', (done) => {
     chai.request(index).post('/api/auth/signup').send(user).then((res) => {
@@ -71,12 +78,12 @@ describe('It checks title errors', () => {
   });
 });
 describe('Test the body', () => {
+  const newArticle = {
+    title: faker.random.words(),
+    description: faker.lorem.paragraph(),
+    body: ''
+  };
   it('should not create and article if the body is empty', (done) => {
-    const newArticle = {
-      title: faker.random.words(),
-      description: faker.lorem.paragraph(),
-      body: ''
-    };
     chai.request(index).post('/api/articles').send(newArticle).then((res) => {
       res.should.have.status(400);
       res.body.should.be.a('object');
@@ -93,7 +100,7 @@ describe('Test the body', () => {
     chai.request(index).post('/api/articles').send(longTitleArticle).then((res) => {
       res.should.have.status(400);
       res.body.should.be.a('object');
-      res.body.should.have.property('message').eql('article.body cannot be null');
+      res.body.should.have.property('error').eql('body can not be null');
       done();
     })
       .catch(err => err);
@@ -102,9 +109,10 @@ describe('Test the body', () => {
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title: faker.lorem.sentence(),
+      title: faker.lorem.sentences(),
       body: faker.lorem.paragraphs(),
       description: faker.lorem.paragraph(),
+      authorid: 100
     };
     chai.request(index).post('/api/articles').send(longTitleArticle).then((res) => {
       res.should.have.status(201);
@@ -112,6 +120,40 @@ describe('Test the title', () => {
       res.body.should.have.property('article');
       done();
     })
-      .catch(err => err);
+      .catch(err => console.log(err));
   });
 });
+
+// describe('LIKE OR DISLIKE ARTICLE', () => {
+//   user.id = 123;
+//   before(() => {
+//     chai.request(index).post('/api/auth/login').send({ email: user.email, password: user.password }).end((err, res) => {
+//       const { token } = res.body.user;
+//       userId = res.body.user.id;
+//       userToken = token;
+//     });
+//     newArticle1.authorid = userId || 100;
+//     newArticle1.body = 'The request has been received but not yet acted upon. It is non-committal, meaning that there is no way in HTTP to later send an asynchronous response indicating the outcome of processing the request. It is intended for cases where another process or server handles the request, or for batch processing';
+//     chai.request(index).post('/api/articles/')
+//       .send(newArticle1)
+//       .end((err, res) => {
+//         console.log(err);
+//         // const { article } = res.body;
+//         // slug = { article };
+
+//         console.log('======', res.body);
+//       });
+//   });
+
+//   describe('Like article', () => {
+//     it('should like like an article', (done) => {
+//       chai.request(index).patch(`/api/articles/${slug}/like`).set('x-auth-token', userToken)
+//         .send({})
+//         .then((res) => {
+//           res.should.have.status(201);
+//           done();
+//         })
+//         .catch(err => console.log(err));
+//     });
+//   });
+// });
