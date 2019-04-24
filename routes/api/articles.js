@@ -10,5 +10,6 @@ router.post('/', AuthToken, errorHandler(articleController.createArticle));
 router.get('/:slug', errorHandler(articleController.getArticle));
 router.delete('/:slug', AuthToken, errorHandler(articleController.deleteArticle));
 router.put('/:slug', AuthToken, errorHandler(articleController.updateArticle));
+router.post('/:slug/bookmark', AuthToken, errorHandler(articleController.bookmarkArticle));
 
 export default router;

@@ -40,6 +40,11 @@ const ArticleModel = (sequelize, DataTypes) => {
       foreignKey: 'authorid', onDelete: 'CASCADE'
     });
   };
+  Article.associate = (models) => {
+    Article.hasMany(models.bookmark, {
+      foreignKey: 'articleid', onDelete: 'CASCADE'
+    });
+  };
   return Article;
 };
 export default ArticleModel;
