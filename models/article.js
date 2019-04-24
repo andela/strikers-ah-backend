@@ -36,6 +36,7 @@ const ArticleModel = (sequelize, DataTypes) => {
     return data;
   };
 
+  Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
   Article.associate = (models) => {
     Article.belongsTo(models.user, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
