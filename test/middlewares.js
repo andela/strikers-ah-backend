@@ -92,7 +92,7 @@ describe('/ sending mail to client', () => {
   it('it should be able to deliver send email', async () => {
     const client = faker.internet.email();
     const subject = 'testing purpose';
-    const result = await new Mailer(client, subject).sender();
+    const result = await new Mailer(client, subject, faker.internet.url()).sender();
     result.should.be.a('string');
   });
 });
