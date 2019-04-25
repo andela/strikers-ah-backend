@@ -49,6 +49,9 @@ const UserModel = (Sequelize, DataTypes) => {
     User.hasMany(models.article, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
     });
+    User.hasMany(models.notifications, {
+      foreignKey: 'userid', onDelete: 'CASCADE'
+    });
   };
   User.checkEmail = async email => User.findOne({ where: { email } });
   User.resetpassword = async (password, id) => User.update({ password }, { where: { id } });
