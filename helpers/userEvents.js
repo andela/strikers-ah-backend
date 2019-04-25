@@ -5,7 +5,7 @@ import userNotification from '../controllers/userNotification';
 /**
  * notification handler
  */
-class ArticleEvents extends EventEmitter {
+class UserEvents extends EventEmitter {
   /**
      * @author frank harerimana
      * @param {*} userid
@@ -17,4 +17,4 @@ class ArticleEvents extends EventEmitter {
   }
 }
 
-export default ArticleEvents;
+export default UserEvents;
