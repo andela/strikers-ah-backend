@@ -58,16 +58,16 @@ class Article {
   * @returns {object} it returns an object of articles
   */
   static async getAllArticles(req, res) {
-      const getAll = await ArticleModel.getAll();
-      if (getAll.length === 0) {
-        res.status(404).json({
-          error: 'Not article found for now'
-        });
-      } else {
-        res.status(200).json({
-          article: getAll
-        });
-      }
+    const getAll = await ArticleModel.getAll();
+    if (getAll.length === 0) {
+      res.status(404).json({
+        error: 'Not article found for now'
+      });
+    } else {
+      res.status(200).json({
+        article: getAll
+      });
+    }
   }
 
   /**
