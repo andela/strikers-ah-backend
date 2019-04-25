@@ -13,6 +13,7 @@ const notificationModel = (sequelize, DataTypes) => {
       userid, type, message, link
     });
   };
+  Notifications.unfollow = id => Notifications.destroy({ where: { id } });
   return Notifications;
 };
 

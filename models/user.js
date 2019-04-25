@@ -57,7 +57,6 @@ const UserModel = (Sequelize, DataTypes) => {
     User.hasMany(models.followers, {
       foreignKey: 'userid', onDelete: 'CASCADE'
     });
-    
   };
   User.checkEmail = email => User.findOne({ where: { email } });
   User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
