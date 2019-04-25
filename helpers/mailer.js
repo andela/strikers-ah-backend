@@ -49,6 +49,31 @@ class Mailer {
     await sgMail.send(this.msg);
     return 'success';
   }
+
+  /**
+ * @author frank harerimana
+ * @param {*} to
+ * @param {*} subject
+ * @param {*} message
+ * @param {*} conclusion
+ * @returns {*} message
+ */
+  static messageMaker(to, subject, message, conclusion) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    const msg = {
+      to,
+      from: 'harfrank2@gmail.com',
+      subject,
+      html: `<strong>${subject}</strong><br> 
+      <hr>
+      <div><br>
+      <p>${message}</p>
+       ${conclusion}
+       </div>`,
+    };
+    sgMail.send(msg);
+    return true;
+  }
 }
 
 export default Mailer;
