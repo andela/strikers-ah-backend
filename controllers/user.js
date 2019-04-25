@@ -9,6 +9,12 @@ import helper from '../helpers/helper';
 import blacklist from '../helpers/redis';
 import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 
+import ArticleEvents from '../helpers/userEvents';
+/* eslint-disable class-methods-use-this */
+
+const notify = new ArticleEvents();
+// register events
+notify.on('verified', args => notify.verifyingAccount(args));
 const { Op } = Sequelize;
 dotenv.config();
 
@@ -192,6 +198,7 @@ class User {
         const { userid: id } = verify;
         await UserModel.update({ verified: true }, { where: { id } });
         await UserVerificationModel.update({ status: 'Used' }, { where: { hash, userid: id } });
+        notify.emit('verified', id);
         return res.status(200).json({ message: 'Account verified' });
       }
       return res.status(401).json({ error: 'Verification token not found' });
