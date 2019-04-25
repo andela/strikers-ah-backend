@@ -1,0 +1,113 @@
+body {
+    background: #f7f7f7;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+}
+.container {
+    width: 100%;
+}
+.login-section {
+    background: #fbfeff;
+    width: 25%;
+    box-shadow: 1px 0px 5px 1px #aaaaaa;
+    margin-left: 37.5%;
+    display: inline-block;
+    margin-top: 150px;
+}
+.logo{
+    overflow: hidden;
+    margin: 30px;
+}
+.log-text{
+    margin: 30px;
+}
+img{
+    max-width: 100%;
+}
+.log-text input[type="text"], input[type="password"] {
+    padding: 10px 8px;
+    background: #ffffff;
+    width: 100%;
+    margin: 10px 0;
+    font-family: sans-serif;
+    font-size: medium;
+    box-sizing: border-box;
+    outline: none;
+    border: 1px solid #aaaaaa;
+    border-radius: 5px;
+    box-shadow: 2px 7px 25px -15px #000;
+}
+.log-text input[type="text"]:hover, input[type="password"]:hover {
+    border: solid 1px #000;
+}
+.fo-btn{
+    float: right;
+    text-decoration: none;
+    color: #000;
+}
+.fo-btn:hover {
+    text-decoration: underline;
+}
+.fa-twitter{
+    color: #00acee;
+}
+.fa-facebook-f{
+    color: #3b5998;
+}
+.fa-google-plus-g{
+    color: red
+}
+.log-btn{
+    border-top: 1px solid #000;
+    width: 100%;
+}
+.title-login {
+    float: left;
+    margin-left: 30px;
+}
+.login-button-section {
+    float: left;
+    width: 80%;
+    margin-left: 10%;
+    margin-bottom: 30px;
+}
+.social-login-btn {
+    border-radius: 5px;
+    box-shadow: 0px 2px 3px 1px #aaaaaa;
+    padding: 15px;
+    margin-right: 6px;
+    width: 10%;
+    height: 30px;
+    text-align: center;
+    cursor: pointer;
+    background: #fff;
+    float: left;
+}
+.login-btn {
+    padding: 10px 8px;
+    background: #00aef9;
+    color: #fff;
+    width: 100%;
+    margin: 10px 0;
+    font-family: sans-serif;
+    font-size: medium;
+    box-sizing: border-box;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 2px 7px 25px -8px #000;
+}
+@media only screen and (max-width: 1200px) {
+    .login-section {
+        width: 40%;
+        margin-left: 30%;
+    }
+}
+@media only screen and (max-width: 600px) {
+    .login-section {
+        width: 60%;
+        margin-left: 20%;
+    }
+}
