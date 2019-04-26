@@ -23,6 +23,7 @@ class UserEvents extends EventEmitter {
    */
   resetpassword(id) {
     userNotification.resetpassword(id);
+    return id;
   }
 }
 

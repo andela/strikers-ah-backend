@@ -29,7 +29,7 @@ class Mailer {
   async formatt() {
     this.msg = {
       to: this.to,
-      from: 'harfrank2@gmail.com',
+      from: 'no-reply@author-haven.com',
       subject: this.subject,
       html: `<strong>Reset Password</strong><br> 
       <hr>
