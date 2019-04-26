@@ -63,17 +63,13 @@ class Article {
 
     // check if the article exists
     const article = await ArticleModel.findOne({ where: { slug } });
-    let data;
     if (article) {
-      data = { user_id: userId, article_id: article.id };
-      await ArticleLikesModel.saveLike(data, `${likeState}`);
+      await ArticleLikesModel.saveLike({ user_id: userId, article_id: article.id }, `${likeState}`);
       // get article likes count
       const { count: likes } = await ArticleLikesModel.findAndCountAll({ where: { article_id: article.id, like_value: 'like' } });
       // get article dislikes count
       const { count: dislikes } = await ArticleLikesModel.findAndCountAll({ where: { article_id: article.id, like_value: 'dislike' } });
-      // combine likes and dislikes with article into one object
-      const articleWithVotes = select.pick(article, ['id', 'slug', 'taglist', 'title', 'body', 'description', 'authorid', 'createdAt', 'updatedAt']);
-      res.json({ ...articleWithVotes, userVotes: { likes, dislikes } });
+      res.json({ article: helper.combineWithArticle(article, { likes, dislikes }) });
     }
   }
 }

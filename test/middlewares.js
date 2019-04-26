@@ -1,10 +1,15 @@
 import chai from 'chai';
+import debug from 'debug';
 import faker from 'faker';
+import assert, { AssertionError } from 'assert';
 import encrypt from '../helpers/encrypt';
 import Mailer from '../helpers/mailer';
 import linkMaker from '../helpers/mailLinkMaker';
 import userHandler from '../helpers/userHandler';
 import { GetSocial, GetSocialTwitterGithub } from '../middlewares/callbackHandler';
+import Strategy from '../middlewares/auth';
+
+const logError = debug('app:*');
 
 process.env.NODE_ENV = 'test';
 chai.should();
@@ -107,6 +112,25 @@ describe('/ creating a link to the email', () => {
     ini = await new linkMaker(token);
     const result = await ini.resetPasswordLink();
     result.should.be.a('string');
+  });
+});
+
+describe('Token Verification', () => {
+  it('should return unauthorized on invalid token', () => {
+    const res = {
+      status(stat) {
+        throw new Error(stat);
+      }
+    };
+    const req = {};
+    try {
+      Strategy.verifyToken(req, res);
+      assert.fail('Expected error was not thrown');
+    } catch (error) {
+      if (error instanceof AssertionError) {
+        throw error;
+      }
+    }
   });
 });
 

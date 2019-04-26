@@ -2,10 +2,13 @@ import chaiHttp from 'chai-http';
 import assert, { AssertionError } from 'assert';
 import chai from 'chai';
 import faker from 'faker';
+import debug from 'debug';
 import models from '../models/index';
 import modelsuserverification from '../models/userverification';
 
-const { user: User, userverification } = models;
+const logError = debug('app:*');
+
+const { user: User, userverification, ArticleLikesAndDislikes } = models;
 
 chai.use(chaiHttp);
 chai.should();
@@ -47,6 +50,29 @@ describe('TEST MODELS', () => {
   describe('TEST  VERIFICAION MODEL CREATE', () => {
     it('Should be a function', async () => {
       modelsuserverification.should.be.a('function');
+    });
+  });
+  describe('TEST ARTICLE LIKES AND DISLIKES MODEL', () => {
+    it('should create empty object to show that current user has not liked', (done) => {
+      ArticleLikesAndDislikes.saveLike({ user_id: '100', article_id: '1' }, 'like')
+        .then((res) => {
+          res.should.be.a('object');
+          done();
+        }).catch(err => logError(err));
+    });
+    it('it should change existing like to a dislike', (done) => {
+      ArticleLikesAndDislikes.saveLike({ user_id: '100', article_id: '1' }, 'dislike')
+        .then((res) => {
+          res.should.be.a('object');
+          done();
+        }).catch(err => logError(err));
+    });
+    it('should delete existing like if it is similar to the incoming like', (done) => {
+      ArticleLikesAndDislikes.saveLike({ user_id: '100', article_id: '1' }, 'dislike')
+        .then((res) => {
+          res.should.be.eql(1);
+          done();
+        }).catch(err => logError(err));
     });
   });
 });
