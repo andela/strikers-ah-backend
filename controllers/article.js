@@ -6,6 +6,7 @@ import Description from '../helpers/makeDescription';
 import ArticleEvents from '../helpers/articleEvents';
 import enumRate from '../helpers/enumeration';
 import objKey from '../helpers/enumKeyFinder';
+import helper from '../helpers/helper';
 
 const notify = new ArticleEvents();
 
@@ -15,7 +16,8 @@ const {
   article: ArticleModel,
   rating: ratingModel,
   user: UserModel,
-  bookmark: bookmarkModel
+  bookmark: bookmarkModel,
+  ArticleLikesAndDislikes
 } = models;
 
 /**
@@ -34,7 +36,8 @@ class Article {
     } = req.body;
     if (!title) {
       return res.status(400).json({ error: 'title can not be null' });
-    } if (!body) {
+    }
+    if (!body) {
       return res.status(400).json({ error: 'body can not be null' });
     }
     const authorid = req.user;
@@ -49,7 +52,12 @@ class Article {
     const descriptData = descriptionInstance.makeDescription();
     const slug = slugInstance.returnSlug();
     const newArticle = {
-      title, body, description: descriptData, slug, authorid, taglist
+      title,
+      body,
+      description: descriptData,
+      slug,
+      authorid,
+      taglist
     };
     const article = await ArticleModel.createArticle(newArticle);
     notify.emit('create', newArticle);
@@ -76,11 +84,11 @@ class Article {
   }
 
   /**
-  * @author Innocent Nkunzi
-  * @param {*} req
-  * @param {*} res
-  * @returns {object} it returns an object of articles
-  */
+   * @author Innocent Nkunzi
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} it returns an object of articles
+   */
   static async getAllArticles(req, res) {
     const getAll = await ArticleModel.getAll();
     if (getAll.length === 0) {
@@ -121,7 +129,7 @@ class Article {
    * @param {Object} req
    * @param {Object} res
    * @returns {Object} updted Article
-  */
+   */
   static async updateArticle(req, res) {
     const { slug } = req.params;
     const {
@@ -129,7 +137,8 @@ class Article {
     } = req.body;
     if (!title) {
       return res.status(400).json({ error: 'title can not be null' });
-    } if (!body) {
+    }
+    if (!body) {
       return res.status(400).json({ error: 'body can not be null' });
     }
     const authorid = req.user;
@@ -145,7 +154,12 @@ class Article {
       const descriptData = descripInstance.makeDescription();
       const newSlug = slugInstance.returnSlug();
       const updatedArticle = {
-        title, body, description: descriptData, slug: newSlug, authorid, taglist
+        title,
+        body,
+        description: descriptData,
+        slug: newSlug,
+        authorid,
+        taglist
       };
       const updateArticle = await ArticleModel.updateFoundArticle(id, updatedArticle);
       res.status(200).json({
@@ -186,12 +200,12 @@ class Article {
   }
 
   /**
- *
- * @author Innocent Nkunzi
- * @param {*} req
- * @param {*} res
- * @returns {object} it returns an object of articles
- */
+   *
+   * @author Innocent Nkunzi
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} it returns an object of articles
+   */
   static async articlePagination(req, res) {
     const pageNumber = parseInt(req.query.page, 10);
     const limit = parseInt(req.query.limit, 10);
@@ -199,7 +213,8 @@ class Article {
       return res.status(403).json({
         error: 'Invalid page number'
       });
-    } if (limit <= 0) {
+    }
+    if (limit <= 0) {
       return res.status(403).json({
         error: 'Invalid page limit'
       });
@@ -238,7 +253,7 @@ class Article {
     }
     const { id, username } = user.dataValues;
 
-    if (typeof (rating) === 'undefined') {
+    if (typeof rating === 'undefined') {
       return res.status(400).send({
         status: 400,
         error: 'invalid rating'
@@ -351,7 +366,8 @@ class Article {
       UsersCount: count
     });
   }
-    /*
+
+  /**
    * @author Mwibutsa Floribert
    * @param {object} req - request object
    * @param {object} res - response object
@@ -366,17 +382,20 @@ class Article {
 
     // check if the article exists
     const article = await ArticleModel.findOne({ where: { slug } });
-    let data;
     if (article) {
-      data = { user_id: userId, article_id: article.id };
-      await ArticleLikesModel.saveLike(data, `${likeState}`);
+      await ArticleLikesAndDislikes.saveLike(
+        { user_id: userId, article_id: article.id },
+        `${likeState}`
+      );
       // get article likes count
-      const { count: likes } = await ArticleLikesModel.findAndCountAll({ where: { article_id: article.id, like_value: 'like' } });
+      const { count: likes } = await ArticleLikesAndDislikes.findAndCountAll({
+        where: { article_id: article.id, like_value: 'like' }
+      });
       // get article dislikes count
-      const { count: dislikes } = await ArticleLikesModel.findAndCountAll({ where: { article_id: article.id, like_value: 'dislike' } });
-      // combine likes and dislikes with article into one object
-      const articleWithVotes = select.pick(article, ['id', 'slug', 'taglist', 'title', 'body', 'description', 'authorid', 'createdAt', 'updatedAt']);
-      res.json({ ...articleWithVotes, userVotes: { likes, dislikes } });
+      const { count: dislikes } = await ArticleLikesAndDislikes.findAndCountAll({
+        where: { article_id: article.id, like_value: 'dislike' }
+      });
+      res.status(201).json({ article: helper.combineWithArticle(article, { likes, dislikes }) });
     }
   }
 }

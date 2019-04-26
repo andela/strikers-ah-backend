@@ -9,13 +9,12 @@ import index from '../index';
 
 const articleModel = db.article;
 const userModel = db.user;
-let userToken;
 let slug;
 let userId;
 const newArticle1 = {
   title: faker.random.words(),
   description: faker.lorem.paragraph(),
-  body:''
+  body: ''
 };
 chai.should();
 chai.use(chaiHttp);
@@ -33,6 +32,15 @@ const user = {
   email: 'nkunzi@gmail.com',
   password: '@Nkunzi1234'
 };
+dotenv.config();
+process.env.NODE_ENV = 'test';
+
+describe('Cleaning the database', () => {
+  before('Cleaning the database first', async () => {
+    await articleModel.destroy({ truncate: true, cascade: true });
+    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+  });
+});
 
 // A user to be used to update an article that they didn't create
 const newUser = {
@@ -125,11 +133,6 @@ describe('Test the body', () => {
     body: ''
   };
   it('should not create and article if the body is empty', (done) => {
-    const newArticle = {
-      title: faker.random.words(),
-      description: faker.lorem.paragraph(),
-      body: ''
-    };
     chai
       .request(index)
       .post('/api/articles')
@@ -454,37 +457,3 @@ describe('Bookmark tests', () => {
       .catch(error => logError(error));
   });
 });
-
-// describe('LIKE OR DISLIKE ARTICLE', () => {
-//   user.id = 123;
-//   before(() => {
-//     chai.request(index).post('/api/auth/login').send({ email: user.email, password: user.password }).end((err, res) => {
-//       const { token } = res.body.user;
-//       userId = res.body.user.id;
-//       userToken = token;
-//     });
-//     newArticle1.authorid = userId || 100;
-//     newArticle1.body = 'The request has been received but not yet acted upon. It is non-committal, meaning that there is no way in HTTP to later send an asynchronous response indicating the outcome of processing the request. It is intended for cases where another process or server handles the request, or for batch processing';
-//     chai.request(index).post('/api/articles/')
-//       .send(newArticle1)
-//       .end((err, res) => {
-//         console.log(err);
-//         // const { article } = res.body;
-//         // slug = { article };
-
-//         console.log('======', res.body);
-//       });
-//   });
-
-//   describe('Like article', () => {
-//     it('should like like an article', (done) => {
-//       chai.request(index).patch(`/api/articles/${slug}/like`).set('x-auth-token', userToken)
-//         .send({})
-//         .then((res) => {
-//           res.should.have.status(201);
-//           done();
-//         })
-//         .catch(err => console.log(err));
-//     });
-//   });
-// });
