@@ -167,8 +167,7 @@ describe('Test the body', () => {
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title:
-        'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
+      title: 'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
       body: faker.lorem.paragraphs(),
       description: faker.lorem.paragraph()
     };
