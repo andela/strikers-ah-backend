@@ -68,7 +68,6 @@ const UserModel = (Sequelize, DataTypes) => {
       foreignKey: 'userid', onDelete: 'CASCADE'
     });
   };
-
   return User;
 };
 export default UserModel;

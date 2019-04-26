@@ -33,7 +33,7 @@ paths:
                 type: 'string'
                 example: 'Welcome to Author Haven'
         '404':
-          description: Route not found
+            description: Route not found
           # responses may fall through to errors
   /api/users:
     # returns a jwt token after registration
@@ -182,21 +182,21 @@ paths:
         '200':
           description: success
           schema:
-            type: object
-            properties:
-              user:
-                type: object
-                properties:
-                  username:
-                    type: string
-                  email:
-                    type: string
-                  bio:
-                    type: string
-                  token:
-                    type: string
-                  image:
-                    type: string
+           type: object
+           properties:
+             user:
+              type: object
+              properties:
+                username:
+                 type: string
+                email:
+                 type: string
+                bio:
+                 type: string
+                token:
+                 type: string
+                image:
+                 type: string
         '404':
           description: Route not found
   /api/auth/google:
@@ -484,3 +484,72 @@ paths:
                 type: 'String'
                 example: 'image1.png'
 
+  /api/articles/{articleSlug}/rates:
+    get:
+      description: Returns an object with title, slug of an article, and names of users who rated it.
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: articleSlug
+          description: it's slug of an existing article
+          required: true
+          type: string
+        - in: header
+          name: authorization
+          type: string
+          required: true
+
+      responses:
+        '400':
+          description: slug of an article can not be a number
+          schema:
+            type: object
+            properties:
+              status:
+                type: 'integer'
+              error:
+                type: 'string'
+        '404':
+          description: Article can not be found
+          schema:
+            type: object
+            properties:
+              status:
+                type: 'integer'
+              error:
+                type: 'string'
+        '200':
+          description: fetch rating of an article
+          schema:
+            type: object
+            properties:
+              status:
+                type: 'integer'
+              article:
+                type: object
+                properties:
+                  title:
+                    type: 'string'
+                  slug:
+                    type: 'string'
+              who_rated:
+                type: 'array'
+                items:
+                  type: object
+                  properties:
+                    rating:
+                      type: 'integer'
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: 'integer'
+                        firstname:
+                          type: 'string'
+                        lastname:
+                          type: 'string'
+                        username:
+                          type: 'string'
+              UsersCount:
+                type: 'integer'

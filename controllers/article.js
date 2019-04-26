@@ -305,5 +305,49 @@ class Article {
       error: 'Article can only be rated once.'
     });
   }
+
+  /**
+   *@author: Clet Mwunguzi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Rate
+   */
+  static async fetchArticleRating(req, res) {
+    const { slug } = req.params;
+
+    if (Number(slug)) {
+      return res.status(400).send({
+        status: 400,
+        error: 'slug of an article can not be a number.'
+      });
+    }
+
+    const results = await ArticleModel.verifyArticle(slug);
+    if (!results) {
+      return res.status(404).send({
+        status: 404,
+        error: 'Article can not be found.'
+      });
+    }
+    const { title, slug: articleSlug } = results.dataValues;
+    const allArticles = await ratingModel.allRatings(UserModel, ArticleModel, slug);
+    const { count, rows } = allArticles;
+
+    if (rows.length === 0) {
+      return res.status(404).send({
+        status: 404,
+        error: 'No rating found for this article'
+      });
+    }
+    return res.status(200).send({
+      status: 200,
+      article: {
+        title,
+        slug: articleSlug
+      },
+      who_rated: rows,
+      UsersCount: count
+    });
+  }
 }
 export default Article;

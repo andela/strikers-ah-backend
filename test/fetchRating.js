@@ -19,6 +19,7 @@ chai.use(chaiHttp);
  */
 
 const user = {
+  id: 3,
   username: 'mwunguzi',
   email: 'clet@hjih.com',
   password: '@Cletw1234',
@@ -34,7 +35,7 @@ const mockUser = {
 
 let userToken, userTokenId;
 let articleSlug;
-describe('Create a user for rating an article', () => {
+describe('/Fetching ratings --> Create a user for rating an article', () => {
   before('Cleaning the database first', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
     await userModel.destroy({ truncate: true, cascade: true });
@@ -67,12 +68,6 @@ describe('Create a user for rating an article', () => {
       res.body.user.should.have.property('bio');
       res.body.user.should.have.property('image');
       res.body.user.should.have.property('token');
-      (async () => {
-        await userModel.destroy({
-          where:
-          { email: mockUser.email },
-        });
-      })();
       done();
     })
       .catch(err => err);
@@ -82,10 +77,11 @@ describe('Create a user for rating an article', () => {
 const fakeData = {
   title: faker.random.words(),
   description: faker.lorem.paragraphs(),
-  body: faker.lorem.paragraphs()
+  body: faker.lorem.paragraphs(),
+  authorid: 3
 };
-describe('Create an article', () => {
-  it('should create an article 2', (done) => {
+describe('/Fetching ratings --> Create an article', () => {
+  it('should create an article', (done) => {
     chai.request(index).post('/api/articles')
       .set('Authorization', userToken)
       .send(fakeData)
@@ -96,7 +92,7 @@ describe('Create an article', () => {
         res.body.should.be.a('object');
         res.body.article.should.be.a('object');
         res.body.article.should.have.property('id');
-        res.body.article.should.have.property('slug').equal(articleSlug);
+        res.body.article.should.have.property('slug');
         res.body.article.should.have.property('title').equal(fakeData.title);
         res.body.article.should.have.property('description');
         res.body.article.should.have.property('body').equal(fakeData.body);
@@ -109,10 +105,9 @@ describe('Create an article', () => {
       .catch(err => err);
   });
 });
-
-describe('Rate an article', () => {
+describe('Fetch rate for an article', () => {
   it('should not enter an invalid slug', (done) => {
-    chai.request(index).post('/api/articles/23/rate/Terrible')
+    chai.request(index).get('/api/articles/23/rates')
       .set('Authorization', userToken)
       .then((res) => {
         res.should.have.status(400);
@@ -123,37 +118,9 @@ describe('Rate an article', () => {
       })
       .catch(err => err);
   });
-
-  it('Should not enter an invalid article rating', (done) => {
-    chai.request(index)
-      .post(`/api/articles/${articleSlug}/rate/Terribl`)
-      .set('Authorization', userToken)
-      .then((res) => {
-        res.should.have.status(400);
-        res.body.should.be.a('object');
-        res.body.should.have.property('status').equal(400);
-        res.body.should.have.property('error').equal('invalid rating');
-        done();
-      })
-      .catch(err => err);
-  });
-
-  it('Should not create article if user don\'t exists', (done) => {
-    chai.request(index)
-      .post(`/api/articles/${articleSlug}/rate/Good`)
-      .set('Authorization', userTokenId)
-      .then((res) => {
-        res.body.should.be.a('object');
-        res.body.should.have.property('status').equal(404);
-        res.body.should.have.property('error').equal('User not found');
-        done();
-      })
-      .catch(err => err);
-  });
-
   it('Should verify if article exists', (done) => {
     chai.request(index)
-      .post('/api/articles/slug12!/rate/Terrible')
+      .get('/api/articles/slug12!/rates')
       .set('Authorization', userToken)
       .then((res) => {
         res.body.should.be.a('object');
@@ -163,12 +130,23 @@ describe('Rate an article', () => {
       })
       .catch(err => err);
   });
-
+  it('Should verify if there are ratings for an article', (done) => {
+    chai.request(index)
+      .get(`/api/articles/${articleSlug}/rates`)
+      .set('Authorization', userToken)
+      .then((res) => {
+        res.body.should.be.a('object');
+        res.body.should.have.property('status').equal(404);
+        res.body.should.have.property('error').equal('No rating found for this article');
+        done();
+      })
+      .catch(err => err);
+  });
 
   it('Should create a new rate for an article', (done) => {
     chai.request(index)
       .post(`/api/articles/${articleSlug}/rate/Terrible`)
-      .set('Authorization', userToken)
+      .set('Authorization', userTokenId)
       .then((res) => {
         res.body.should.be.a('object');
         res.body.should.have.property('rated_article');
@@ -176,7 +154,8 @@ describe('Rate an article', () => {
         res.body.rated_article.should.have.property('status').equal(201);
         res.body.rated_article.should.have.property('id');
         res.body.rated_article.should.have.property('user');
-        res.body.rated_article.user.should.have.property('username').equal('mwunguzi');
+        res.body.rated_article.user.should.have.property('id').equal(2);
+        res.body.rated_article.user.should.have.property('username').equal('George');
         res.body.rated_article.should.have.property('article');
         res.body.rated_article.article.should.have.property('title').equal(fakeData.title);
         res.body.rated_article.article.should.have.property('slug').equal(articleSlug);
@@ -186,7 +165,7 @@ describe('Rate an article', () => {
       .catch(err => err);
   });
 
-  it('Should update a rating for an article', (done) => {
+  it('Should create a new rate for an article', (done) => {
     chai.request(index)
       .post(`/api/articles/${articleSlug}/rate/Good`)
       .set('Authorization', userToken)
@@ -194,28 +173,41 @@ describe('Rate an article', () => {
         res.body.should.be.a('object');
         res.body.should.have.property('rated_article');
         res.body.rated_article.should.be.a('object');
-        res.body.rated_article.should.have.property('status').equal(200);
+        res.body.rated_article.should.have.property('status').equal(201);
         res.body.rated_article.should.have.property('id');
         res.body.rated_article.should.have.property('user');
+        res.body.rated_article.user.should.have.property('id').equal(3);
         res.body.rated_article.user.should.have.property('username').equal('mwunguzi');
         res.body.rated_article.should.have.property('article');
         res.body.rated_article.article.should.have.property('title').equal(fakeData.title);
         res.body.rated_article.article.should.have.property('slug').equal(articleSlug);
         res.body.rated_article.should.have.property('rating').equal('Good');
-        res.body.rated_article.should.have.property('previousRating').equal('Terrible');
         done();
       })
       .catch(err => err);
   });
 
-  it('Should not rate an article more than once with the same rating', (done) => {
+  it('Should fetch all ratings for an article and users who rated it', (done) => {
     chai.request(index)
-      .post(`/api/articles/${articleSlug}/rate/Good`)
+      .get(`/api/articles/${articleSlug}/rates`)
       .set('Authorization', userToken)
       .then((res) => {
         res.body.should.be.a('object');
-        res.body.should.have.property('status').equal(403);
-        res.body.should.have.property('error').equal('Article can only be rated once.');
+        res.body.should.have.property('status').equal(200);
+        res.body.article.should.be.a('object');
+        res.body.article.should.have.property('title').equal(fakeData.title);
+        res.body.article.should.have.property('slug').equal(articleSlug);
+        res.body.who_rated.should.be.an('array');
+        res.body.who_rated[0].should.contain.keys({
+          rating: 1,
+          user: { id: mockUser.id, username: mockUser.username }
+        });
+        res.body.who_rated[1].should.include.keys({
+          rating: 4,
+          user: { id: user.id, username: user.username }
+        });
+        res.body.should.have.property('UsersCount').equal(2);
+
         done();
       })
       .catch(err => err);

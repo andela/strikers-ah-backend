@@ -14,21 +14,13 @@ chai.should();
 chai.use(chaiHttp);
 
 const logError = debug('app:*');
+dotenv.config();
+process.env.NODE_ENV = 'test';
 /**
  * @author: Innocent Nkunzi
  * @description: tests related to article
  */
 
-dotenv.config();
-process.env.NODE_ENV = 'test';
-
-describe('Cleaning the database', () => {
-  before('Cleaning the database first', async () => {
-    await articleModel.destroy({ truncate: true, cascade: true });
-    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
-  });
-});
-// A user to be used to create article
 const user = {
   username: 'nkunziinnocent',
   email: 'nkunzi@gmail.com',
@@ -43,6 +35,10 @@ const newUser = {
 };
 let userToken, testToken;
 describe('Create a user to be used in in creating article', () => {
+  before('Cleaning the database first', async () => {
+    await articleModel.destroy({ truncate: true, cascade: true });
+    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+  });
   it('should create a user', (done) => {
     chai
       .request(index)
