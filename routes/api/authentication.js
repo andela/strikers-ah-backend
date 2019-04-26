@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import user from '../../controllers/user';
 import Strategy from '../../middlewares/auth';
-import secureRoute from '../../helpers/tokenValidation';
+import secureRoute from '../../middlewares/tokenValidation';
 
 const router = express.Router();
 
