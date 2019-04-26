@@ -307,12 +307,17 @@ describe('reset password with an existing email', () => {
  * @author frank harerimana
  */
 describe('record a new user follow', () => {
-  it('it should return a new record', (done) => {
-    followingModel.newRecord(1, 1).then((result) => {
+  it('it should return a new record', async () => {
+    try {
+      const res = await UserModel.checkUser(user.username);
+      const result = await followingModel.newRecord(res.dataValues.id, res.dataValues.id);
       result.should.be.a('object');
-      done();
-    })
-      .catch(error => logError(error));
+      result.dataValues.should.have.property('following').eql(res.dataValues.id);
+      result.dataValues.should.have.property('userid').eql(res.dataValues.id);
+      result.dataValues.should.have.property('id');
+    } catch (error) {
+      logError(error);
+    }
   });
 });
 describe('find user by id', () => {
@@ -329,7 +334,8 @@ describe('find user by id', () => {
 describe('create follow record', () => {
   it('should be able return the record', async () => {
     try {
-      const result = await followingModel.newRecord(1, 1);
+      const res = await UserModel.checkUser(user.username);
+      const result = await followingModel.newRecord(res.dataValues.id, res.dataValues.id);
       result.should.be.a('object');
     } catch (error) {
       logError(error);

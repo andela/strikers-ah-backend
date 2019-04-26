@@ -87,6 +87,7 @@ describe('It checks title errors', () => {
       title: '',
       description: faker.lorem.paragraph(),
       body: faker.lorem.paragraphs(),
+      authorid: 100
     };
     chai.request(index).post('/api/articles').set('x-access-token', `${userToken}`).send(newArticle)
       .then((res) => {
@@ -118,6 +119,7 @@ describe('Test the body', () => {
     const longTitleArticle = {
       title: faker.random.words(),
       description: faker.lorem.paragraph(),
+      authorid: 100
     };
     chai.request(index).post('/api/articles').send(longTitleArticle).set('x-access-token', `${userToken}`)
       .then((res) => {

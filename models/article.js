@@ -17,6 +17,7 @@ const ArticleModel = (sequelize, DataTypes) => {
     description: { type: DataTypes.TEXT, trim: true },
     authorid: { type: DataTypes.INTEGER, allowNull: false }
   }, {});
+
   sequelizeTrasform(Article);
   Article.createArticle = article => Article.create(article);
   Article.getAll = article => Article.findAll(article);
@@ -24,6 +25,8 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
   Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
+  Article.verifyArticle = id => Article.findOne({ where: { id } });
+  Article.verifyArticle = slug => Article.findOne({ where: { slug } });
 
   Article.updateFoundArticle = (id, data) => {
     Article.update({
