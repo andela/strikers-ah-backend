@@ -4,7 +4,7 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --require @babel/polyfill --require @babel/register ./test/*.js --exit",
+    "test": "NODE_ENV=test npm run migrate && nyc --reporter=html --reporter=text mocha --require @babel/polyfill --require @babel/register ./test/*.js --exit",
     "start": "babel-node ./index.js",
     "migrate": "node_modules/.bin/sequelize db:migrate:undo:all && node_modules/.bin/sequelize db:migrate",
     "dev": "nodemon --exec babel-node ./index.js ",
@@ -78,6 +78,7 @@
     "nyc": "^13.3.0",
     "prettier-eslint": "^8.8.2",
     "prettier-eslint-cli": "^4.7.1",
-    "prettier-stylelint": "^0.4.2"
+    "prettier-stylelint": "^0.4.2",
+    "sinon": "^7.3.2"
   }
 }
