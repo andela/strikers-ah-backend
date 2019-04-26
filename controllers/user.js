@@ -109,7 +109,7 @@ class User {
    * @returns { Middleware } -- returns nothing
    */
   static welcomeUser(req, res) {
-    return res.status(200).send(`Welcome >> ${req.user}`);
+    return res.status(200).send('Welcome');
   }
 
   /**
