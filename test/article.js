@@ -9,7 +9,6 @@ import index from '../index';
 
 const articleModel = db.article;
 const userModel = db.user;
-
 chai.should();
 chai.use(chaiHttp);
 

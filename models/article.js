@@ -41,6 +41,7 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
   Article.getAllPages = (limit, offset) => Article.findAll({ limit, offset });
   Article.verifyArticle = slug => Article.findOne({ where: { slug } });
+  Article.verifyArticle = id => Article.findOne({ where: { id } });
 
   Article.updateFoundArticle = (id, data) => {
     Article.update({

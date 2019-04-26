@@ -265,7 +265,7 @@ class Article {
     }
     const { id, username } = user.dataValues;
 
-    if (typeof rating === 'undefined') {
+    if (typeof (rating) === 'undefined') {
       return res.status(400).send({
         status: 400,
         error: 'invalid rating'
@@ -279,7 +279,7 @@ class Article {
       });
     }
 
-    const results = await ArticleModel.verifyArticle(slug);
+    const results = await ArticleModel.getOneArticle(slug);
     if (!results) {
       return res.status(404).send({
         status: 404,
@@ -351,7 +351,7 @@ class Article {
       });
     }
 
-    const results = await ArticleModel.verifyArticle(slug);
+    const results = await ArticleModel.getOneArticle(slug);
     if (!results) {
       return res.status(404).send({
         status: 404,
@@ -674,6 +674,52 @@ class Article {
     } catch (error) {
       return res.status(500).json({ error });
     }
+  }
+
+  /**
+   *@author: Clet Mwunguzi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} it returns avg rating
+   */
+  static async fetchAvgRating(req, res) {
+    const { slug } = req.params;
+    if (Number(slug)) {
+      return res.status(400).send({
+        status: 400,
+        error: 'slug of an article can not be a number.'
+      });
+    }
+
+    const results = await ArticleModel.getOneArticle(slug);
+    if (!results) {
+      return res.status(404).send({
+        status: 404,
+        error: 'Article can not be found.'
+      });
+    }
+
+    const allArticles = await ratingModel.allRatings(UserModel, ArticleModel, slug);
+    const { rows } = allArticles;
+    if (rows.length === 0) {
+      return res.status(404).send({
+        status: 404,
+        error: 'No rating. Be first to rate'
+      });
+    }
+
+    const avgRating = await ratingModel.avgFind(slug, ArticleModel, ratingModel);
+    const { articleSlug: aSlug, avgRating: AvgRate, article } = avgRating[0].dataValues;
+    const { title } = article.dataValues;
+
+    return res.status(200).send({
+      status: 200,
+      article: {
+        title,
+        slug: aSlug
+      },
+      averageRating: objKey(Math.ceil(AvgRate))
+    });
   }
 }
 export default Article;

@@ -34,10 +34,16 @@ module.exports = (sequelize, DataTypes) => {
     where: { id: rateId }
   });
 
-  rating.avgFind = id => rating.findAll({
-    where: { articleId: id },
-    attributes: ['articleId', [sequelize.fn('AVG', sequelize.col('rating')), 'avgRating']],
-    group: 'rating.articleId'
+  rating.avgFind = (slug, articleModel) => rating.findAll({
+    where: { articleSlug: slug },
+    include: [{
+      model: articleModel,
+      on: { '$article.slug$': { $col: 'rating.articleSlug' } },
+      attributes: ['title']
+    }
+    ],
+    attributes: ['articleSlug', [sequelize.fn('AVG', sequelize.col('rating')), 'avgRating']],
+    group: ['article.id', 'rating.articleSlug']
   });
 
   rating.allRatings = (userModel, articleModel, slug) => rating.findAndCountAll({
