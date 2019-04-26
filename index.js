@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use((express.json()));
 
 app.use(session({
-  secret: process.env.SECRETKEY,
+  secret: process.env.secretKey,
   resave: false,
   saveUninitialized: true
 }));
