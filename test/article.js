@@ -19,10 +19,11 @@ process.env.NODE_ENV = 'test';
  * @author: Innocent Nkunzi
  * @description: tests related to article
  */
-
-before('Cleaning the database first', async () => {
-  await articleModel.destroy({ truncate: true, cascade: true });
-  await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+describe('Clean the databse', () => {
+  before('Cleaning the database first', async () => {
+    await articleModel.destroy({ truncate: true, cascade: true });
+    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+  });
 });
 const user = {
   username: 'nkunziinnocent',
