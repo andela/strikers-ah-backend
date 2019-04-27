@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     articleSlug: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -17,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
 =======
     articleId: {
       type: DataTypes.INTEGER,
+=======
+    articleSlug: {
+      type: DataTypes.STRING,
+>>>>>>> get user from token
       allowNull: false
 >>>>>>> add rating models
     },
@@ -27,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
 
   }, {});
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   rating.addRate = (rate, article, id) => rating.findOrCreate({
     where: { userId: id, articleSlug: article },
@@ -68,12 +74,19 @@ module.exports = (sequelize, DataTypes) => {
     rating.belongsTo(models.article, { foreignKey: 'articleSlug', onDelete: 'CASCADE' });
 =======
   rating.rateCheck = (rate, article, id) => rating.findOrCreate({ where: { userId: id, articleId: article }, defaults: { rating: rate } });
+=======
+  rating.rateCheck = (rate, article, id) => rating.findOrCreate({ where: { userId: id, articleSlug: article }, defaults: { rating: rate } });
+>>>>>>> get user from token
   rating.rateUpdate = (rateId, rate) => rating.update({ rating: rate }, { returning: true, where: { id: rateId } });
   rating.avgFind = id => rating.findAll({ where: { articleId: id }, attributes: ['articleId', [sequelize.fn('AVG', sequelize.col('rating')), 'avgRating']], group: 'rating.articleId' });
   rating.associate = (models) => {
     rating.belongsTo(models.user, { foreignKey: 'userId', onDelete: 'CASCADE' });
+<<<<<<< HEAD
     rating.belongsTo(models.article, { foreignKey: 'articleId', onDelete: 'CASCADE' });
 >>>>>>> add rating models
+=======
+    rating.belongsTo(models.article, { foreignKey: 'articleSlug', onDelete: 'CASCADE' });
+>>>>>>> get user from token
   };
 
   return rating;
