@@ -308,7 +308,6 @@ class Article {
         }
       });
     }
-
     if (!returnValue && dataResult.dataValues.rating !== rating) {
       const updateRate = await ratingModel.rateUpdate(rateChecking[0].dataValues.id, rating);
       const { userId: userid } = updateRate[1][0].dataValues;

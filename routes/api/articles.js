@@ -17,7 +17,6 @@ router.get('/', errorHandler(articleController.articlePagination));
 router.post('/:slug/bookmark', AuthToken, errorHandler(articleController.bookmarkArticle));
 router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.get('/:slug/rates', AuthToken, articleController.fetchArticleRating);
-router.post('/', AuthToken, errorHandler(articleController.createArticle));
 router.delete('/:slug', AuthToken, errorHandler(articleController.deleteArticle));
 router.put('/:slug', AuthToken, errorHandler(articleController.updateArticle));
 router.patch(
