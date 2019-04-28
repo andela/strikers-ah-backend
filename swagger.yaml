@@ -360,10 +360,10 @@ paths:
                 body:
                   type: string
                   example: Lorem Ipsum is simply dummy text
-                description: 
+                description:
                   type: string
                   example: 'Lorem Ipsum is simply dummy text of the printing   and typesetting industry. Lorem Ipsum has been the industry'
-                tagList: 
+                tagList:
                   items:
                     type: string
                     example: Sport
@@ -372,19 +372,19 @@ paths:
           description: article updated
           content:
               application/json:
-                schema: 
+                schema:
                   type: object
-                  properties: 
+                  properties:
                     article:
                       type: object
                       properties:
-                        id: 
+                        id:
                           type: integer
                           example: 1
-                        title: 
+                        title:
                           type: string
                           example: Lorem Ipsum is simply dummy text
-                        slug: 
+                        slug:
                           type: string
                           example: world-class-devs-77f5d72
                         body:
@@ -406,19 +406,19 @@ paths:
           description: list of articles
           content:
               application/json:
-                schema: 
+                schema:
                   type: object
-                  properties: 
+                  properties:
                     article:
                       type: object
                       properties:
-                        id: 
+                        id:
                           type: integer
                           example: 1
-                        title: 
+                        title:
                           type: string
                           example: Lorem Ipsum is simply dummy text
-                        slug: 
+                        slug:
                           type: string
                           example: world-class-devs-77f5d72
                         body:
@@ -431,8 +431,7 @@ paths:
                           type: string
                           example: "2019-04-29 15:36:48.352+02"
         404:
-          description: No article found with the specified slug       
-  
+          description: No article found with the specified slug
   /api/auth/profile:
     # edit user profile
     post:
@@ -553,3 +552,70 @@ paths:
                           type: 'string'
               UsersCount:
                 type: 'integer'
+  /api/articles/{slug}/comments:
+    # binds a127 app logic to a route
+    post:
+      description: Adding new comment on article
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: slug
+          description: Slug identifies an article
+          required: true
+          type: string
+          example: how-to-cook-2dc4b2
+        - name: New comment
+          in: body
+          required: true
+          description: The comment object to be created
+          schema:
+            type: object
+            properties:
+              comment:
+                type: 'Object'
+                example: '{"body": "His name was my name too."}'
+                properties:
+                  body:
+                    type: 'String'
+                    example: 'His name was my name too.'
+      responses:
+        '404':
+          description: Article not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Article not found'
+        '400':
+          description: No comment provided
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Provide comment'
+        '201':
+          description: Comment added
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+        '401':
+          description: No access token provided
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'String'
+                example: 'No token was provided'
+        '403':
+          description: Provided token is invalid
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'String'
+                example: 'The token you provided is invalid'
