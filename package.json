@@ -6,7 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test npm run migrate && nyc --reporter=html --reporter=text mocha --require @babel/polyfill --require @babel/register ./test/*.js --exit",
     "start": "babel-node ./index.js",
-    "migrate": "node_modules/.bin/sequelize db:migrate:undo && node_modules/.bin/sequelize db:migrate",
+    "migrate": "node_modules/.bin/sequelize db:migrate:undo:all && node_modules/.bin/sequelize db:migrate",
     "dev": "nodemon --exec babel-node ./index.js ",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint ./",

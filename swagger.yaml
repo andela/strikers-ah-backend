@@ -388,7 +388,7 @@ paths:
             type: object
             properties:
               comment:
-                type: 'Object'
+                type: 'Array'
               commentsCount:
                 type: 'String'
         '401':
@@ -554,3 +554,109 @@ paths:
               error:
                 type: 'String'
                 example: 'The token you provided is invalid'
+  /api/articles/{articlelug}/comments/popular:
+    # binds a127 app logic to a route
+    get:
+      description: Lists comments of an article sorted by popularity
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: articlelug
+          description: Slug identifies an article
+          required: true
+          type: string
+          example: how-to-cook-2dc4b2
+      responses:
+        '404':
+          description: Article not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Article not found'
+        '200':
+          description: Listing comments by popularity
+          schema:
+            type: object
+            properties:
+              comment:
+                type: 'Array'
+              commentsCount:
+                type: 'String'
+        '401':
+          description: No access token provided
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'String'
+                example: 'No token was provided'
+        '403':
+          description: Provided token is invalid
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'String'
+                example: 'The token you provided is invalid'
+  /api/articles/{artslug}/comments/{id}/like:
+    # binds a127 app logic to a route
+    post:
+      description: Like /Unlike a comment on article
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: artslug
+          description: Slug identifies an article
+          required: true
+          type: string
+          example: how-to-cook-2dc4b2
+        - in: path
+          name: -id
+          description: Comment identifier
+          required: true
+          type: integer
+          example: 1
+      responses:
+        '404':
+          description: Article not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Article not found'
+        '404':
+          description: Article not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Article comment not found'
+        '200':
+          description: Comment like
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Comment liked'
+        '200':
+          description: Comment unlike
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Comment unliked'
+        '400':
+          description: No access token provided
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'Object' 
