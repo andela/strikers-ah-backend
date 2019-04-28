@@ -9,5 +9,6 @@ router.get('/');
 router.delete('/:slug');
 router.put('/:slug');
 
+router.post('/:slug/comments', secureRoute, articleController.addComment);
 
 export default router;
