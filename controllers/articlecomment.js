@@ -58,7 +58,7 @@ class ArticleComment {
         comments.push(entry);
       }));
 
-      return helper.jsonResponse(res, 201, { comment: comments, commentsCount: comments.length });
+      return helper.jsonResponse(res, 200, { comment: comments, commentsCount: comments.length });
     } catch (error) { return helper.jsonResponse(res, 400, { error: error.errors[0].message }); }
   }
 
@@ -89,7 +89,7 @@ class ArticleComment {
       const author = await userModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: req.user } });
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
-      return helper.jsonResponse(res, 201, { comment });
+      return helper.jsonResponse(res, 200, { comment });
     } catch (error) { helper.jsonResponse(res, 400, { error: error.errors[0].message }); }
   }
 
