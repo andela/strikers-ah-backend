@@ -21,5 +21,6 @@ router.patch(
   Strategy.verifyToken,
   helper.asyncHandler(articleController.likeArticle)
 );
+router.post('/:slug/comments', AuthToken, articleController.addComment);
 
 export default router;
