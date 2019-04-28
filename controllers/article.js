@@ -23,7 +23,7 @@ class Article {
         title, body, taglist
       } = req.body;
       const slug = slugInstance.returnSlug(title);
-      const authorid = 100;
+      const authorid = req.user;
       const newArticle = {
         title, body, description: descriptData, slug, authorid, taglist
       };
