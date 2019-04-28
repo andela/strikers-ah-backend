@@ -1,0 +1,25 @@
+const ArticleCommentModel = (Sequelize, DataTypes) => {
+  const ArticleComment = Sequelize.define('articlecomment', {
+    userid: { type: DataTypes.INTEGER, allowNull: false },
+    articleid: { type: DataTypes.INTEGER, allowNull: false },
+    comment: { type: DataTypes.STRING, allowNull: false }
+  }, {
+    freezeTableName: true // Model tableName will be the same as the model name
+  });
+  ArticleComment.listComments = async (articleId) => {
+    const result = await Sequelize.query(
+      `SELECT articlecomment.*, users.id AS userid, users.username, users.bio, users.image FROM articlecomment, users WHERE articlecomment.userid = userid AND articlecomment.articleid = ${articleId}`,
+      { type: Sequelize.QueryTypes.SELECT }
+    );
+    return result;
+  };
+  ArticleComment.singleComment = async (articleId, commentId) => {
+    const result = await Sequelize.query(
+      `SELECT articlecomment.*, articles.authorid AS articleauthor FROM articlecomment, articles WHERE articlecomment.id = ${commentId} AND articlecomment.articleid = ${articleId} AND articles.id = articlecomment.articleid`,
+      { type: Sequelize.QueryTypes.SELECT }
+    );
+    return result;
+  };
+  return ArticleComment;
+};
+export default ArticleCommentModel;
