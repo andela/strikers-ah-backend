@@ -633,6 +633,8 @@ paths:
           schema:
             type: object
             properties:
+              status:
+                type: 'integer'
               error:
                 type: 'String'
                 example: 'The token you provided is invalid'

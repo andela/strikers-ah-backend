@@ -85,11 +85,15 @@ describe('Create a user to be used in in creating article', () => {
 });
 describe('Create an article', () => {
   it('should create an article', (done) => {
+<<<<<<< HEAD
     chai
       .request(index)
       .post('/api/articles')
       .send(fakeData)
       .set('x-access-token', `${userToken}`)
+=======
+    chai.request(index).post('/api/articles').set('x-access-token', `${userToken}`).send(fakeData)
+>>>>>>> [Feature rate-article] document this feature with swagger
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -102,8 +106,8 @@ describe('Create an article', () => {
         res.body.article.should.have.property('updatedAt');
         done();
       })
-      .catch(error => logError(error));
-  });
+      .catch(err => err);
+  }).timeout(15000);
 });
 describe('It checks title errors', () => {
   it('Should not create an article if the title is empty', (done) => {

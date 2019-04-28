@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> get user from token
 module.exports = (sequelize, DataTypes) => {
   const rating = sequelize.define('rating', {
     userId: {
@@ -10,16 +6,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     articleSlug: {
       type: DataTypes.STRING,
-<<<<<<< HEAD
       allowNull: false,
       references: {
         model: 'article',
         key: 'slug'
       },
       onDelete: 'CASCADE'
-=======
-      allowNull: false
->>>>>>> get user from token
     },
     rating: {
       type: DataTypes.INTEGER,
@@ -28,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
 
   }, {});
 
-<<<<<<< HEAD
   rating.addRate = (rate, article, id) => rating.findOrCreate({
     where: { userId: id, articleSlug: article },
     defaults: { rating: rate }
@@ -64,11 +55,10 @@ module.exports = (sequelize, DataTypes) => {
     ],
   });
 
-=======
   rating.rateCheck = (rate, article, id) => rating.findOrCreate({ where: { userId: id, articleSlug: article }, defaults: { rating: rate } });
+  rating.addRate = (rate, article, id) => rating.findOrCreate({ where: { userId: id, articleSlug: article }, defaults: { rating: rate } });
   rating.rateUpdate = (rateId, rate) => rating.update({ rating: rate }, { returning: true, where: { id: rateId } });
   rating.avgFind = id => rating.findAll({ where: { articleId: id }, attributes: ['articleId', [sequelize.fn('AVG', sequelize.col('rating')), 'avgRating']], group: 'rating.articleId' });
->>>>>>> get user from token
   rating.associate = (models) => {
     rating.belongsTo(models.user, { foreignKey: 'userId', onDelete: 'CASCADE' });
     rating.belongsTo(models.article, { foreignKey: 'articleSlug', onDelete: 'CASCADE' });
