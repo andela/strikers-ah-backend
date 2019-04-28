@@ -28,5 +28,8 @@ router.put('/:slug/comments/:commentid', AuthToken, articleController.updateComm
 router.delete('/:slug/comments/:commentid', AuthToken, articleCommentController.deleteComment);
 router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.post('/:slug/comments/:commentid/like', AuthToken, articleCommentController.likeComment);
+router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
+router.get('/:slug/comments/popular', AuthToken, (req, res, next) => { req.commenttype = 'popular'; next(); }, articleCommentController.getComments);
+
 
 export default router;
