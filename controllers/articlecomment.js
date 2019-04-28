@@ -17,12 +17,8 @@ class ArticleComment {
    */
   static async addComment(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
-    if (!articleDetails) {
-      return helper.jsonResponse(res, 404, { message: 'Article not found' });
-    }
-    if (!req.body.comment.body.trim()) {
-      return helper.jsonResponse(res, 400, { message: 'Provide comment' });
-    }
+    if (!articleDetails) { return helper.jsonResponse(res, 404, { message: 'Article not found' }); }
+    if (!req.body.comment.body.trim()) { return helper.jsonResponse(res, 400, { message: 'Provide comment' }); }
     const commentBody = req.body.comment.body.trim();
     const { id: articleid } = articleDetails;
     try {
@@ -33,7 +29,7 @@ class ArticleComment {
       };
       let comment = await ArticleCommentModel.create(newComment);
       const author = await userModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: newComment.userid } });
-      comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
+      comment = select.pick(comment, ['id', 'comment', 'likes', 'createdAt', 'updatedAt']);
       comment.author = author;
       return helper.jsonResponse(res, 201, { comment });
     } catch (error) { return helper.jsonResponse(res, 400, { error }); }
@@ -47,21 +43,20 @@ class ArticleComment {
    */
   static async getComments(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
-    if (!articleDetails) {
-      return helper.jsonResponse(res, 404, { message: 'Article not found' });
-    }
+    if (!articleDetails) { return helper.jsonResponse(res, 404, { message: 'Article not found' }); }
     try {
-      const comment = await ArticleCommentModel.listComments(articleDetails.id);
+      const type = (req.commenttype && req.commenttype === 'popular') ? 'popular' : 'all';
+      const comment = await ArticleCommentModel.listComments(articleDetails.id, type);
       const comments = [];
       await (comment.map(async (entry) => {
         const author = select.pick(entry, ['username', 'bio', 'image']);
-        entry = select.pick(entry, ['id', 'comment', 'createdAt', 'updatedAt']);
+        entry = select.pick(entry, ['id', 'comment', 'likes', 'createdAt', 'updatedAt']);
         entry.author = author;
         comments.push(entry);
       }));
 
       return helper.jsonResponse(res, 200, { comment: comments, commentsCount: comments.length });
-    } catch (error) { return helper.jsonResponse(res, 400, { error: error.errors[0].message }); }
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
 
 
@@ -92,7 +87,7 @@ class ArticleComment {
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
       return helper.jsonResponse(res, 200, { comment });
-    } catch (error) { helper.jsonResponse(res, 400, { error: error.errors[0].message }); }
+    } catch (error) { helper.jsonResponse(res, 400, { error }); }
   }
 
   /**
@@ -103,26 +98,20 @@ class ArticleComment {
    */
   static async deleteComment(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
-    if (!articleDetails) {
-      return helper.jsonResponse(res, 404, { message: 'Article not found' });
-    }
+    if (!articleDetails) { return helper.jsonResponse(res, 404, { message: 'Article not found' }); }
     const { commentid } = req.params;
     const articleId = articleDetails.id;
     let articleCommentDetails = await ArticleCommentModel.singleComment(articleId, commentid);
-    if (!articleCommentDetails[0]) {
-      return helper.jsonResponse(res, 404, { message: 'Article comment not found' });
-    }
+    if (!articleCommentDetails[0]) { return helper.jsonResponse(res, 404, { message: 'Article comment not found' }); }
     [articleCommentDetails] = articleCommentDetails;
     const commentAuthor = articleCommentDetails.userid;
     const articleAuthor = articleCommentDetails.articleauthor;
-    if (commentAuthor !== req.user || req.user !== articleAuthor) {
-      return helper.jsonResponse(res, 400, { message: 'You are allowed to delete comment' });
-    }
+    if (commentAuthor !== req.user || req.user !== articleAuthor) { return helper.jsonResponse(res, 400, { message: 'You are allowed to delete comment' }); }
     const { id } = articleCommentDetails;
     try {
       await ArticleCommentModel.destroy({ where: { id } });
       return helper.jsonResponse(res, 200, { message: 'Comment deleted' });
-    } catch (error) { return helper.jsonResponse(res, 400, { error: error.errors[0].message }); }
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
 
   /**
@@ -133,15 +122,11 @@ class ArticleComment {
    */
   static async likeComment(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
-    if (!articleDetails) {
-      return helper.jsonResponse(res, 404, { message: 'Article not found' });
-    }
+    if (!articleDetails) { return helper.jsonResponse(res, 404, { message: 'Article not found' }); }
     const { commentid } = req.params;
     const articleId = articleDetails.id;
     const articleCommentDetails = await ArticleCommentModel.singleComment(articleId, commentid);
-    if (!articleCommentDetails[0]) {
-      return helper.jsonResponse(res, 404, { message: 'Article comment not found' });
-    }
+    if (!articleCommentDetails[0]) { return helper.jsonResponse(res, 404, { message: 'Article comment not found' }); }
     let message;
     try {
       const like = await ArticleCommentLiker.findOne({ where: { commentid, userid: req.user } });
@@ -155,7 +140,7 @@ class ArticleComment {
         message = 'Comment liked';
       }
       return helper.jsonResponse(res, 200, { message });
-    } catch (error) { return helper.jsonResponse(res, 400, { error: error.errors[0].message }); }
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
 }
 export default ArticleComment;
