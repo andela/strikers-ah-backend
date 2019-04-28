@@ -9,7 +9,7 @@ const ArticleCommentModel = (Sequelize, DataTypes) => {
   });
   ArticleComment.listComments = async (articleId) => {
     const result = await Sequelize.query(
-      `SELECT articlecomment.*, users.id AS userid, users.username, users.bio, users.image FROM articlecomment, users WHERE articlecomment.userid = userid AND articlecomment.articleid = ${articleId}`,
+      `SELECT users.id AS userid, users.username, users.bio, users.image, articlecomment.* FROM users, articlecomment WHERE users.id = articlecomment.userid AND articlecomment.articleid = ${articleId}`,
       { type: Sequelize.QueryTypes.SELECT }
     );
     return result;

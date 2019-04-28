@@ -26,5 +26,7 @@ router.post('/:slug/comments', AuthToken, articleController.addComment);
 router.get('/:slug/comments', AuthToken, articleController.getComments);
 router.put('/:slug/comments/:commentid', AuthToken, articleController.updateComment);
 router.delete('/:slug/comments/:commentid', AuthToken, articleCommentController.deleteComment);
+router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
+router.post('/:slug/comments/:commentid/like', AuthToken, articleCommentController.likeComment);
 
 export default router;
