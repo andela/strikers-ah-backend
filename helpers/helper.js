@@ -57,11 +57,14 @@ const validatePassword = (password) => {
 
 const authenticationResponse = (res, token, userData) => res.header('x-auth-token', token).status(200).json({ user: { ...userData, token } });
 
+const jsonResponse = (res, statusCode, message) => res.status(statusCode).json(message);
+
 export default {
   hashPassword,
   comparePassword,
   generateToken,
   handleUsed,
   validatePassword,
-  authenticationResponse
+  authenticationResponse,
+  jsonResponse
 };
