@@ -2,7 +2,8 @@ const ArticleCommentModel = (Sequelize, DataTypes) => {
   const ArticleComment = Sequelize.define('articlecomment', {
     userid: { type: DataTypes.INTEGER, allowNull: false },
     articleid: { type: DataTypes.INTEGER, allowNull: false },
-    comment: { type: DataTypes.STRING, allowNull: false }
+    comment: { type: DataTypes.STRING, allowNull: false },
+    likes: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }
   }, {
     freezeTableName: true // Model tableName will be the same as the model name
   });
