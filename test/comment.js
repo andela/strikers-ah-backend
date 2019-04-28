@@ -105,12 +105,7 @@ describe('Article commenting', () => {
   });
 
   it('Should get all comments on article', (done) => {
-    const newComment = {
-      comment: {
-        body: faker.lorem.sentence()
-      }
-    };
-    chai.request(index).get(`/api/articles/${articleSlug}/comments`).set('x-access-token', tokenIssued).send(newComment)
+    chai.request(index).get(`/api/articles/${articleSlug}/comments`).set('x-access-token', tokenIssued)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -122,13 +117,42 @@ describe('Article commenting', () => {
       .catch(err => err);
   });
 
+  it('Like a comment', (done) => {
+    chai.request(index).post(`/api/articles/${articleSlug}/comments/${commentId}/like`).set('x-access-token', tokenIssued)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message');
+        res.body.message.should.be.a('string').eql('Comment liked');
+        done();
+      })
+      .catch(err => err);
+  });
+
+  it('Should get comments on article sorted by popularity', (done) => {
+    chai.request(index).get(`/api/articles/${articleSlug}/comments/popular`).set('x-access-token', tokenIssued)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        done();
+      })
+      .catch(err => err);
+  });
+
+  it('Unlike a comment', (done) => {
+    chai.request(index).post(`/api/articles/${articleSlug}/comments/${commentId}/like`).set('x-access-token', tokenIssued)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message');
+        res.body.message.should.be.a('string').eql('Comment unliked');
+        done();
+      })
+      .catch(err => err);
+  });
+
   it('Should delete a comment on article', (done) => {
-    const newComment = {
-      comment: {
-        body: faker.lorem.sentence()
-      }
-    };
-    chai.request(index).delete(`/api/articles/${articleSlug}/comments/${commentId}`).set('x-access-token', tokenIssued).send(newComment)
+    chai.request(index).delete(`/api/articles/${articleSlug}/comments/${commentId}`).set('x-access-token', tokenIssued)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
