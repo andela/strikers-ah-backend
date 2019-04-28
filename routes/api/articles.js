@@ -14,5 +14,6 @@ router.post('/:slug/comments', secureRoute, articleCommentController.addComment)
 router.get('/:slug/comments', secureRoute, articleCommentController.getComments);
 router.put('/:slug/comments/:commentid', secureRoute, articleCommentController.updateComment);
 router.delete('/:slug/comments/:commentid', secureRoute, articleCommentController.deleteComment);
+router.post('/:slug/comments/:commentid/like', secureRoute, articleCommentController.likeComment);
 
 export default router;

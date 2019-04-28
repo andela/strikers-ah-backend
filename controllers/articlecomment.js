@@ -3,6 +3,8 @@ import models from '../models';
 import helper from '../helpers/helper';
 
 const { article: ArticleModel, articlecomment: ArticleCommentModel, user: userModel } = models;
+const { articlecommentliker: ArticleCommentLiker } = models;
+
 /**
  * @description  CRUD for article Class
  */
@@ -67,7 +69,7 @@ class ArticleComment {
    *@author: Jacques Nyilinkindi
    * @param {Object} req
    * @param {Object} res
-   * @returns {Object} Add Article Comments
+   * @returns {Object} Update Article Comments
    */
   static async updateComment(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
@@ -97,7 +99,7 @@ class ArticleComment {
    *@author: Jacques Nyilinkindi
    * @param {Object} req
    * @param {Object} res
-   * @returns {Object} Add Article Comments
+   * @returns {Object} Delete Article Comments
    */
   static async deleteComment(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
@@ -120,6 +122,39 @@ class ArticleComment {
     try {
       await ArticleCommentModel.destroy({ where: { id } });
       return helper.jsonResponse(res, 200, { message: 'Comment deleted' });
+    } catch (error) { return helper.jsonResponse(res, 400, { error: error.errors[0].message }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Add Article Comment Like
+   */
+  static async likeComment(req, res) {
+    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    if (!articleDetails) {
+      return helper.jsonResponse(res, 404, { message: 'Article not found' });
+    }
+    const { commentid } = req.params;
+    const articleId = articleDetails.id;
+    const articleCommentDetails = await ArticleCommentModel.singleComment(articleId, commentid);
+    if (!articleCommentDetails[0]) {
+      return helper.jsonResponse(res, 404, { message: 'Article comment not found' });
+    }
+    let message;
+    try {
+      const like = await ArticleCommentLiker.findOne({ where: { commentid, userid: req.user } });
+      if (like) {
+        await ArticleCommentModel.decrement('likes', { by: 1, where: { id: commentid } });
+        await ArticleCommentLiker.destroy({ where: { commentid, userid: req.user } });
+        message = 'Comment unliked';
+      } else {
+        await ArticleCommentModel.increment('likes', { by: 1, where: { id: commentid } });
+        await ArticleCommentLiker.create({ userid: req.user, commentid });
+        message = 'Comment liked';
+      }
+      return helper.jsonResponse(res, 200, { message });
     } catch (error) { return helper.jsonResponse(res, 400, { error: error.errors[0].message }); }
   }
 }
