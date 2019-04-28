@@ -22,5 +22,7 @@ router.patch(
   helper.asyncHandler(articleController.likeArticle)
 );
 router.post('/:slug/comments', AuthToken, articleController.addComment);
+router.post('/:slug/comments', AuthToken, articleController.addComment);
+router.get('/:slug/comments', AuthToken, articleController.getComments);
 
 export default router;

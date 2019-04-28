@@ -404,7 +404,7 @@ class Article {
    *@author: Jacques Nyilinkindi
    * @param {Object} req
    * @param {Object} res
-   * @returns {Object} Article
+   * @returns {Object} Add Article Comments
    */
   static async addComment(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
@@ -418,7 +418,7 @@ class Article {
     const { id: articleid } = articleDetails;
     try {
       const newComment = {
-        userid: req.user.id,
+        userid: req.user,
         articleid,
         comment: commentBody
       };
@@ -427,6 +427,31 @@ class Article {
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
       return res.status(201).json({ comment });
+    } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get Article Comments
+   */
+  static async getComments(req, res) {
+    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    if (!articleDetails) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+    try {
+      const comment = await ArticleCommentModel.listComments(articleDetails.id);
+      const comments = [];
+      await (comment.map(async (entry) => {
+        const author = select.pick(entry, ['username', 'bio', 'image']);
+        entry = select.pick(entry, ['id', 'comment', 'createdAt', 'updatedAt']);
+        entry.author = author;
+        comments.push(entry);
+      }));
+
+      return res.status(201).json({ comment: comments, commentsCount: comments.length });
     } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
   }
 }
