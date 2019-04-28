@@ -1,7 +1,5 @@
-
-
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('articlecomment', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('articlecommentliker', {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -11,18 +9,9 @@ module.exports = {
       type: Sequelize.INTEGER,
       allowNull: false
     },
-    articleid: {
+    commentid: {
       type: Sequelize.INTEGER,
       allowNull: false
-    },
-    comment: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    likes: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
     },
     createdAt: {
       allowNull: false,
@@ -37,5 +26,5 @@ module.exports = {
   }),
 
   // eslint-disable-next-line no-unused-vars
-  down: (queryInterface, Sequelize) => Promise.all([queryInterface.dropTable('articlecomment')])
+  down: (queryInterface, Sequelize) => Promise.all([queryInterface.dropTable('articlecommentliker')])
 };
