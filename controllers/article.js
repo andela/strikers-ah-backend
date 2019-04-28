@@ -487,7 +487,7 @@ class Article {
         { where: { id }, returning: true }
       );
       [, [comment]] = comment;
-      const author = await userModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: req.user } });
+      const author = await UserModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: req.user } });
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
       return res.status(201).json({ comment });

@@ -102,6 +102,8 @@ const asyncHandler = callBackFunction => async (req, res, next) => {
   }
 };
 const decodeToken = req => jwt.verify(req.header('x-auth-token'), process.env.SECRETKEY);
+const jsonResponse = (res, statusCode, message) => res.status(statusCode).json(message);
+
 export default {
   hashPassword,
   comparePassword,
@@ -114,5 +116,6 @@ export default {
   asyncHandler,
   articleReadTime,
   combineWithArticle,
-  combineHelper
+  combineHelper,
+  jsonResponse
 };

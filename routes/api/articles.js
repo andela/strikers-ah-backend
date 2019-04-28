@@ -1,6 +1,7 @@
 import express from 'express';
 import articleController from '../../controllers/article';
 import AuthToken from '../../middlewares/tokenValidation';
+import articleCommentController from '../../controllers/articlecomment';
 import errorHandler from '../../middlewares/errorHandler';
 import Strategy from '../../middlewares/auth';
 import helper from '../../helpers/helper';
@@ -24,5 +25,6 @@ router.patch(
 router.post('/:slug/comments', AuthToken, articleController.addComment);
 router.get('/:slug/comments', AuthToken, articleController.getComments);
 router.put('/:slug/comments/:commentid', AuthToken, articleController.updateComment);
+router.delete('/:slug/comments/:commentid', AuthToken, articleCommentController.deleteComment);
 
 export default router;
