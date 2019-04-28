@@ -11,5 +11,6 @@ router.put('/:slug');
 
 router.post('/:slug/comments', secureRoute, articleController.addComment);
 router.get('/:slug/comments', secureRoute, articleController.getComments);
+router.put('/:slug/comments/:commentid', secureRoute, articleController.updateComment);
 
 export default router;
