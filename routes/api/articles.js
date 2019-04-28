@@ -21,4 +21,5 @@ router.patch(
   Strategy.verifyToken,
   helper.asyncHandler(articleController.likeArticle)
 );
+
 export default router;
