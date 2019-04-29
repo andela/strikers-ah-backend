@@ -1,5 +1,6 @@
 import chai from 'chai';
 import faker from 'faker';
+import debug from 'debug';
 import chaiHttp from 'chai-http';
 import db from '../models';
 import fakeData from './mockData/articleMockData';
@@ -11,6 +12,8 @@ const userModel = db.user;
 chai.should();
 chai.use(chaiHttp);
 
+const logError = debug('app:*');
+
 /**
  * @author: Innocent Nkunzi
  * @description: tests related to article
@@ -21,38 +24,40 @@ before('Cleaning the database first', async () => {
   await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
 });
 const user = {
-  id: 100,
   username: 'nkunziinnocent',
   email: 'nkunzi@gmail.com',
   password: '@Nkunzi1234',
 };
+let userToken;
 describe('Create a user to be used in in creating article', () => {
   it('should create a user', (done) => {
     chai.request(index).post('/api/auth/signup').send(user).then((res) => {
       res.should.have.status(200);
       res.body.user.should.be.a('object');
       res.body.user.should.have.property('username');
+      userToken = res.body.user.token;
       done();
     })
-      .catch(err => err);
-  }).timeout(15000);
+      .catch(error => logError(error));
+  });
 });
 describe('Create an article', () => {
   it('should create an article', (done) => {
-    chai.request(index).post('/api/articles').send(fakeData).then((res) => {
-      res.should.have.status(201);
-      res.body.should.have.property('article');
-      res.body.article.should.be.a('object');
-      res.body.article.should.have.property('id');
-      res.body.article.should.have.property('slug');
-      res.body.article.should.have.property('title');
-      res.body.article.should.have.property('description');
-      res.body.article.should.have.property('createdAt');
-      res.body.article.should.have.property('updatedAt');
-      done();
-    })
-      .catch(err => err);
-  }).timeout(15000);
+    chai.request(index).post('/api/articles').send(fakeData).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.have.property('article');
+        res.body.article.should.be.a('object');
+        res.body.article.should.have.property('id');
+        res.body.article.should.have.property('slug');
+        res.body.article.should.have.property('title');
+        res.body.article.should.have.property('description');
+        res.body.article.should.have.property('createdAt');
+        res.body.article.should.have.property('updatedAt');
+        done();
+      })
+      .catch(error => logError(error));
+  });
 });
 describe('It checks title errors', () => {
   it('Should not create an article if the title is empty', (done) => {
@@ -61,13 +66,14 @@ describe('It checks title errors', () => {
       description: faker.lorem.paragraph(),
       body: faker.lorem.paragraphs(),
     };
-    chai.request(index).post('/api/articles').send(newArticle).then((res) => {
-      res.should.have.status(400);
-      res.body.should.be.a('object');
-      res.body.should.have.property('error').eql('title can not be null');
-      done();
-    })
-      .catch(err => err);
+    chai.request(index).post('/api/articles').set('x-access-token', `${userToken}`).send(newArticle)
+      .then((res) => {
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error').eql('title can not be null');
+        done();
+      })
+      .catch(error => logError(error));
   });
 });
 describe('Test the body', () => {
@@ -77,41 +83,44 @@ describe('Test the body', () => {
       description: faker.lorem.paragraph(),
       body: ''
     };
-    chai.request(index).post('/api/articles').send(newArticle).then((res) => {
-      res.should.have.status(400);
-      res.body.should.be.a('object');
-      //   res.body.should.have.property('error').eql('The body can\'t be empty');
-      done();
-    })
-      .catch(err => err);
+    chai.request(index).post('/api/articles').send(newArticle).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        //   res.body.should.have.property('error').eql('The body can\'t be empty');
+        done();
+      })
+      .catch(error => logError(error));
   });
   it('should return an error if the body is not predefined', (done) => {
     const longTitleArticle = {
       title: faker.lorem.sentences(),
       description: faker.lorem.paragraph(),
     };
-    chai.request(index).post('/api/articles').send(longTitleArticle).then((res) => {
-      res.should.have.status(400);
-      res.body.should.be.a('object');
-      res.body.should.have.property('message').eql('article.body cannot be null');
-      done();
-    })
-      .catch(err => err);
+    chai.request(index).post('/api/articles').send(longTitleArticle).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error').eql('body can not be null');
+        done();
+      })
+      .catch(error => logError(error));
   });
 });
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title: faker.lorem.sentence(),
+      title: faker.lorem.sentences(),
       body: faker.lorem.paragraphs(),
       description: faker.lorem.paragraph(),
     };
-    chai.request(index).post('/api/articles').send(longTitleArticle).then((res) => {
-      res.should.have.status(201);
-      res.body.should.be.a('object');
-      res.body.should.have.property('article');
-      done();
-    })
-      .catch(err => err);
+    chai.request(index).post('/api/articles').send(longTitleArticle).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        res.body.should.have.property('article');
+        done();
+      })
+      .catch(error => logError(error));
   });
 });
