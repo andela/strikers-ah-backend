@@ -3,7 +3,7 @@ import models from '../models';
 import helper from '../helpers/helper';
 
 const { article: ArticleModel, articlecomment: ArticleCommentModel, user: userModel } = models;
-const { articlecommentliker: ArticleCommentLiker } = models;
+const { articlecommentliker: ArticleCommentLiker, commenthistory: CommentHistoryModel } = models;
 
 /**
  * @description  CRUD for article Class
@@ -84,6 +84,7 @@ class ArticleComment {
       );
       [, [comment]] = comment;
       const author = await userModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: req.user } });
+      await CommentHistoryModel.create({ commentid, oldcomment: articleCommentDetails.comment });
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
       return helper.jsonResponse(res, 200, { comment });
