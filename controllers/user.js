@@ -525,7 +525,7 @@ class User {
     try {
       const profile = await UserModel.singleUser(req.params.username);
       if (!profile) { return helper.jsonResponse(res, 404, { message: 'User not found' }); }
-      return helper.jsonResponse(res, 200, { profile, profileCount: profile.length });
+      return helper.jsonResponse(res, 200, { profile });
     } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
 }
