@@ -13,7 +13,7 @@ const { Op } = Sequelize;
 dotenv.config();
 
 const { user: UserModel, userverification: UserVerificationModel } = model;
-const { resetpassword: resetPassword } = model;
+const { resetpassword: resetPassword, articlereadingstats: ArticleReadingStats } = model;
 
 /**
  * @param { class } User -- User }
@@ -209,6 +209,24 @@ class User {
       const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
       return res.status(status).json({ error: `${error.message}` });
     }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get User Reading History
+   */
+  static async getReadingHistory(req, res) {
+    if (!req.params.username) { return helper.jsonResponse(res, 400, { message: 'Provide username' }); }
+    const userDetails = await UserModel.findOne({ where: { username: req.params.username } });
+    if (!userDetails) { return helper.jsonResponse(res, 404, { message: 'User not found' }); }
+    try {
+      let stats = await ArticleReadingStats.getUserHistory(userDetails.id);
+      let statsCount = stats.length;
+      if (!stats || stats.length === 0) { stats = 'No Articles read '; statsCount = 0; }
+      return helper.jsonResponse(res, 200, { stats, statsCount });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
 }
 export default User;
