@@ -5,5 +5,6 @@ import secureRoute from '../../middlewares/tokenValidation';
 const router = express.Router();
 
 router.get('/:username/stats', secureRoute, user.getReadingHistory);
+router.get('/', secureRoute, user.getAllUsers);
 
 export default router;

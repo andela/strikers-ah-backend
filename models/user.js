@@ -68,6 +68,7 @@ const UserModel = (Sequelize, DataTypes) => {
       foreignKey: 'userid', onDelete: 'CASCADE'
     });
   };
+  User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image'] });
   return User;
 };
 export default UserModel;
