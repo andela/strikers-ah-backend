@@ -163,6 +163,16 @@ describe('Test description', () => {
   });
 });
 describe('Pagination tests', () => {
+  it('should create an article to be used in pagination test', (done) => {
+    chai.request(index).post('/api/articles').send(fakeData).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.have.property('article');
+        res.body.article.should.be.a('object');
+        done();
+      })
+      .catch(error => logError(error));
+  });
   it('should select apecified article on a given page', (done) => {
     chai.request(index).get('/api/articles?page=1&limit=1').then((res) => {
       res.should.have.status(200);
@@ -255,6 +265,16 @@ describe('Delete article', () => {
   });
 });
 describe('Test all articles', () => {
+  it('should create an article', (done) => {
+    chai.request(index).post('/api/articles').send(fakeData).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.have.property('article');
+        res.body.article.should.be.a('object');
+        done();
+      })
+      .catch(error => logError(error));
+  });
   it('should return all the articles', () => {
     chai.request(index).get('/api/articles/all').then((res) => {
       res.should.have.status(200);
