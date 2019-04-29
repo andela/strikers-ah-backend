@@ -18,6 +18,7 @@ router.delete('/:slug/comments/:commentid', secureRoute, articleCommentControlle
 router.post('/:slug/comments/:commentid/like', secureRoute, articleCommentController.likeComment);
 router.get('/:slug/comments/popular', secureRoute, (req, res, next) => { req.commenttype = 'popular'; next(); }, articleCommentController.getComments);
 router.get('/:slug/comments/:commentid/history', secureRoute, articleCommentController.commentEditHistory);
+router.get('/:slug/stats', secureRoute, articleController.getReadingStats);
 
 
 export default router;
