@@ -18,7 +18,8 @@ const {
   user: UserModel,
   bookmark: bookmarkModel,
   ArticleLikesAndDislikes,
-  articlecomment: ArticleCommentModel
+  articlecomment: ArticleCommentModel,
+  articlereadingstats: ArticleReadingStats
 } = models;
 
 /**
@@ -80,6 +81,13 @@ class Article {
         error: 'No article found with the slug provided'
       });
     } else {
+      const { id: articleid } = article;
+      const [, created] = await ArticleReadingStats.findOrCreate({
+        where: { userid: req.user, articleid }
+      });
+      if (created) {
+        await ArticleModel.addViewer(articleid);
+      }
       res.status(200).json({ article });
     }
   }

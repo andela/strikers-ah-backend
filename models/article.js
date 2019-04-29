@@ -43,6 +43,7 @@ const ArticleModel = (sequelize, DataTypes) => {
     }, { where: { id } });
     return data;
   };
+  Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
 
   Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
   Article.associate = (models) => {

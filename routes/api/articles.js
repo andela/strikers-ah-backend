@@ -33,5 +33,4 @@ router.get('/:slug/comments/popular', AuthToken, (req, res, next) => { req.comme
 router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.get('/:slug/comments/:commentid/history', AuthToken, articleCommentController.commentEditHistory);
 
-
 export default router;
