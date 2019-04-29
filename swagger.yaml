@@ -912,3 +912,82 @@ paths:
             properties:
               error:
                 type: 'String'
+  /api/users/{username}/role:
+    # binds a127 app logic to a route
+    post:
+      description: Assign user new role
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: username
+          description: Username for identifying a user
+          required: true
+          type: string
+          example: kanaka
+        - name: New Role
+          in: body
+          required: true
+          description: The Role object to be assigned
+          schema:
+            type: object
+            properties:
+              role:
+                type: 'String'
+                example: 'Moderator'
+      responses:
+        '400':
+          description: No username provided
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'String'
+                example: 'Provide username'
+        '400':
+          description: No new role provided
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'String'
+                example: 'Provide new role'
+        '400':
+          description: Unkown role provided
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'String'
+                example: 'Role not known'
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'String'
+                example: 'User not found'
+        '200':
+          description: Comment added
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'String'
+        '401':
+          description: No access token provided
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'String'
+                example: 'No token was provided'
+        '403':
+          description: Provided token is invalid
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'String'
+                example: 'The token you provided is invalid'
