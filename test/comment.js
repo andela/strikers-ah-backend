@@ -151,6 +151,19 @@ describe('Article commenting', () => {
       .catch(err => err);
   });
 
+  it('Should get edit history of comments on article', (done) => {
+    chai.request(index).get(`/api/articles/${articleSlug}/comments/${commentId}/history`).set('x-access-token', tokenIssued)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('commenthistory');
+        res.body.commenthistory.should.be.a('array');
+        res.body.should.have.property('count');
+        done();
+      })
+      .catch(err => err);
+  });
+
   it('Should delete a comment on article', (done) => {
     chai.request(index).delete(`/api/articles/${articleSlug}/comments/${commentId}`).set('x-access-token', tokenIssued)
       .then((res) => {
