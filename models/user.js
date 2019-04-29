@@ -53,8 +53,8 @@ const UserModel = (Sequelize, DataTypes) => {
   };
   User.checkEmail = async email => User.findOne({ where: { email } });
   User.resetpassword = async (password, id) => User.update({ password }, { where: { id } });
-  User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image'] });
-  User.singleUser = async username => User.findOne({ attributes: ['username', 'bio', 'image'], where: { username } });
+  User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image', 'role'] });
+  User.singleUser = async username => User.findOne({ attributes: ['username', 'bio', 'image', 'role'], where: { username } });
   return User;
 };
 export default UserModel;
