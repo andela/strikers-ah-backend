@@ -745,3 +745,95 @@ paths:
             properties:
               error:
                 type: 'Object'
+  /api/articles/{artslug}/stats:
+    # binds a127 app logic to a route
+    get:
+      description: List users who read article
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: artslug
+          description: Slug identifies an article
+          required: true
+          type: string
+          example: how-to-cook-2dc4b2
+      responses:
+        '400':
+          description: Article slug not provided
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Provide article slug'
+        '404':
+          description: Article not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Article comment not found'
+        '200':
+          description: List stats
+          schema:
+            type: object
+            properties:
+              stats:
+                type: 'String'
+              statsCont:
+                type: 'Integer'
+        '400':
+          description: No access token provided
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'Object'
+  /api/users/{username}/stats:
+    # binds a127 app logic to a route
+    get:
+      description: List articles read by user
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: username
+          description: Username identifies a user
+          required: true
+          type: string
+          example: kanaka
+      responses:
+        '400':
+          description: Username not provided
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'Provide username'
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: 'Object'
+                example: 'User not found'
+        '200':
+          description: List users
+          schema:
+            type: object
+            properties:
+              stats:
+                type: 'String'
+              statsCont:
+                type: 'Integer'
+        '400':
+          description: No access token provided
+          schema:
+            type: object
+            properties:
+              error:
+                type: 'Object'
