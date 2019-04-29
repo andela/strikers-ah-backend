@@ -52,6 +52,7 @@ const UserModel = (Sequelize, DataTypes) => {
   };
   User.checkEmail = async email => User.findOne({ where: { email } });
   User.resetpassword = async (password, id) => User.update({ password }, { where: { id } });
+  User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image'] });
   return User;
 };
 export default UserModel;

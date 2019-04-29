@@ -227,5 +227,18 @@ class User {
       return helper.jsonResponse(res, 200, { stats, statsCount: stats.length });
     } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get All Users
+   */
+  static async getAllUsers(req, res) {
+    try {
+      const profiles = await UserModel.allUsers();
+      return helper.jsonResponse(res, 200, { profiles, profileCount: profiles.length });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
+  }
 }
 export default User;
