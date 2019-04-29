@@ -174,4 +174,47 @@ describe('Article commenting', () => {
       })
       .catch(err => err);
   });
+  it('Should get all articles', (done) => {
+    chai.request(index).get('/api/articles').set('x-access-token', tokenIssued)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        done();
+      })
+      .catch(err => err);
+  });
+
+  it('Should read article', (done) => {
+    chai.request(index).get(`/api/articles/${articleSlug}`).set('x-access-token', tokenIssued)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        done();
+      })
+      .catch(err => err);
+  });
+
+  it('Should get user\'s reading history', (done) => {
+    chai.request(index).get(`/api/users/${user.username}/stats`).set('x-access-token', tokenIssued)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('stats');
+        res.body.should.have.property('statsCount');
+        done();
+      })
+      .catch(err => err);
+  });
+
+  it('Should get article\'s readers', (done) => {
+    chai.request(index).get(`/api/articles/${articleSlug}/stats`).set('x-access-token', tokenIssued)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('stats');
+        res.body.should.have.property('statsCount');
+        done();
+      })
+      .catch(err => err);
+  });
 });
