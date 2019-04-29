@@ -222,10 +222,9 @@ class User {
     const userDetails = await UserModel.findOne({ where: { username: req.params.username } });
     if (!userDetails) { return helper.jsonResponse(res, 404, { message: 'User not found' }); }
     try {
-      let stats = await ArticleReadingStats.readingStats('user', userDetails.id);
-      let statsCount = stats.length;
-      if (!stats || stats.length === 0) { stats = 'No Articles read '; statsCount = 0; }
-      return helper.jsonResponse(res, 200, { stats, statsCount });
+      const stats = await ArticleReadingStats.readingStats('user', userDetails.id);
+      if (!stats || stats.length === 0) { return helper.jsonResponse(res, 404, { message: 'No article read' }); }
+      return helper.jsonResponse(res, 200, { stats, statsCount: stats.length });
     } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
 }
