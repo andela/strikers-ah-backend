@@ -23,7 +23,7 @@ const comparePassword = (password, hashedPassword) => {
 };
 
 const generateToken = (user) => {
-  const token = jwt.sign(user, process.env.SECRETKEY);
+  const token = jwt.sign(user, process.env.secretKey, { expiresIn: '1 day' });
   return token;
 };
 const handleUsed = (emailUsed, userNameUsed) => {

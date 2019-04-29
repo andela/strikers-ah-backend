@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use((express.json()));
 
 app.use(session({
-  secret: process.env.SECRETKEY,
+  secret: process.env.secretKey,
   resave: false,
   saveUninitialized: true
 }));
@@ -30,6 +30,7 @@ app.use(passport.session());
 
 app.use('/api', routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 app.use(express.static(path.resolve(__dirname, 'view/')));
 
