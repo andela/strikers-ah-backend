@@ -143,5 +143,24 @@ class ArticleComment {
       return helper.jsonResponse(res, 200, { message });
     } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Comment edit history
+   */
+  static async commentEditHistory(req, res) {
+    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    if (!articleDetails) { return helper.jsonResponse(res, 404, { message: 'Article not found' }); }
+    const { commentid } = req.params;
+    const articleId = articleDetails.id;
+    const articleCommentDetails = await ArticleCommentModel.singleComment(articleId, commentid);
+    if (!articleCommentDetails[0]) { return helper.jsonResponse(res, 404, { message: 'Article comment not found' }); }
+    try {
+      const commenthistory = await CommentHistoryModel.findAll({ where: { commentid } });
+      return helper.jsonResponse(res, 200, { commenthistory, count: commenthistory.length });
+    } catch (error) { helper.jsonResponse(res, 400, { error }); }
+  }
 }
 export default ArticleComment;

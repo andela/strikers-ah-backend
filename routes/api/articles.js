@@ -30,6 +30,8 @@ router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.post('/:slug/comments/:commentid/like', AuthToken, articleCommentController.likeComment);
 router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.get('/:slug/comments/popular', AuthToken, (req, res, next) => { req.commenttype = 'popular'; next(); }, articleCommentController.getComments);
+router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
+router.get('/:slug/comments/:commentid/history', AuthToken, articleCommentController.commentEditHistory);
 
 
 export default router;
