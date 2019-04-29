@@ -11,20 +11,22 @@ const UserModel = (Sequelize, DataTypes) => {
       allowNull: true,
       validate: {
         validation() {
-          if (!(this.provider)) {
-            if (!(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.email))) { throw new Error('Please enter a valid email address'); }
+          if (!this.provider) {
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.email)) {
+              throw new Error('Please enter a valid email address');
+            }
           }
         }
       }
     },
-    bio: { type: DataTypes.STRING, allowNull: true, },
+    bio: { type: DataTypes.STRING, allowNull: true },
     image: { type: DataTypes.TEXT, allowNull: true },
     password: {
       type: DataTypes.TEXT,
       allowNull: true,
       validate: {
         validation() {
-          if (!(this.provider)) {
+          if (!this.provider) {
             const result = helper.validatePassword(this.password);
             if (result !== true) {
               throw new Error(result);
@@ -32,10 +34,10 @@ const UserModel = (Sequelize, DataTypes) => {
             this.password = helper.hashPassword(this.password);
           }
         }
-      },
+      }
     },
     provider: { type: DataTypes.STRING, allowNull: true, defaultValue: '' },
-    provideruserid: { type: DataTypes.STRING, allowNull: true, },
+    provideruserid: { type: DataTypes.STRING, allowNull: true },
     verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     inapp_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
     email_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
@@ -50,14 +52,19 @@ const UserModel = (Sequelize, DataTypes) => {
   };
   User.associate = (models) => {
     User.hasMany(models.article, {
-      foreignKey: 'authorid', onDelete: 'CASCADE'
+      foreignKey: 'authorid',
+      onDelete: 'CASCADE'
     });
     User.hasMany(models.notifications, {
-      foreignKey: 'userid', onDelete: 'CASCADE'
+      foreignKey: 'userid',
+      onDelete: 'CASCADE'
     });
     User.hasMany(models.followers, {
-      foreignKey: 'userid', onDelete: 'CASCADE'
+      foreignKey: 'userid',
+      onDelete: 'CASCADE'
     });
+    User.hasMany(models.article_highlights, { foreignKey: 'userId', onDelete: 'CASCADE' });
+    User.hasMany(models.articleHighLightComments, { foreignKey: 'userId', onDelete: 'CASCADE' });
   };
   User.checkEmail = email => User.findOne({ where: { email } });
   User.resetpassword = (password, id) => User.update({ password }, { where: { id } });

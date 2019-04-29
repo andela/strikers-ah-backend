@@ -6,12 +6,14 @@ import dotenv from 'dotenv';
 import db from '../models';
 import fakeData from './mockData/articleMockData';
 import index from '../index';
+import fakeArticle from './mockData/fakeArticle';
 
 const articleModel = db.article;
 const userModel = db.user;
 chai.should();
 chai.use(chaiHttp);
-
+let articleSlug;
+let higlightWIthComment;
 const logError = debug('app:*');
 dotenv.config();
 process.env.NODE_ENV = 'test';
@@ -48,7 +50,7 @@ const newUser = {
 };
 let userToken, testToken;
 let categoryId;
-let articleSlug;
+let articleData;
 describe('Create a user to be used in in creating article', () => {
   before('Cleaning the database first', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
@@ -100,6 +102,7 @@ describe('Create an article', () => {
         res.body.article.should.have.property('description');
         res.body.article.should.have.property('createdAt');
         res.body.article.should.have.property('updatedAt');
+        articleSlug = res.body.article.slug;
         done();
       })
       .catch(err => err);
@@ -201,7 +204,6 @@ describe('Test description', () => {
         res.should.have.status(201);
         res.body.should.have.property('article');
         res.body.article.should.have.property('description');
-        articleSlug = res.body.article.slug;
         done();
       })
       .catch(error => logError(error));
@@ -444,7 +446,10 @@ describe('Update tests', () => {
       });
   });
   it('should list reporting categories', (done) => {
-    chai.request(index).get('/api/articles/report/category').set('x-access-token', userToken)
+    chai
+      .request(index)
+      .get('/api/articles/report/category')
+      .set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -474,7 +479,11 @@ describe('Test article reporting', () => {
     const newCategory = {
       category: 'Abuse'
     };
-    chai.request(index).post('/api/articles/report/category').send(newCategory).set('x-access-token', userToken)
+    chai
+      .request(index)
+      .post('/api/articles/report/category')
+      .send(newCategory)
+      .set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.be.a('object');
@@ -487,7 +496,10 @@ describe('Test article reporting', () => {
   });
 
   it('should list reporting categories', (done) => {
-    chai.request(index).get('/api/articles/report/category').set('x-access-token', userToken)
+    chai
+      .request(index)
+      .get('/api/articles/report/category')
+      .set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -501,7 +513,11 @@ describe('Test article reporting', () => {
     const newCategory = {
       category: 'Abusing'
     };
-    chai.request(index).put(`/api/articles/report/category/${categoryId}`).send(newCategory).set('x-access-token', userToken)
+    chai
+      .request(index)
+      .put(`/api/articles/report/category/${categoryId}`)
+      .send(newCategory)
+      .set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -540,7 +556,10 @@ describe('Bookmark tests', () => {
 
 describe('Get users information', () => {
   it('Should get all users', (done) => {
-    chai.request(index).get('/api/users').set('x-access-token', userToken)
+    chai
+      .request(index)
+      .get('/api/users')
+      .set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -551,7 +570,10 @@ describe('Get users information', () => {
       .catch(err => err);
   });
   it('Should get user information', (done) => {
-    chai.request(index).get(`/api/users/${user.username}`).set('x-access-token', userToken)
+    chai
+      .request(index)
+      .get(`/api/users/${user.username}`)
+      .set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -564,18 +586,27 @@ describe('Get users information', () => {
     const newRole = {
       role: 'Moderator'
     };
-    chai.request(index).post(`/api/users/${user.username}/role`).set('x-access-token', userToken).send(newRole)
+    chai
+      .request(index)
+      .post(`/api/users/${user.username}/role`)
+      .set('x-access-token', userToken)
+      .send(newRole)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
-        res.body.should.have.property('message').eql(`${user.username}'s role is now ${newRole.role}`);
+        res.body.should.have
+          .property('message')
+          .eql(`${user.username}'s role is now ${newRole.role}`);
         done();
       })
       .catch(err => err);
   });
 
   it('should list all reported articles', (done) => {
-    chai.request(index).get('/api/articles/reports').set('x-access-token', userToken)
+    chai
+      .request(index)
+      .get('/api/articles/reports')
+      .set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -587,7 +618,10 @@ describe('Get users information', () => {
   });
 
   it('should delete reporting category', (done) => {
-    chai.request(index).delete(`/api/articles/report/category/${categoryId}`).set('x-access-token', userToken)
+    chai
+      .request(index)
+      .delete(`/api/articles/report/category/${categoryId}`)
+      .set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -595,5 +629,211 @@ describe('Get users information', () => {
         done();
       })
       .catch(error => logError(error));
+  });
+});
+describe('====ARTILCE TESTS', () => {
+  before((done) => {
+    const userData = { ...user };
+    chai
+      .request(index)
+      .post('/api/auth/login')
+      .send(userData)
+      .then((res) => {
+        userToken = res.body.user.token;
+        done();
+      })
+      .catch(err => logError(err));
+  });
+  describe('TEST ARTICLE HIGHLIGHT', () => {
+    let highlightId;
+    before((done) => {
+      const { title, body } = fakeArticle;
+      chai
+        .request(index)
+        .post('/api/articles')
+        .set('x-access-token', `${userToken}`)
+        .send({ title, body })
+        .then((res) => {
+          articleData = res.body.article;
+          done();
+        });
+    });
+    it('-- Should be able to highlight part of article text content', (done) => {
+      chai
+        .request(index)
+        .post(`/api/articles/${articleData.slug}/highlight`)
+        .set('x-auth-token', `${userToken}`)
+        .send({
+          startPosition: 0,
+          endPosition: 20,
+          highlightedText: fakeArticle.body.substr(0, 20),
+          action: 'both',
+          comment: 'Wow this is killing!'
+        })
+        .then((res) => {
+          higlightWIthComment = res.body;
+          res.should.have.status(201);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- shoulf be able to get article top highlights', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/${articleData.slug}/top-highlight`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.should.have.status(200);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- shoulf be able to get like or dislike an article', (done) => {
+      chai
+        .request(index)
+        .patch(`/api/articles/${articleData.slug}/like`)
+        .set('x-auth-token', `${userToken}`)
+        .send({})
+        .then((res) => {
+          res.should.have.status(201);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- shoulf have status 404 whenever there is no top highlights', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/aa${articleData.slug}/top-highlight`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.should.have.status(404);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- should be able to get user highlights', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/${articleData.slug}/user-highlights`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.body.should.have.status(200);
+          const highlights = res.body.highlights[0];
+          highlightId = highlights.id;
+          highlights.should.have.property('id').eql(1);
+          highlights.should.have.property('startposition').eql(0);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+
+    it('-- should not return highlights for non existing articles', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/abcs${articleData.slug}/user-highlights`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.body.should.have.status(404);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- should get user comments on highlight', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/${articleData.slug}/highlight/${highlightId}/user-comments`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.should.have.status(200);
+          const comments = res.body.comments[0];
+          comments.should.have.property('id').eql(1);
+          comments.should.have.property('userId').eql(1);
+          comments.should.have.property('comment').contains('Wow');
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- should not return 404 if there is no comment', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/${articleData.slug}/highlight/2/user-comments`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.should.have.status(404);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- should be able to get article highlights', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/${articleData.slug}/highlights`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.should.have.status(200);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- should not get highlights for non existing article', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/bbbb${articleData.slug}/highlights`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.should.have.status(400);
+          res.body.should.have.property('error');
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- should be able to get highlight comments', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/${articleData.slug}/${higlightWIthComment.id}/comments`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.should.have.status(200);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    it('-- should return 404 when no highlight comments are found', (done) => {
+      chai
+        .request(index)
+        .get(`/api/articles/${articleSlug}/23/comments`)
+        .set('x-auth-token', `${userToken}`)
+        .then((res) => {
+          res.should.have.status(404);
+          done();
+        })
+        .catch(err => logError(err));
+    });
+    describe('Return 404 when no article highlight', () => {
+      before((done) => {
+        const { title, body } = fakeArticle;
+        chai
+          .request(index)
+          .post('/api/articles')
+          .set('x-access-token', `${userToken}`)
+          .send({ title, body })
+          .then((res) => {
+            articleSlug = res.body.article.slug;
+            done();
+          });
+      });
+      it('-- should able to respond  with 404 if no highlight was found on an article', (done) => {
+        chai
+          .request(index)
+          .get(`/api/articles/${articleSlug}/highlights`)
+          .set('x-auth-token', `${userToken}`)
+          .then((res) => {
+            res.should.have.status(404);
+            res.body.should.have.property('error');
+            done();
+          })
+          .catch(err => logError(err));
+      });
+    });
   });
 });

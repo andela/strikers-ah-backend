@@ -21,7 +21,10 @@ const {
   articlecomment: ArticleCommentModel,
   articlereadingstats: ArticleReadingStats,
   reportingcategory: articleReportingCategory,
-  articlereporting: articleReporting
+  articlereporting: articleReporting,
+  highlights: articleHighLights,
+  articleHighLightComments,
+  sequelize
 } = models;
 
 /**
@@ -36,9 +39,9 @@ class Article {
    */
   static async createArticle(req, res) {
     const {
-      title, body, taglist, description,
+      title, body, taglist, description
     } = req.body;
-    const image = (req.file ? req.file.url : 'null');
+    const image = req.file ? req.file.url : 'null';
 
     if (!title) {
       return res.status(400).json({ error: 'title can not be null' });
@@ -58,7 +61,13 @@ class Article {
     const descriptData = descriptionInstance.makeDescription();
     const slug = slugInstance.returnSlug();
     const newArticle = {
-      title, body, description: descriptData, slug, authorid, taglist, image
+      title,
+      body,
+      description: descriptData,
+      slug,
+      authorid,
+      taglist,
+      image
     };
     const article = await ArticleModel.createArticle(newArticle);
     notify.emit('create', newArticle);
@@ -74,7 +83,7 @@ class Article {
         image: article.image,
         updatedAt: article.updatedAt,
         createdAt: article.createdAt
-      },
+      }
     });
   }
 
@@ -167,18 +176,64 @@ class Article {
     const newSlug = slugInstance.returnSlug();
     const { id } = searchArticle;
     const updatedArticle = {
-      title: (title.length !== 0) ? title : searchArticle.title,
-      body: (body.length !== 0) ? body : searchArticle.body,
+      title: title.length !== 0 ? title : searchArticle.title,
+      body: body.length !== 0 ? body : searchArticle.body,
       description: description || searchArticle.description,
-      slug: (newSlug.length === 8) ? searchArticle.slug : newSlug,
+      slug: newSlug.length === 8 ? searchArticle.slug : newSlug,
       authorid,
-      taglist: (!taglist) ? taglist : searchArticle.taglist
+      taglist: !taglist ? taglist : searchArticle.taglist
     };
     const updateArticle = await ArticleModel.updateFoundArticle(id, updatedArticle);
     res.status(200).json({
       message: 'Article updated',
       article: updateArticle
     });
+  }
+
+  /**
+   * @author Mwibutsa Floribert
+   * @param {*} req
+   * @param {*} res
+   * @returns { object } --
+   */
+  static async highlightArticle(req, res) {
+    const { slug } = req.params;
+    const { id: userId } = helper.decodeToken(req);
+    const {
+      comment, startPosition, endPosition, highlightedText, action
+    } = req.body;
+
+    const highlighted = helper.compareAction(action === 'highlight', action === 'both');
+    const commented = helper.compareAction(action === 'commented', action === 'both');
+    const article = await ArticleModel.findOne({ where: { slug } });
+    let highlightComment;
+    let hightLight;
+    if (article) {
+      hightLight = await articleHighLights.create({
+        startposition: startPosition,
+        endposition: endPosition,
+        userid: userId,
+        articleid: article.id,
+        textcontent: highlightedText,
+        highlighted
+      });
+      if (commented) {
+        highlightComment = await articleHighLightComments.create({
+          comment,
+          userId,
+          articleHighlightId: hightLight.id
+        });
+      }
+      res.status(201).json({
+        id: hightLight.id,
+        userId: hightLight.userid,
+        articleId: hightLight.articleid,
+        startPostion: hightLight.startposition,
+        endPosition: hightLight.endposition,
+        hightlightedText: hightLight.textcontent,
+        comment: commented ? highlightComment.comment : ''
+      });
+    }
   }
 
   /**
@@ -208,6 +263,26 @@ class Article {
       res.status(403).json({
         error: 'Already bookmarked'
       });
+    }
+  }
+
+  /**
+   * @author Mwibutsa Floribert
+   * @param {*} req
+   * @param {*} res
+   * @returns { * } --
+   */
+  static async getUserHighlights(req, res) {
+    const { id: userId } = helper.decodeToken(req);
+    const { slug } = req.params;
+    const article = await ArticleModel.findOne({ where: { slug } });
+    if (article) {
+      const highlights = await articleHighLights.findAll({
+        where: { articleid: article.id, userid: userId }
+      });
+      res.status(200).json({ status: 200, highlights });
+    } else {
+      res.status(404).json({ status: 404, error: 'No highlights found for this article' });
     }
   }
 
@@ -265,7 +340,7 @@ class Article {
     }
     const { id, username } = user.dataValues;
 
-    if (typeof (rating) === 'undefined') {
+    if (typeof rating === 'undefined') {
       return res.status(400).send({
         status: 400,
         error: 'invalid rating'
@@ -380,6 +455,26 @@ class Article {
 
   /**
    * @author Mwibutsa Floribert
+   * @param {*} req
+   * @param {*} res
+   * @returns { * } --
+   */
+  static async getUserCommentsOnHightlight(req, res) {
+    const { id: userId } = helper.decodeToken(req);
+    const { highlightId } = req.params;
+
+    const comments = await articleHighLightComments.findAll({
+      where: { userId, articleHighlightId: highlightId }
+    });
+    if (comments.length) {
+      res.status(200).json({ status: 200, comments });
+    } else {
+      res.status(404).json({ status: 404, error: 'No comments are found on this highlight' });
+    }
+  }
+
+  /**
+   * @author Mwibutsa Floribert
    * @param {object} req - request object
    * @param {object} res - response object
    * @returns {object} -
@@ -433,11 +528,16 @@ class Article {
         comment: commentBody
       };
       let comment = await ArticleCommentModel.create(newComment);
-      const author = await UserModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: newComment.userid } });
+      const author = await UserModel.findOne({
+        attributes: ['id', 'username', 'bio', 'image'],
+        where: { id: newComment.userid }
+      });
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
       return res.status(201).json({ comment });
-    } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
+    } catch (error) {
+      return res.status(400).json({ error: error.errors[0].message });
+    }
   }
 
   /**
@@ -454,15 +554,17 @@ class Article {
     try {
       const comment = await ArticleCommentModel.listComments(articleDetails.id);
       const comments = [];
-      await (comment.map(async (entry) => {
+      await comment.map(async (entry) => {
         const author = select.pick(entry, ['username', 'bio', 'image']);
         entry = select.pick(entry, ['id', 'comment', 'createdAt', 'updatedAt']);
         entry.author = author;
         comments.push(entry);
-      }));
+      });
 
       return res.status(200).json({ comment: comments, commentsCount: comments.length });
-    } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
+    } catch (error) {
+      return res.status(400).json({ error: error.errors[0].message });
+    }
   }
 
   /**
@@ -497,11 +599,16 @@ class Article {
         { where: { id }, returning: true }
       );
       [, [comment]] = comment;
-      const author = await UserModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: req.user } });
+      const author = await UserModel.findOne({
+        attributes: ['id', 'username', 'bio', 'image'],
+        where: { id: req.user }
+      });
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
       return res.status(200).json({ comment });
-    } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
+    } catch (error) {
+      return res.status(400).json({ error: error.errors[0].message });
+    }
   }
 
   /**
@@ -511,16 +618,25 @@ class Article {
    * @returns {Object} Get Article readers
    */
   static async getReadingStats(req, res) {
-    if (!req.params.slug) { return helper.jsonResponse(res, 400, { message: 'Provide article slug' }); }
+    if (!req.params.slug) {
+      return helper.jsonResponse(res, 400, { message: 'Provide article slug' });
+    }
     const { slug } = req.params;
     const articleDetails = await ArticleModel.findOne({ where: { slug } });
-    if (!articleDetails) { return helper.jsonResponse(res, 404, { message: 'Article not found' }); }
+    if (!articleDetails) {
+      return helper.jsonResponse(res, 404, { message: 'Article not found' });
+    }
     try {
       let stats = await ArticleReadingStats.readingStats('article', articleDetails.id);
       let statsCount = stats.length;
-      if (!stats || stats.length === 0) { stats = 'Articles not read '; statsCount = 0; }
+      if (!stats || stats.length === 0) {
+        stats = 'Articles not read ';
+        statsCount = 0;
+      }
       return helper.jsonResponse(res, 200, { stats, statsCount });
-    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
+    } catch (error) {
+      return helper.jsonResponse(res, 400, { error });
+    }
   }
 
   /**
@@ -613,6 +729,48 @@ class Article {
   }
 
   /**
+   * @param {*} req
+   * @param {*} res
+   * @returns { * } --
+   */
+  static async getTopHighlight(req, res) {
+    const { slug } = req.params;
+    const article = await ArticleModel.findOne({ where: { slug } });
+    let topHighlight;
+    if (article) {
+      topHighlight = await sequelize.query(
+        'SELECT textcontent from highlights group by textcontent order by count(*) desc limit 1'
+      );
+      // topHighlight = await articleHighLights.findOne({
+      //   where: { textcontent: topHighlight.textcontent }
+      // });
+      res.status(200).json({ status: 200, top: topHighlight[0][0] });
+    } else {
+      res
+        .status(404)
+        .json({ status: 404, error: 'No top highlights can be found on non-existing article' });
+    }
+  }
+
+  /**
+   * @author Mwibutsa Floribert
+   * @param {*} req
+   * @param {*} res
+   * @returns { * } --
+   */
+  static async getArticleHighlight(req, res) {
+    const { slug } = req.params;
+    const article = await ArticleModel.findOne({ where: { slug } });
+    if (article) {
+      const highlights = await articleHighLights.findAll({ where: { articleid: article.id } });
+      if (highlights.length) res.status(200).json({ status: 200, highlights });
+      else res.status(404).json({ status: 404, error: 'No hightlights are found for this article' });
+    } else {
+      res.status(400).json({ status: 400, error: 'Can not find highlights for invalid article' });
+    }
+  }
+
+  /**
    *@author: Jacques Nyilinkindi
    * @param {Object} req
    * @param {Object} res
@@ -620,10 +778,16 @@ class Article {
    */
   static async reportingArticle(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
-    if (!articleDetails) { return res.status(404).json({ message: 'Article not found' }); }
-    if (!req.body.category) { return res.status(400).json({ message: 'Provide reporting category' }); }
+    if (!articleDetails) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+    if (!req.body.category) {
+      return res.status(400).json({ message: 'Provide reporting category' });
+    }
     const category = await articleReportingCategory.findOne({ where: { name: req.body.category } });
-    if (!category) { return res.status(404).json({ message: 'Reporting category not found' }); }
+    if (!category) {
+      return res.status(404).json({ message: 'Reporting category not found' });
+    }
     try {
       const report = {
         articleid: articleDetails.id,
@@ -640,12 +804,13 @@ class Article {
           id: articleDetails.id,
           slug: req.params.slug,
           title: articleDetails.title
-        },
+        }
       };
       return res.status(201).json({ report: response });
-    } catch (error) { return res.status(500).json({ error }); }
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
   }
-
 
   /**
    *@author: Jacques Nyilinkindi
@@ -656,7 +821,9 @@ class Article {
   static async getReportedArticle(req, res) {
     try {
       const reported = await articleReporting.reportedArticles();
-      if (!reported) { return res.status(404).json({ message: 'No reported article found!' }); }
+      if (!reported) {
+        return res.status(404).json({ message: 'No reported article found!' });
+      }
       const response = reported.map(({
         id, description, name, articleid, title, slug
       }) => ({
@@ -672,6 +839,24 @@ class Article {
       return res.status(200).json({ report: response });
     } catch (error) {
       return res.status(500).json({ error });
+    }
+  }
+
+  /**
+   * @author Mwibutsa Floribert
+   * @param {*} req
+   * @param {*} res
+   * @returns { * } --
+   */
+  static async getHighlightComments(req, res) {
+    const { higlightId } = req.params;
+    const comments = await articleHighLightComments.findAll({
+      where: { articleHighlightId: higlightId }
+    });
+    if (comments.length) {
+      res.status(200).json({ status: 200, comments });
+    } else {
+      res.status(404).json({ status: 404, error: 'No comments are found on this highlight' });
     }
   }
 
