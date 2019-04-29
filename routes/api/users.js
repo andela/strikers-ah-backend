@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.get('/:username/stats', secureRoute, user.getReadingHistory);
 router.get('/', secureRoute, user.getAllUsers);
+router.get('/:username', secureRoute, user.getUserInformation);
 
 export default router;

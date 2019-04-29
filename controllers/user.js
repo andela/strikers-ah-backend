@@ -240,5 +240,20 @@ class User {
       return helper.jsonResponse(res, 200, { profiles, profileCount: profiles.length });
     } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get User Information
+   */
+  static async getUserInformation(req, res) {
+    if (!req.params.username) { return helper.jsonResponse(res, 400, { message: 'Provide username' }); }
+    try {
+      const profile = await UserModel.singleUser(req.params.username);
+      if (!profile) { return helper.jsonResponse(res, 404, { message: 'User not found' }); }
+      return helper.jsonResponse(res, 200, { profile, profileCount: profile.length });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
+  }
 }
 export default User;
