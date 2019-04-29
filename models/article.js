@@ -20,6 +20,9 @@ const ArticleModel = (sequelize, DataTypes) => {
   }, {});
   sequelizeTrasform(Article);
   Article.createArticle = article => Article.create(article);
+  Article.getOneArticle = slug => Article.findOne({ where: { slug } });
+  Article.getAll = article => Article.findAll(article);
+  Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
 
   Article.associate = (models) => {
     Article.belongsTo(models.user, {

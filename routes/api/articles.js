@@ -6,7 +6,8 @@ import secureRoute from '../../middlewares/tokenValidation';
 const router = express.Router();
 
 router.post('/', secureRoute, articleController.createArticle);
-router.get('/');
+router.get('/', secureRoute, articleController.getAllArticles);
+router.get('/:slug', secureRoute, articleController.getArticle);
 router.delete('/:slug');
 router.put('/:slug');
 
