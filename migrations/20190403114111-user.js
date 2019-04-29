@@ -48,6 +48,11 @@ module.exports = {
       type: Sequelize.BOOLEAN,
       defaultValue: false
     },
+    role: {
+      allowNull: false,
+      type: Sequelize.STRING,
+      defaultValue: 'User'
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
