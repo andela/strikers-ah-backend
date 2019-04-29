@@ -20,7 +20,8 @@ const ArticleModel = (sequelize, DataTypes) => {
     },
     taglist: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true, defaultValue: [] },
     description: { type: DataTypes.TEXT, trim: true },
-    authorid: { type: DataTypes.INTEGER, allowNull: false }
+    authorid: { type: DataTypes.INTEGER, allowNull: false },
+    views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }
   }, {});
 
   sequelizeTrasform(Article);
