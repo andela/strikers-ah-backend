@@ -38,7 +38,8 @@ const UserModel = (Sequelize, DataTypes) => {
     provideruserid: { type: DataTypes.STRING, allowNull: true, },
     verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     inapp_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
-    email_notifications: { type: DataTypes.BOOLEAN, defaultValue: true }
+    email_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
+    role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'User' }
   });
   User.socialUsers = async (userProfile) => {
     const result = await User.findOrCreate({
