@@ -457,3 +457,27 @@ describe('Bookmark tests', () => {
       .catch(error => logError(error));
   });
 });
+
+describe('Get users information', () => {
+  it('Should get all users', (done) => {
+    chai.request(index).get('/api/users').set('x-access-token', issuedToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('profiles').be.a('array');
+        res.body.should.have.property('profileCount');
+        done();
+      })
+      .catch(err => err);
+  });
+  it('Should get user information', (done) => {
+    chai.request(index).get(`/api/users/${user.username}`).set('x-access-token', issuedToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('profile').be.a('object');
+        done();
+      })
+      .catch(err => err);
+  });
+});
