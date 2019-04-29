@@ -50,5 +50,28 @@ class Article {
       res.status(200).json({ article });
     }
   }
+
+  /**
+  * @author Innocent Nkunzi
+  * @param {*} req
+  * @param {*} res
+  * @returns {object} it returns an object of articles
+  */
+  static async getAllArticles(req, res) {
+    try {
+      const getAll = await ArticleModel.getAll();
+      if (getAll.length === 0) {
+        res.status(404).json({
+          error: 'Not article found for now'
+        });
+      } else {
+        res.status(200).json({
+          article: getAll
+        });
+      }
+    } catch (err) {
+      return res.status(400).json({ message: err.errors[0].message });
+    }
+  }
 }
 export default Article;
