@@ -501,5 +501,24 @@ class Article {
       return res.status(201).json({ comment });
     } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
   }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get Article readers
+   */
+  static async getReadingStats(req, res) {
+    if (!req.params.slug) { return helper.jsonResponse(res, 400, { message: 'Provide article slug' }); }
+    const { slug } = req.params;
+    const articleDetails = await ArticleModel.findOne({ where: { slug } });
+    if (!articleDetails) { return helper.jsonResponse(res, 404, { message: 'Article not found' }); }
+    try {
+      let stats = await ArticleReadingStats.readingStats('article', articleDetails.id);
+      let statsCount = stats.length;
+      if (!stats || stats.length === 0) { stats = 'Articles not read '; statsCount = 0; }
+      return helper.jsonResponse(res, 200, { stats, statsCount });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
+  }
 }
 export default Article;
