@@ -276,7 +276,7 @@ class User {
       const { id: userid } = profile;
       let message = `${profile.username}'s role is already ${role}`;
       if (role === profile.role) { return helper.jsonResponse(res, 404, { message }); }
-      const assigned = await AssignRoleModel.create({ userid, role, assignedby: req.user.id });
+      const assigned = await AssignRoleModel.create({ userid, role, assignedby: req.user });
       if (!assigned) { return helper.jsonResponse(res, 400, { message: 'Something went wrong' }); }
       await UserModel.update({ role }, { where: { id: userid }, returning: true });
       message = `${profile.username}'s role is now ${role}`;
