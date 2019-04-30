@@ -571,11 +571,8 @@ class Article {
    * @param {Object} res
    * @returns {Object} Edit reporting category
    */
-  static async editReportingCategories(req, res) {
+  static async editReportingCategory(req, res) {
     const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ message: 'Provide category ID' });
-    }
     const { category } = req.body;
     if (!category) {
       return res.status(400).json({ message: 'Provide new category name' });
@@ -594,6 +591,22 @@ class Article {
         return res.status(200).json({ message: 'Category not found' });
       }
       return res.status(200).json({ category: reportingCategory });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Edit reporting category
+   */
+  static async deleteReportingCategory(req, res) {
+    const { id } = req.params;
+    try {
+      await articleReportingCategory.destroy({ where: { id } });
+      return res.status(200).json({ message: 'Category deleted' });
     } catch (error) {
       return res.status(500).json({ error });
     }
