@@ -10,7 +10,7 @@ import models from '../models/index';
 /**
  * @author frank harerimana
  */
-const { user: UserModel, resetpassword: resetPassword } = models;
+const { user: UserModel, resetpassword: resetPassword, article: ArticleModel } = models;
 
 dotenv.config();
 process.env.NODE_ENV = 'test';
@@ -21,6 +21,7 @@ chai.use(chaiHttp);
 chai.should();
 
 const user = {
+  id: 1,
   username: 'username',
   firstname: 'firstname',
   lastname: 'lastname',
@@ -264,5 +265,42 @@ describe('reset password with an existing email', () => {
         done();
       })
       .catch(error => logError(error));
+  });
+});
+
+describe('share content', () => {
+  it('should not found the article', async () => {
+    const res = await chai.request(app).post('/api/auth/share').send({
+      username: user.username,
+      slug: 'fake article slug'
+    });
+    res.should.have.status(404);
+  });
+});
+
+describe('create article for testing share', () => {
+  const fakeArticle = {
+    authorid: 1,
+    slug: faker.random.word(),
+    title: 'hello there devs',
+    description: faker.lorem.paragraphs(),
+    body: faker.lorem.paragraphs(),
+  };
+  it('should create an article', async () => {
+    try {
+      await ArticleModel.createArticle(fakeArticle);
+    } catch (error) {
+      logError(error);
+    }
+  });
+
+  it('should share the article', async () => {
+    try {
+      const slug = await ArticleModel.getOneArticle(fakeArticle.slug);
+      const res = await chai.request(app).post('/api/auth/share').send({ slug: slug.dataValues.slug, username: user.username });
+      res.should.have.status(200);
+    } catch (error) {
+      logError(error);
+    }
   });
 });
