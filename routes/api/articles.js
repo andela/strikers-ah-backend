@@ -31,6 +31,7 @@ router.get('/:slug/comments/popular', AuthToken, (req, res, next) => { req.comme
 router.get('/:slug/comments/:commentid/history', AuthToken, articleCommentController.commentEditHistory);
 router.get('/:slug/stats', AuthToken, articleController.getReadingStats);
 router.post('/report/category', AuthToken, articleController.AddReportingCategory);
+router.get('/report/category', AuthToken, articleController.reportingCategories);
 
 
 export default router;

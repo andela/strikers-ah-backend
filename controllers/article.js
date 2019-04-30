@@ -546,5 +546,23 @@ class Article {
       return res.status(500).json({ error });
     }
   }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Viw reporting categories
+   */
+  static async reportingCategories(req, res) {
+    try {
+      const categories = await articleReportingCategory.findAll({ attributes: ['id', 'name'] });
+      if (categories) {
+        return res.status(200).json({ categories });
+      }
+      return res.status(404).json({ message: 'No category found' });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
 }
 export default Article;
