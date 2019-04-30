@@ -82,14 +82,13 @@ describe('Test the body', () => {
     const newArticle = {
       title: faker.random.words(),
       description: faker.lorem.paragraph(),
-      body: '',
-      authorid: 100
+      body: ''
     };
     chai.request(index).post('/api/articles').send(newArticle).set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(400);
         res.body.should.be.a('object');
-        res.body.should.have.property('error').eql('The body can\'t be empty');
+        res.body.should.have.property('error').eql('body can not be null');
         done();
       })
       .catch(error => logError(error));
@@ -113,7 +112,7 @@ describe('Test the body', () => {
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title: faker.lorem.sentences(),
+      title: faker.random.words(),
       body: faker.lorem.paragraphs(),
       description: faker.lorem.paragraph(),
       authorid: 100
@@ -132,15 +131,15 @@ describe('Test description', () => {
   const newArticle = {
     title: faker.lorem.sentence(),
     body: faker.lorem.paragraphs(),
-    authorid: 100
   };
   it('should provide a description if not provided', (done) => {
-    chai.request(index).post('/api/articles').send(newArticle).then((res) => {
-      res.should.have.status(201);
-      res.body.should.have.property('article');
-      res.body.article.should.have.property('description');
-      done();
-    })
+    chai.request(index).post('/api/articles').send(newArticle).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.have.property('article');
+        res.body.article.should.have.property('description');
+        done();
+      })
       .catch(error => error);
   });
 });

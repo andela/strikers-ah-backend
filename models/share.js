@@ -1,5 +1,3 @@
-
-
 const shareModel = (sequelize, DataTypes) => {
   const share = sequelize.define('share', {
     userid: DataTypes.INTEGER,

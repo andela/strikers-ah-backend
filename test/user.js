@@ -258,13 +258,13 @@ describe('reset password with an unexisting email', () => {
 });
 
 describe('reset password with an existing email', () => {
-  it('it should return error', (done) => {
-    chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email })
-      .then((result) => {
-        result.should.have.status(202);
-        done();
-      })
-      .catch(error => logError(error));
+  it('it should return error', async () => {
+    try {
+      const res = await chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email });
+      res.should.have.status(202);
+    } catch (error) {
+      logError(error);
+    }
   });
 });
 
