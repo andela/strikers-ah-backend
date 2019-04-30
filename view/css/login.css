@@ -61,7 +61,7 @@ body {
 
 .container .login-section .log-text .login-btn {
   background: #00aef9;
-  border: none;
+  border: 0;
   border-radius: 5px;
   -webkit-box-shadow: 2px 7px 25px -8px #000;
           box-shadow: 2px 7px 25px -8px #000;
@@ -112,16 +112,7 @@ body {
   color: red;
 }
 
-.container .login-section .log-btn .login-button-section background,
-.container .login-section .log-btn .login-button-section border-radius,
-.container .login-section .log-btn .login-button-section box-shadow,
-.container .login-section .log-btn .login-button-section cursor,
-.container .login-section .log-btn .login-button-section float,
-.container .login-section .log-btn .login-button-section height,
-.container .login-section .log-btn .login-button-section margin-right,
-.container .login-section .log-btn .login-button-section padding,
-.container .login-section .log-btn .login-button-section text-align,
-.container .login-section .log-btn .login-button-section width .social-login-btn {
+.container .login-section .log-btn .login-button-section .social-login-btn {
   background: #ffffff;
   border-radius: 5px;
   -webkit-box-shadow: 0 2px 3px 1px #aaaaaa;
