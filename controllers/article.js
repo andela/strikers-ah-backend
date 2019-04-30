@@ -616,7 +616,7 @@ class Article {
    *@author: Jacques Nyilinkindi
    * @param {Object} req
    * @param {Object} res
-   * @returns {Object} Add reporting category
+   * @returns {Object} Reporting an article
    */
   static async reportingArticle(req, res) {
     const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
@@ -642,6 +642,33 @@ class Article {
           title: articleDetails.title
         },
       };
+      return res.status(201).json({ report: response });
+    } catch (error) { return res.status(500).json({ error }); }
+  }
+
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get reported articles
+   */
+  static async getReportedArticle(req, res) {
+    try {
+      const reported = await articleReporting.reportedArticles();
+      if (!reported) { return res.status(404).json({ message: 'No reported article found!' }); }
+      const response = reported.map(({
+        id, description, name, articleid, title, slug
+      }) => ({
+        id,
+        category: name,
+        description,
+        article: {
+          id: articleid,
+          slug,
+          title
+        }
+      }));
       return res.status(201).json({ report: response });
     } catch (error) {
       return res.status(500).json({ error });
