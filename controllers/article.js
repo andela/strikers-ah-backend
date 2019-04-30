@@ -20,9 +20,9 @@ const {
   ArticleLikesAndDislikes,
   articlecomment: ArticleCommentModel,
   articlereadingstats: ArticleReadingStats,
-  reportingcategory: articleReportingCategory
+  reportingcategory: articleReportingCategory,
+  articlereporting: articleReporting
 } = models;
-
 
 /**
  * @description  CRUD for article Class
@@ -551,7 +551,7 @@ class Article {
    *@author: Jacques Nyilinkindi
    * @param {Object} req
    * @param {Object} res
-   * @returns {Object} Viw reporting categories
+   * @returns {Object} View reporting categories
    */
   static async reportingCategories(req, res) {
     try {
@@ -600,13 +600,49 @@ class Article {
    *@author: Jacques Nyilinkindi
    * @param {Object} req
    * @param {Object} res
-   * @returns {Object} Edit reporting category
+   * @returns {Object} Delete reporting category
    */
   static async deleteReportingCategory(req, res) {
     const { id } = req.params;
     try {
       await articleReportingCategory.destroy({ where: { id } });
       return res.status(200).json({ message: 'Category deleted' });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Add reporting category
+   */
+  static async reportingArticle(req, res) {
+    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    if (!articleDetails) { return res.status(404).json({ message: 'Article not found' }); }
+    if (!req.body.category) { return res.status(400).json({ message: 'Provide reporting category' }); }
+    const category = await articleReportingCategory.findOne({ where: { name: req.body.category } });
+    if (!category) { return res.status(404).json({ message: 'Reporting category not found' }); }
+    try {
+      const report = {
+        articleid: articleDetails.id,
+        categoryid: category.id,
+        userid: req.user,
+        description: req.body.description || ''
+      };
+      const reported = await articleReporting.create(report);
+      const response = {
+        id: reported.id,
+        category: req.body.category,
+        description: report.description,
+        article: {
+          id: articleDetails.id,
+          slug: req.params.slug,
+          title: articleDetails.title
+        },
+      };
+      return res.status(201).json({ report: response });
     } catch (error) {
       return res.status(500).json({ error });
     }
