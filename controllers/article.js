@@ -564,5 +564,39 @@ class Article {
       return res.status(500).json({ error });
     }
   }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Edit reporting category
+   */
+  static async editReportingCategories(req, res) {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: 'Provide category ID' });
+    }
+    const { category } = req.body;
+    if (!category) {
+      return res.status(400).json({ message: 'Provide new category name' });
+    }
+    const findCategory = await articleReportingCategory.findOne({ where: { name: category } });
+    if (findCategory) {
+      return res.status(409).json({ message: 'Category with same name exists' });
+    }
+    try {
+      let reportingCategory = await articleReportingCategory.update(
+        { name: category },
+        { where: { id }, returning: true }
+      );
+      [, [reportingCategory]] = reportingCategory;
+      if (!reportingCategory) {
+        return res.status(200).json({ message: 'Category not found' });
+      }
+      return res.status(200).json({ category: reportingCategory });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
 }
 export default Article;

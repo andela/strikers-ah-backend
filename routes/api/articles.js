@@ -32,6 +32,7 @@ router.get('/:slug/comments/:commentid/history', AuthToken, articleCommentContro
 router.get('/:slug/stats', AuthToken, articleController.getReadingStats);
 router.post('/report/category', AuthToken, articleController.AddReportingCategory);
 router.get('/report/category', AuthToken, articleController.reportingCategories);
+router.put('/report/category/:id', AuthToken, articleController.editReportingCategories);
 
 
 export default router;
