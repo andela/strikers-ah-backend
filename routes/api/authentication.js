@@ -32,4 +32,6 @@ router.post('/forgetpassword', user.passwordreset);
 router.put('/resetpassword/:token', user.resetpassword);
 router.get('/verify/:hash', user.verifyUser);
 
+router.post('/share', user.shareContent);
+
 export default router;

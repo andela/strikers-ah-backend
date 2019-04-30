@@ -26,6 +26,9 @@ const ArticleModel = (sequelize, DataTypes) => {
     Article.belongsTo(models.user, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
     });
+    Article.hasMany(models.share, {
+      foreignKey: 'articleid', onDelete: 'CASCADE'
+    });
   };
   return Article;
 };

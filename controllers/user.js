@@ -13,7 +13,7 @@ const { Op } = Sequelize;
 dotenv.config();
 
 const { user: UserModel, userverification: UserVerificationModel } = model;
-const { resetpassword: resetPassword } = model;
+const { resetpassword: resetPassword, article: ArticleModel, share: shareModel } = model;
 
 /**
  * @param { class } User -- User }
@@ -209,6 +209,24 @@ class User {
       const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
       return res.status(status).json({ error: `${error.message}` });
     }
+  }
+
+  /**
+ * @author frank harerimana
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} share
+ */
+  static async shareContent(req, res) {
+    const { slug, username } = req.body;
+    const article = await ArticleModel.getOneArticle(slug);
+    const user = await UserModel.ByUsername(username);
+    if (!article || !user) res.status(404).json({ status: 404, message: 'bad request' });
+    await shareModel.newRecord(user.dataValues.id, article.dataValues.id);
+    res.status(200).json({
+      status: 200,
+      message: 'success'
+    });
   }
 }
 export default User;
