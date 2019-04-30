@@ -258,13 +258,13 @@ describe('reset password with an unexisting email', () => {
 });
 
 describe('reset password with an existing email', () => {
-  it('it should return error', (done) => {
-    chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email })
-      .then((result) => {
-        result.should.have.status(202);
-        done();
-      })
-      .catch(error => logError(error));
+  it('it should return error', async () => {
+    try {
+      const res = await chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email });
+      res.should.have.status(202);
+    } catch (error) {
+      logError(error);
+    }
   });
 });
 
@@ -275,32 +275,5 @@ describe('share content', () => {
       slug: 'fake article slug'
     });
     res.should.have.status(404);
-  });
-});
-
-describe('create article for testing share', () => {
-  const fakeArticle = {
-    authorid: 1,
-    slug: faker.random.word(),
-    title: 'hello there devs',
-    description: faker.lorem.paragraphs(),
-    body: faker.lorem.paragraphs(),
-  };
-  it('should create an article', async () => {
-    try {
-      await ArticleModel.createArticle(fakeArticle);
-    } catch (error) {
-      logError(error);
-    }
-  });
-
-  it('should share the article', async () => {
-    try {
-      const slug = await ArticleModel.getOneArticle(fakeArticle.slug);
-      const res = await chai.request(app).post('/api/auth/share').send({ slug: slug.dataValues.slug, username: user.username });
-      res.should.have.status(200);
-    } catch (error) {
-      logError(error);
-    }
   });
 });
