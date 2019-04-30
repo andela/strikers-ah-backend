@@ -26,11 +26,11 @@ router.post('/:slug/comments', AuthToken, articleController.addComment);
 router.get('/:slug/comments', AuthToken, articleController.getComments);
 router.put('/:slug/comments/:commentid', AuthToken, articleController.updateComment);
 router.delete('/:slug/comments/:commentid', AuthToken, articleCommentController.deleteComment);
-router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.post('/:slug/comments/:commentid/like', AuthToken, articleCommentController.likeComment);
 router.get('/:slug/comments/popular', AuthToken, (req, res, next) => { req.commenttype = 'popular'; next(); }, articleCommentController.getComments);
 router.get('/:slug/comments/:commentid/history', AuthToken, articleCommentController.commentEditHistory);
 router.get('/:slug/stats', AuthToken, articleController.getReadingStats);
+router.post('/report/category', AuthToken, articleController.AddReportingCategory);
 
 
 export default router;
