@@ -41,6 +41,10 @@ body {
         .log-text {
             margin: 30px;
 
+            .divider {
+                padding: 12px 0;
+            }
+
             input[type] {
                 background: color(accent);
                 border: 1px solid color(bord);
@@ -94,7 +98,6 @@ body {
             width: 100%;
 
             .title-login {
-                // float: left;
                 margin-left: 30px;
             }
 

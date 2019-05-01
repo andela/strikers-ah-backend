@@ -29,6 +29,10 @@ body {
   margin: 30px;
 }
 
+.container .login-section .log-text .divider {
+  padding: 12px 0;
+}
+
 .container .login-section .log-text input[type] {
   background: #ffffff;
   border: 1px solid #aaaaaa;
