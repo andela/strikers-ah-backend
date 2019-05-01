@@ -27,6 +27,10 @@ process.env.NODE_ENV = 'test';
  * @description: tests related to article
  */
 
+before('Cleaning the database first', async () => {
+  await articleModel.destroy({ truncate: true, cascade: true });
+  await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+});
 const user = {
   username: 'nkunziinnocent',
   email: 'nkunzi@gmail.com',
@@ -49,6 +53,8 @@ const newUser = {
   password: 'Ishara@123'
 };
 let userToken, testToken;
+let categoryId;
+let articleSlug;
 describe('Create a user to be used in in creating article', () => {
   before('Cleaning the database first', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
@@ -202,6 +208,7 @@ describe('Test description', () => {
         res.should.have.status(201);
         res.body.should.have.property('article');
         res.body.article.should.have.property('description');
+        articleSlug = res.body.article.slug;
         done();
       })
       .catch(error => logError(error));
@@ -414,6 +421,16 @@ describe('Update tests', () => {
         res.body.should.be.a('object');
         res.body.should.have.property('error').eql('No article found for you to edit');
         done();
+      });
+  });
+  it('should list reporting categories', (done) => {
+    chai.request(index).get('/api/articles/report/category').set('x-access-token', userToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('categories');
+        res.body.categories.should.be.a('array');
+        done();
       })
       .catch(error => logError(error));
   });
@@ -429,6 +446,48 @@ describe('Update tests', () => {
         res.body.should.have.property('message').eql('Article updated');
         newSlug3 = res.body.article.slug;
         done();
+      });
+  });
+});
+describe('Test article reporting', () => {
+  it('should save reporting category', (done) => {
+    const newCategory = {
+      category: 'Abuse'
+    };
+    chai.request(index).post('/api/articles/report/category').send(newCategory).set('x-access-token', userToken)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        res.body.should.have.property('category');
+        res.body.category.should.have.property('name');
+        categoryId = res.body.category.id;
+        done();
+      })
+      .catch(error => logError(error));
+  });
+
+  it('should list reporting categories', (done) => {
+    chai.request(index).get('/api/articles/report/category').set('x-access-token', userToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('categories');
+        res.body.categories.should.be.a('array');
+        done();
+      })
+      .catch(error => logError(error));
+  });
+  it('should edit reporting category', (done) => {
+    const newCategory = {
+      category: 'Abusing'
+    };
+    chai.request(index).put(`/api/articles/report/category/${categoryId}`).send(newCategory).set('x-access-token', userToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('category');
+        res.body.category.should.have.property('name').eql(newCategory.category);
+        done();
       })
       .catch(error => logError(error));
   });
@@ -443,8 +502,7 @@ describe('Bookmark tests', () => {
         res.should.have.status(201);
         res.body.should.be.a('object');
         done();
-      })
-      .catch(error => logError(error));
+      });
   });
   it('should not bookmark an article for the second time', (done) => {
     chai
@@ -494,5 +552,28 @@ describe('Get users information', () => {
         done();
       })
       .catch(err => err);
+  });
+
+  it('should list all reported articles', (done) => {
+    chai.request(index).get('/api/articles/reports').set('x-access-token', userToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('report');
+        res.body.report.should.be.a('array');
+        done();
+      })
+      .catch(error => logError(error));
+  });
+
+  it('should delete reporting category', (done) => {
+    chai.request(index).delete(`/api/articles/report/category/${categoryId}`).set('x-access-token', userToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message').eql('Category deleted');
+        done();
+      })
+      .catch(error => logError(error));
   });
 });

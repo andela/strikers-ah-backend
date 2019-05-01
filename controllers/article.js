@@ -669,7 +669,7 @@ class Article {
           title
         }
       }));
-      return res.status(201).json({ report: response });
+      return res.status(200).json({ report: response });
     } catch (error) {
       return res.status(500).json({ error });
     }

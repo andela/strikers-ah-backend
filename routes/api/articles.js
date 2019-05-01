@@ -9,6 +9,7 @@ import helper from '../../helpers/helper';
 const router = express.Router();
 
 router.get('/all', errorHandler(articleController.getAllArticles));
+router.get('/reports', AuthToken, articleController.getReportedArticle);
 router.get('/:slug', AuthToken, errorHandler(articleController.getArticle));
 router.get('/', errorHandler(articleController.articlePagination));
 router.post('/:slug/bookmark', AuthToken, errorHandler(articleController.bookmarkArticle));
@@ -32,10 +33,9 @@ router.get('/:slug/comments/:commentid/history', AuthToken, articleCommentContro
 router.get('/:slug/stats', AuthToken, articleController.getReadingStats);
 router.post('/report/category', AuthToken, articleController.AddReportingCategory);
 router.get('/report/category', AuthToken, articleController.reportingCategories);
-router.put('/report/category/:id', AuthToken, articleController.editReportingCategories);
+router.put('/report/category/:id', AuthToken, articleController.editReportingCategory);
 router.delete('/report/category/:id', AuthToken, articleController.deleteReportingCategory);
 router.post('/:slug/report/', AuthToken, articleController.reportingArticle);
-router.get('/reports', AuthToken, articleController.getReportedArticle);
 
 
 export default router;
