@@ -15,6 +15,16 @@ class UserEvents extends EventEmitter {
     userNotification.userVerifiedAccount(userid);
     return 'success';
   }
+
+  /**
+   * @author frank harerimana
+   * @param {*} id
+   * @returns {*} success
+   */
+  resetpassword(id) {
+    userNotification.resetpassword(id);
+    return id;
+  }
 }
 
 export default UserEvents;

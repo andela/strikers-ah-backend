@@ -57,11 +57,11 @@ const UserModel = (Sequelize, DataTypes) => {
     User.hasMany(models.followers, {
       foreignKey: 'userid', onDelete: 'CASCADE'
     });
-    
   };
   User.checkEmail = email => User.findOne({ where: { email } });
   User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
   User.checkUser = username => User.findOne({ where: { username } });
+  User.findUser = id => User.findOne({ where: { id } });
   return User;
 };
 export default UserModel;

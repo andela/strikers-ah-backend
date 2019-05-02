@@ -7,6 +7,8 @@ import app from '../index';
 import helper from '../helpers/helper';
 import userController from '../controllers/user';
 import models from '../models/index';
+import usernotifications from '../controllers/userNotification';
+import userEvents from '../helpers/userEvents';
 
 /**
  * @author frank harerimana
@@ -107,6 +109,31 @@ describe('Test User', () => {
             provideruserid: faker.random.number().toString()
           }
         };
+
+        describe('reset password success notification', () => {
+          it('should send notification', async () => {
+            try {
+              const res = await usernotifications.resetpassword(user.id);
+              res.should.be.a('object');
+              res.should.have.property('username');
+            } catch (error) {
+              logError(error);
+            }
+          });
+        });
+
+        describe('reset password helper notification', () => {
+          it('should pass data to notification controller', async () => {
+            try {
+              const userEvent = new userEvents();
+              const res = await userEvent.resetpassword(user.id);
+              res.should.be.a('number').eql(user.id);
+            } catch (error) {
+              logError(error);
+            }
+          });
+        });
+
 
         userController.socialLogin(userObj)
           .then(() => {

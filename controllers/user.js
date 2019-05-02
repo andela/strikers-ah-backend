@@ -14,6 +14,7 @@ import UserEvents from '../helpers/userEvents';
 const notify = new UserEvents();
 // register events
 notify.on('verified', args => notify.verifyingAccount(args));
+notify.on('resetpassword', args => notify.resetpassword(args));
 const { Op } = Sequelize;
 dotenv.config();
 
@@ -188,6 +189,7 @@ class User {
       if (second > 600) { return res.status(400).json({ message: 'token has expired' }); }
       const { password } = req.body;
       const result = await UserModel.resetpassword(password, decode.id);
+      notify.emit('resetpassword', decode.id);
       res.status(201).json({
         data: result
       });
