@@ -37,13 +37,15 @@ class Article {
    */
   static async createArticle(req, res) {
     const {
-      title, body, taglist, description
-    } = req.body;
+ title, body, taglist, description 
+} = req.body;
     let { category } = req.body;
     if (!category || category === '') {
       category = 0;
     } else {
-      const categoryExists = await ArticleCategoryModel.findOne({ where: { id: category } });
+      const categoryExists = await ArticleCategoryModel.findOne({
+        where: { id: category }
+      });
       if (!categoryExists) {
         return helper.jsonResponse(res, 404, { error: 'Category not found' });
       }
@@ -60,7 +62,7 @@ class Article {
     const checkuser = await UserModel.checkuserExistance(authorid);
     if (!checkuser) {
       return res.status(404).json({
-        error: 'Please register',
+        error: 'Please register'
       });
     }
     const slugInstance = new Slug(title);
@@ -79,7 +81,9 @@ class Article {
     };
     const article = await ArticleModel.createArticle(newArticle);
     let categoryName = 'Other';
-    const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+    const getCategory = await ArticleCategoryModel.findOne({
+      where: { id: article.category }
+    });
     if (getCategory) {
       categoryName = getCategory.name;
     }
@@ -96,8 +100,8 @@ class Article {
         image: article.image,
         category: categoryName,
         updatedAt: article.updatedAt,
-        createdAt: article.createdAt,
-      },
+        createdAt: article.createdAt
+      }
     });
   }
 
@@ -113,25 +117,30 @@ class Article {
     let article = await ArticleModel.getOneArticle(slug);
     if (!article) {
       res.status(404).json({
-        error: 'No article found with the slug provided',
+        error: 'No article found with the slug provided'
       });
     } else {
       const { id: articleid } = article;
       const [, created] = await ArticleReadingStats.findOrCreate({
-        where: { userid: req.user, articleid },
+        where: { userid: req.user, articleid }
       });
       if (created) {
         await ArticleModel.addViewer(articleid);
       }
       let categoryName = 'Other';
-      const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+      const getCategory = await ArticleCategoryModel.findOne({
+        where: { id: article.category }
+      });
       if (getCategory) {
         categoryName = getCategory.name;
       }
       article.category = categoryName;
       const bookmarked = await bookmarkModel.checkuser(req.user, articleid);
       const isBookmarked = !!bookmarked;
-      const { username } = await UserModel.findOne({ attributes: ['username'], where: { id: req.user } });
+      const { username } = await UserModel.findOne({
+        attributes: ['username'],
+        where: { id: req.user }
+      });
       article = { ...article.dataValues, bookmark: isBookmarked, username };
       res.status(200).json({ article });
     }
@@ -147,21 +156,25 @@ class Article {
     const getAll = await ArticleModel.getAll(UserModel);
     if (getAll.length === 0) {
       res.status(404).json({
-        error: 'Not article found for now',
+        error: 'Not article found for now'
       });
     } else {
-      await Promise.all(getAll.map(async (article) => {
-        let categoryName = 'Other';
-        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
-        if (getCategory) {
-          categoryName = getCategory.name;
-        }
-        article.category = categoryName;
-        return article;
-      }));
+      await Promise.all(
+        getAll.map(async (article) => {
+          let categoryName = 'Other';
+          const getCategory = await ArticleCategoryModel.findOne({
+            where: { id: article.category }
+          });
+          if (getCategory) {
+            categoryName = getCategory.name;
+          }
+          article.category = categoryName;
+          return article;
+        })
+      );
       //
       res.status(200).json({
-        article: getAll,
+        article: getAll
       });
     }
   }
@@ -177,13 +190,15 @@ class Article {
     const authorid = req.user;
     const findArticle = await ArticleModel.findArticleSlug(authorid, slug);
     if (!findArticle) {
-      return res.status(404).json({ error: 'No article found for you to delete' });
+      return res
+        .status(404)
+        .json({ error: 'No article found for you to delete' });
     }
     const articleId = findArticle.id;
     const deleteArticle = await ArticleModel.deleteArticle(articleId);
     if (deleteArticle.length !== 0) {
       res.status(200).json({
-        message: 'Article deleted',
+        message: 'Article deleted'
       });
     }
   }
@@ -197,13 +212,15 @@ class Article {
   static async updateArticle(req, res) {
     const { slug } = req.params;
     const {
-      title, body, taglist, description
-    } = req.body;
+ title, body, taglist, description 
+} = req.body;
     let { category } = req.body;
     if (!category || category === '') {
       category = 0;
     } else {
-      const categoryExists = await ArticleCategoryModel.findOne({ where: { id: category } });
+      const categoryExists = await ArticleCategoryModel.findOne({
+        where: { id: category }
+      });
       if (!categoryExists) {
         return helper.jsonResponse(res, 404, { error: 'Category not found' });
       }
@@ -212,7 +229,7 @@ class Article {
     const searchArticle = await ArticleModel.findArticleSlug(authorid, slug);
     if (!searchArticle) {
       return res.status(404).json({
-        error: 'No article found for you to edit',
+        error: 'No article found for you to edit'
       });
     }
     const slugInstance = new Slug(title);
@@ -227,16 +244,21 @@ class Article {
       taglist: !taglist ? taglist : searchArticle.taglist,
       category
     };
-    const updateArticle = await ArticleModel.updateFoundArticle(id, updatedArticle);
+    const updateArticle = await ArticleModel.updateFoundArticle(
+      id,
+      updatedArticle
+    );
     let categoryName = 'Other';
-    const getCategory = await ArticleCategoryModel.findOne({ where: { id: updatedArticle.category } });
+    const getCategory = await ArticleCategoryModel.findOne({
+      where: { id: updatedArticle.category }
+    });
     if (getCategory) {
       categoryName = getCategory.name;
     }
     updateArticle.category = categoryName;
     res.status(200).json({
       message: 'Article updated',
-      article: updateArticle,
+      article: updateArticle
     });
   }
 
@@ -250,13 +272,13 @@ class Article {
     const { slug } = req.params;
     const { user: userId } = req;
     const {
-      comment, text, positionleft, positiontop
-    } = req.body;
+ comment, text, positionleft, positiontop 
+} = req.body;
 
     const article = await ArticleModel.findOne({ where: { slug } });
     if (!article) {
       return res.status(404).json({
-        error: 'Article not found',
+        error: 'Article not found'
       });
     }
     try {
@@ -287,7 +309,7 @@ class Article {
     const article = await ArticleModel.findOne({ where: { slug } });
     if (!article) {
       return res.status(404).json({
-        error: 'Article not found',
+        error: 'Article not found'
       });
     }
     const comments = await articleHighLightComments.findAll({
@@ -308,13 +330,15 @@ class Article {
     const article = await ArticleModel.findOne({ where: { slug } });
     if (!article) {
       return res.status(404).json({
-        error: 'Article not found',
+        error: 'Article not found'
       });
     }
-    const articleHighlight = await articleHighLightComments.findOne({ where: { articleid: article.id, userid, id } });
+    const articleHighlight = await articleHighLightComments.findOne({
+      where: { articleid: article.id, userid, id }
+    });
     if (!articleHighlight) {
       return res.status(404).json({
-        error: 'Article highlight not found',
+        error: 'Article highlight not found'
       });
     }
     await articleHighLightComments.destroy({
@@ -335,7 +359,7 @@ class Article {
     const checkSlug = await ArticleModel.getOneArticle(slug);
     if (!checkSlug) {
       return res.status(404).json({
-        error: 'No article found with the specified slug',
+        error: 'No article found with the specified slug'
       });
     }
     const articleId = checkSlug.id;
@@ -344,11 +368,11 @@ class Article {
       const bookmark = await bookmarkModel.bookmark(userid, articleId);
       res.status(201).json({
         message: 'Bookmarked',
-        article: bookmark,
+        article: bookmark
       });
     } else {
       res.status(403).json({
-        error: 'Already bookmarked',
+        error: 'Already bookmarked'
       });
     }
   }
@@ -365,34 +389,38 @@ class Article {
     const limit = parseInt(req.query.limit, 10);
     if (pageNumber <= 0) {
       return res.status(403).json({
-        error: 'Invalid page number',
+        error: 'Invalid page number'
       });
     }
     if (limit <= 0) {
       return res.status(403).json({
-        error: 'Invalid page limit',
+        error: 'Invalid page limit'
       });
     }
     const offset = limit * (pageNumber - 1);
     const getAll = await ArticleModel.getAllPages(limit, offset);
-    await Promise.all(getAll.map(async (article) => {
-      let categoryName = 'Other';
-      const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
-      if (getCategory) {
-        categoryName = getCategory.name;
-      }
-      article.category = categoryName;
-      return article;
-    }));
+    await Promise.all(
+      getAll.map(async (article) => {
+        let categoryName = 'Other';
+        const getCategory = await ArticleCategoryModel.findOne({
+          where: { id: article.category }
+        });
+        if (getCategory) {
+          categoryName = getCategory.name;
+        }
+        article.category = categoryName;
+        return article;
+      })
+    );
     //
     if (getAll) {
       res.status(200).json({
         article: getAll,
-        articlesCount: getAll.length,
+        articlesCount: getAll.length
       });
     } else {
       res.status(404).json({
-        error: 'No article found for now',
+        error: 'No article found for now'
       });
     }
   }
@@ -412,7 +440,7 @@ class Article {
     if (!user) {
       return res.status(404).send({
         status: 404,
-        error: 'User not found',
+        error: 'User not found'
       });
     }
     const { id, username } = user.dataValues;
@@ -420,14 +448,14 @@ class Article {
     if (typeof rating === 'undefined') {
       return res.status(400).send({
         status: 400,
-        error: 'invalid rating',
+        error: 'invalid rating'
       });
     }
 
     if (Number(slug)) {
       return res.status(400).send({
         status: 400,
-        error: 'slug of an article can not be a number.',
+        error: 'slug of an article can not be a number.'
       });
     }
 
@@ -435,7 +463,7 @@ class Article {
     if (!results) {
       return res.status(404).send({
         status: 404,
-        error: 'Article can not be found.',
+        error: 'Article can not be found.'
       });
     }
     const { title: articleTitle } = results.dataValues;
@@ -450,18 +478,21 @@ class Article {
           id: dataResult.dataValues.id,
           user: {
             id,
-            username,
+            username
           },
           article: {
             title: articleTitle,
-            slug: dataResult.dataValues.articleSlug,
+            slug: dataResult.dataValues.articleSlug
           },
-          rating: rate,
-        },
+          rating: rate
+        }
       });
     }
     if (!returnValue && dataResult.dataValues.rating !== rating) {
-      const updateRate = await ratingModel.rateUpdate(rateChecking[0].dataValues.id, rating);
+      const updateRate = await ratingModel.rateUpdate(
+        rateChecking[0].dataValues.id,
+        rating
+      );
       const { userId: userid } = updateRate[1][0].dataValues;
       return res.status(200).send({
         rated_article: {
@@ -469,20 +500,20 @@ class Article {
           id: updateRate[1][0].dataValues.id,
           user: {
             id: userid,
-            username,
+            username
           },
           article: {
             title: articleTitle,
-            slug: updateRate[1][0].dataValues.articleSlug,
+            slug: updateRate[1][0].dataValues.articleSlug
           },
           rating: rate,
-          previousRating: objKey(dataResult.dataValues.rating),
-        },
+          previousRating: objKey(dataResult.dataValues.rating)
+        }
       });
     }
     return res.status(403).send({
       status: 403,
-      error: 'Article can only be rated once.',
+      error: 'Article can only be rated once.'
     });
   }
 
@@ -498,7 +529,7 @@ class Article {
     if (Number(slug)) {
       return res.status(400).send({
         status: 400,
-        error: 'slug of an article can not be a number.',
+        error: 'slug of an article can not be a number.'
       });
     }
 
@@ -506,27 +537,31 @@ class Article {
     if (!results) {
       return res.status(404).send({
         status: 404,
-        error: 'Article can not be found.',
+        error: 'Article can not be found.'
       });
     }
     const { title, slug: articleSlug } = results.dataValues;
-    const allArticles = await ratingModel.allRatings(UserModel, ArticleModel, slug);
+    const allArticles = await ratingModel.allRatings(
+      UserModel,
+      ArticleModel,
+      slug
+    );
     const { count, rows } = allArticles;
 
     if (rows.length === 0) {
       return res.status(404).send({
         status: 404,
-        error: 'No rating found for this article',
+        error: 'No rating found for this article'
       });
     }
     return res.status(200).send({
       status: 200,
       article: {
         title,
-        slug: articleSlug,
+        slug: articleSlug
       },
       who_rated: rows,
-      UsersCount: count,
+      UsersCount: count
     });
   }
 
@@ -546,16 +581,23 @@ class Article {
     // check if the article exists
     const article = await ArticleModel.findOne({ where: { slug } });
     if (article) {
-      await ArticleLikesAndDislikes.saveLike({ user_id: userId, article_id: article.id }, `${likeState}`);
+      await ArticleLikesAndDislikes.saveLike(
+        { user_id: userId, article_id: article.id },
+        `${likeState}`
+      );
       // get article likes count
       const { count: likes } = await ArticleLikesAndDislikes.findAndCountAll({
-        where: { article_id: article.id, like_value: 'like' },
+        where: { article_id: article.id, like_value: 'like' }
       });
       // get article dislikes count
-      const { count: dislikes } = await ArticleLikesAndDislikes.findAndCountAll({
-        where: { article_id: article.id, like_value: 'dislike' },
+      const { count: dislikes } = await ArticleLikesAndDislikes.findAndCountAll(
+        {
+          where: { article_id: article.id, like_value: 'dislike' }
+        }
+      );
+      res.status(201).json({
+        article: helper.combineWithArticle(article, { likes, dislikes })
       });
-      res.status(201).json({ article: helper.combineWithArticle(article, { likes, dislikes }) });
     }
   }
 
@@ -575,7 +617,10 @@ class Article {
       return helper.jsonResponse(res, 404, { message: 'Article not found' });
     }
     try {
-      let stats = await ArticleReadingStats.readingStats('article', articleDetails.id);
+      let stats = await ArticleReadingStats.readingStats(
+        'article',
+        articleDetails.id
+      );
       let statsCount = stats.length;
       if (!stats || stats.length === 0) {
         stats = 'Articles not read ';
@@ -599,8 +644,11 @@ class Article {
       return res.status(400).json({ message: 'Provide category name' });
     }
     try {
-      const [categoryInfo, created] = await articleReportingCategory.findOrCreate({
-        where: { name: category },
+      const [
+        categoryInfo,
+        created
+      ] = await articleReportingCategory.findOrCreate({
+        where: { name: category }
       });
       if (created) {
         return res.status(201).json({ category: categoryInfo });
@@ -619,7 +667,9 @@ class Article {
    */
   static async reportingCategories(req, res) {
     try {
-      const categories = await articleReportingCategory.findAll({ attributes: ['id', 'name'] });
+      const categories = await articleReportingCategory.findAll({
+        attributes: ['id', 'name']
+      });
       if (categories) {
         return res.status(200).json({ categories });
       }
@@ -641,9 +691,13 @@ class Article {
     if (!category) {
       return res.status(400).json({ message: 'Provide new category name' });
     }
-    const findCategory = await articleReportingCategory.findOne({ where: { name: category } });
+    const findCategory = await articleReportingCategory.findOne({
+      where: { name: category }
+    });
     if (findCategory) {
-      return res.status(409).json({ message: 'Category with same name exists' });
+      return res
+        .status(409)
+        .json({ message: 'Category with same name exists' });
     }
     try {
       let reportingCategory = await articleReportingCategory.update(
@@ -676,7 +730,6 @@ class Article {
     }
   }
 
-
   /**
    *@author: Jacques Nyilinkindi
    * @param {Object} req
@@ -684,14 +737,18 @@ class Article {
    * @returns {Object} Reporting an article
    */
   static async reportingArticle(req, res) {
-    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    const articleDetails = await ArticleModel.findOne({
+      where: { slug: req.params.slug }
+    });
     if (!articleDetails) {
       return res.status(404).json({ message: 'Article not found' });
     }
     if (!req.body.category) {
       return res.status(400).json({ message: 'Provide reporting category' });
     }
-    const category = await articleReportingCategory.findOne({ where: { name: req.body.category } });
+    const category = await articleReportingCategory.findOne({
+      where: { name: req.body.category }
+    });
     if (!category) {
       return res.status(404).json({ message: 'Reporting category not found' });
     }
@@ -700,7 +757,7 @@ class Article {
         articleid: articleDetails.id,
         categoryid: category.id,
         userid: req.user,
-        description: req.body.description || '',
+        description: req.body.description || ''
       };
       const reported = await articleReporting.create(report);
       const response = {
@@ -710,8 +767,8 @@ class Article {
         article: {
           id: articleDetails.id,
           slug: req.params.slug,
-          title: articleDetails.title,
-        },
+          title: articleDetails.title
+        }
       };
       return res.status(201).json({ report: response });
     } catch (error) {
@@ -731,18 +788,20 @@ class Article {
       if (!reported) {
         return res.status(404).json({ message: 'No reported article found!' });
       }
-      const response = reported.map(({
-        id, description, name, articleid, title, slug
-      }) => ({
-        id,
-        category: name,
-        description,
-        article: {
-          id: articleid,
-          slug,
-          title,
-        },
-      }));
+      const response = reported.map(
+        ({
+ id, description, name, articleid, title, slug 
+}) => ({
+          id,
+          category: name,
+          description,
+          article: {
+            id: articleid,
+            slug,
+            title
+          }
+        })
+      );
       return res.status(200).json({ report: response });
     } catch (error) {
       return res.status(500).json({ error });
@@ -760,7 +819,7 @@ class Article {
     if (Number(slug)) {
       return res.status(400).send({
         status: 400,
-        error: 'slug of an article can not be a number.',
+        error: 'slug of an article can not be a number.'
       });
     }
 
@@ -768,58 +827,73 @@ class Article {
     if (!results) {
       return res.status(404).send({
         status: 404,
-        error: 'Article can not be found.',
+        error: 'Article can not be found.'
       });
     }
-    const allArticles = await ratingModel.allRatings(UserModel, ArticleModel, slug);
+    const allArticles = await ratingModel.allRatings(
+      UserModel,
+      ArticleModel,
+      slug
+    );
     const { rows } = allArticles;
     if (rows.length === 0) {
       return res.status(404).send({
         status: 404,
-        error: 'No rating. Be first to rate',
+        error: 'No rating. Be first to rate'
       });
     }
 
-    const avgRating = await ratingModel.avgFind(slug, ArticleModel, ratingModel);
-    const { articleSlug: aSlug, avgRating: AvgRate, article } = avgRating[0].dataValues;
+    const avgRating = await ratingModel.avgFind(
+      slug,
+      ArticleModel,
+      ratingModel
+    );
+    const {
+      articleSlug: aSlug,
+      avgRating: AvgRate,
+      article
+    } = avgRating[0].dataValues;
     const { title } = article.dataValues;
 
     return res.status(200).send({
       status: 200,
       article: {
         title,
-        slug: aSlug,
+        slug: aSlug
       },
-      averageRating: objKey(Math.ceil(AvgRate)),
+      averageRating: objKey(Math.ceil(AvgRate))
     });
   }
 
   /**
-  * @author Innocent Nkunzi
-  * @param {*} req
-  * @param {*} res
-  * @returns {object} it returns an object of articles
-  */
+   * @author Innocent Nkunzi
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} it returns an object of articles
+   */
   static async articleRatingPagination(req, res) {
     const pageNumber = parseInt(req.query.page, 10);
     const limitRatings = parseInt(req.query.limit, 10);
 
     if (pageNumber <= 0) {
       return res.status(403).json({
-        error: 'Invalid page number',
+        error: 'Invalid page number'
       });
     }
     if (limitRatings <= 0) {
       return res.status(403).json({
-        error: 'Invalid limit',
+        error: 'Invalid limit'
       });
     }
     const offset = limitRatings * (pageNumber - 1);
-    const listOfRatings = await ratingModel.paginateArticleRatings(limitRatings, offset);
+    const listOfRatings = await ratingModel.paginateArticleRatings(
+      limitRatings,
+      offset
+    );
     if (listOfRatings.length) {
       res.status(200).json({
         articles: listOfRatings,
-        ratingCounts: listOfRatings.length,
+        ratingCounts: listOfRatings.length
       });
     } else {
       res.status(404).json({ error: 'No article found' });
@@ -840,28 +914,35 @@ class Article {
         {
           model: UserModel,
           attributes: {
-            exclude: ['password'],
-          },
+            exclude: ['password']
+          }
         },
         {
-          model: ArticleModel,
-        },
-      ],
+          model: ArticleModel
+        }
+      ]
     });
     if (bookmarked) {
-      await Promise.all(bookmarked.map(async (article) => {
-        let categoryName = 'Other';
-        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.article.category } });
-        if (getCategory) {
-          categoryName = getCategory.name;
-        }
-        article.article.category = categoryName;
-        return article;
-      }));
+      await Promise.all(
+        bookmarked.map(async (article) => {
+          let categoryName = 'Other';
+          const getCategory = await ArticleCategoryModel.findOne({
+            where: { id: article.article.category }
+          });
+          if (getCategory) {
+            categoryName = getCategory.name;
+          }
+          article.article.category = categoryName;
+          return article;
+        })
+      );
       //
       res.status(200).json({ status: 200, bookmarkedArticles: bookmarked });
     } else {
-      res.status(404).json({ satus: 404, error: 'no bookmarked articles were found for you' });
+      res.status(404).json({
+        satus: 404,
+        error: 'no bookmarked articles were found for you'
+      });
     }
   }
 
@@ -874,24 +955,28 @@ class Article {
   static async fetchLatestArticles(req, res) {
     const result = await ArticleModel.fetchLatest(UserModel);
     if (result) {
-      await Promise.all(result.map(async (article) => {
-        let categoryName = 'Other';
-        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
-        if (getCategory) {
-          categoryName = getCategory.name;
-        }
-        article.category = categoryName;
-        return article;
-      }));
+      await Promise.all(
+        result.map(async (article) => {
+          let categoryName = 'Other';
+          const getCategory = await ArticleCategoryModel.findOne({
+            where: { id: article.category }
+          });
+          if (getCategory) {
+            categoryName = getCategory.name;
+          }
+          article.category = categoryName;
+          return article;
+        })
+      );
       //
       return res.status(200).send({
         status: 200,
-        data: result,
+        data: result
       });
     }
     return res.status(200).send({
       status: 200,
-      message: 'There are no latest articles',
+      message: 'There are no latest articles'
     });
   }
 
@@ -902,25 +987,36 @@ class Article {
    * @returns { * } --
    */
   static async getUserArticles(req, res) {
-    const profile = await UserModel.findOne({ where: { username: req.params.username } });
+    const profile = await UserModel.findOne({
+      where: { username: req.params.username }
+    });
     if (profile) {
-      const userArticles = await ArticleModel.findAll({ where: { authorid: profile.id } });
-      await Promise.all(userArticles.map(async (article) => {
-        let categoryName = 'Other';
-        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
-        if (getCategory) {
-          categoryName = getCategory.name;
-        }
-        article.category = categoryName;
-        return article;
-      }));
+      const userArticles = await ArticleModel.findAll({
+        where: { authorid: profile.id }
+      });
+      await Promise.all(
+        userArticles.map(async (article) => {
+          let categoryName = 'Other';
+          const getCategory = await ArticleCategoryModel.findOne({
+            where: { id: article.category }
+          });
+          if (getCategory) {
+            categoryName = getCategory.name;
+          }
+          article.category = categoryName;
+          return article;
+        })
+      );
       //
       res.status(200).json({
         status: 200,
-        articles: userArticles,
+        articles: userArticles
       });
     } else {
-      res.status(404).json({ status: 404, error: `No articles were found for ${req.params.username}` });
+      res.status(404).json({
+        status: 404,
+        error: `No articles were found for ${req.params.username}`
+      });
     }
   }
 
@@ -937,7 +1033,9 @@ class Article {
     }
     const id = 0;
     if (name !== 'Other') {
-      const categoryExists = await ArticleCategoryModel.findOne({ where: { name } });
+      const categoryExists = await ArticleCategoryModel.findOne({
+        where: { name }
+      });
       if (!categoryExists) {
         return helper.jsonResponse(res, 404, { error: 'Category not found' });
       }
@@ -945,21 +1043,25 @@ class Article {
     const getAll = await ArticleModel.findAll({ where: { category: id } });
     if (!getAll) {
       res.status(404).json({
-        error: 'Not article found for now',
+        error: 'Not article found for now'
       });
     } else {
-      await Promise.all(getAll.map(async (article) => {
-        let categoryName = 'Other';
-        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
-        if (getCategory) {
-          categoryName = getCategory.name;
-        }
-        article.category = categoryName;
-        return article;
-      }));
+      await Promise.all(
+        getAll.map(async (article) => {
+          let categoryName = 'Other';
+          const getCategory = await ArticleCategoryModel.findOne({
+            where: { id: article.category }
+          });
+          if (getCategory) {
+            categoryName = getCategory.name;
+          }
+          article.category = categoryName;
+          return article;
+        })
+      );
       //
       res.status(200).json({
-        article: getAll,
+        article: getAll
       });
     }
   }
