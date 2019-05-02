@@ -17,8 +17,11 @@ notify.on('verified', args => notify.verifyingAccount(args));
 const { Op } = Sequelize;
 dotenv.config();
 
-const { user: UserModel, userverification: UserVerificationModel } = model;
-const { resetpassword: resetPassword } = model;
+const {
+  user: UserModel, userverification: UserVerificationModel,
+  resetpassword: resetPassword, following: followingModel,
+  followers: followersModel
+} = model;
 
 /**
  * @param { class } User -- User }
@@ -214,6 +217,70 @@ class User {
     } catch (error) {
       const status = (error.name === 'SequelizeValidationError') ? 400 : 500;
       return res.status(status).json({ error: `${error.message}` });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} success
+   */
+  static async follow(req, res) {
+    try {
+      const { username } = req.params;
+      const followedUser = await UserModel.checkUser(username);
+      if (req.user !== followedUser.id) {
+        const checker = await followingModel.findRecord(req.user, followedUser.id);
+        if (!checker) {
+          await followingModel.newRecord(req.user, followedUser.id);
+          await followersModel.newRecord(followedUser.id, req.user);
+        }
+        res.status(201).json({
+          status: 201,
+          message: 'followed',
+          follower: followedUser.username
+        });
+      } else {
+        res.status(409).json({
+          status: 409,
+          message: 'you can\'t follow you self',
+        });
+      }
+    } catch (error) {
+      res.status(400).json({ status: 400, error: 'bad request' });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} unfollow
+   */
+  static async unfollow(req, res) {
+    try {
+      const { username } = req.params;
+      const unfollowedUser = await UserModel.checkUser(username);
+      if (req.user !== unfollowedUser.id) {
+        const checker = await followingModel.findRecord(req.user, unfollowedUser.id);
+        if (!checker) {
+          await followingModel.unfollow(req.user, unfollowedUser.id);
+          await followersModel.unfollow(unfollowedUser.id, req.user);
+        }
+        res.status(201).json({
+          status: 201,
+          message: 'unfollowed',
+          follower: unfollowedUser.username
+        });
+      } else {
+        res.status(409).json({
+          status: 409,
+          message: 'you can\'t unfollow you self',
+        });
+      }
+    } catch (error) {
+      res.status(400).json({ status: 400, error: 'bad request' });
     }
   }
 }
