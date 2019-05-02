@@ -95,7 +95,7 @@ describe('Test the body', () => {
   });
   it('should return an error if the body is not predefined', (done) => {
     const longTitleArticle = {
-      title: faker.lorem.sentence(),
+      title: faker.random.words(),
       description: faker.lorem.paragraph(),
       authorid: 100
     };
@@ -112,7 +112,7 @@ describe('Test the body', () => {
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title: faker.lorem.words(),
+      title: faker.random.words(),
       body: faker.lorem.paragraphs(),
       description: faker.lorem.paragraph(),
     };
