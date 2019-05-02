@@ -27,7 +27,6 @@ chai.use(chaiHttp);
 chai.should();
 
 const user = {
-  id: 1,
   username: 'username',
   firstname: 'firstname',
   lastname: 'lastname',
@@ -37,10 +36,9 @@ const user = {
 describe('Test User', () => {
   before(async () => {
     // clear data in the table
-    await UserModel.destroy({ where: { email: user.email } });
-    });
+    // await UserModel.destroy({ where: { email: user.email } });
   });
-  describe('Test User Sign up', () =>{
+  describe('Test User Sign up', () => {
     describe('POST /api/auth/signup', () => {
       it('Should create new User account', (done) => {
         chai.request(app).post('/api/auth/signup').send(user).then((res) => {
@@ -84,7 +82,10 @@ describe('Test User', () => {
           res.body.user.should.have.property('email').eql('email@tes.com');
           done();
         })
-          .catch(error => logError(`error${error}`));
+          .catch((error) => {
+            console.log(error);
+          });
+        // .catch(error => logError(`error${error}`));
       });
     });
     describe('should be able to create a user', () => {
@@ -159,6 +160,8 @@ describe('Test User', () => {
           .catch(error => logError(`error${error}`));
       });
     });
+  });
+});
 
 /**
  * @author frank harerimana
@@ -293,7 +296,7 @@ describe('reset password with an unexisting email', () => {
 
 describe('reset password with an existing email', () => {
   it('it should return error', (done) => {
-    chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email })
+    chai.request(app).post('/api/auth/forgetpassword').send({ email: ruser.email })
       .then((result) => {
         result.should.have.status(202);
         done();
@@ -483,4 +486,3 @@ describe('delete follower record', () => {
     }
   });
 });
-  }

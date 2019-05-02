@@ -1,7 +1,7 @@
 import models from '../models';
 import Slug from '../helpers/slug';
 
-const { article: ArticleModel } = models;
+const { article: ArticleModel, user: UserModel } = models;
 /**
  * @description  CRUD for article Class
  */
@@ -22,6 +22,12 @@ class Article {
       return res.status(400).json({ error: 'body can not be null' });
     }
     const authorid = req.user;
+    const checkuser = await UserModel.checkuser(authorid);
+    if (!checkuser) {
+      return res.status(404).json({
+        error: 'Please register'
+      });
+    }
     const slugInstance = new Slug(req.body.title);
     const descriptData = req.body.description || `${req.body.body.substring(0, 100)}...`;
     const slug = slugInstance.returnSlug(title);

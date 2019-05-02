@@ -21,6 +21,7 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.createArticle = article => Article.create(article);
   Article.getAll = article => Article.findAll(article);
   Article.getOneArticle = slug => Article.findOne({ where: { slug } });
+  Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
 
   Article.associate = (models) => {

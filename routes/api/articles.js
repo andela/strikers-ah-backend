@@ -5,11 +5,10 @@ import errorHandler from '../../middlewares/errorHandler';
 
 const router = express.Router();
 
-router.get('/', articleController.getAllArticles);
+router.get('/all', errorHandler(articleController.getAllArticles));
 router.post('/', AuthToken, errorHandler(articleController.createArticle));
 router.get('/:slug', errorHandler(articleController.getArticle));
-router.post('/', articleController.createArticle);
-router.delete('/:slug', articleController.deleteArticle);
+router.delete('/:slug', AuthToken, errorHandler(articleController.deleteArticle));
 router.put('/:slug');
 
 export default router;
