@@ -9,13 +9,7 @@ import index from '../index';
 
 const articleModel = db.article;
 const userModel = db.user;
-let slug;
-let userId;
-const newArticle1 = {
-  title: faker.random.words(),
-  description: faker.lorem.paragraph(),
-  body: ''
-};
+
 chai.should();
 chai.use(chaiHttp);
 

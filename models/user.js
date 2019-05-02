@@ -69,8 +69,11 @@ const UserModel = (Sequelize, DataTypes) => {
   User.checkUser = username => User.findOne({ where: { username } });
   User.findUser = id => User.findOne({ where: { id } });
   User.checkuser = authorid => User.findOne({ where: { id: authorid } });
+<<<<<<< HEAD
   User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image', 'role'] });
   User.singleUser = async username => User.findOne({ attributes: ['username', 'bio', 'image', 'role'], where: { username } });
+=======
+>>>>>>> pull latest changes
   return User;
 };
 export default UserModel;

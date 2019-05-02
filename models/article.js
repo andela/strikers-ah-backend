@@ -45,7 +45,6 @@ const ArticleModel = (sequelize, DataTypes) => {
   };
   Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
 
-  Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
   Article.associate = (models) => {
     Article.belongsTo(models.user, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
