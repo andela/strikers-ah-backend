@@ -36,7 +36,9 @@ const UserModel = (Sequelize, DataTypes) => {
     },
     provider: { type: DataTypes.STRING, allowNull: true, defaultValue: '' },
     provideruserid: { type: DataTypes.STRING, allowNull: true, },
-    verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
+    verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    inapp_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
+    email_notifications: { type: DataTypes.BOOLEAN, defaultValue: true }
   });
   User.socialUsers = async (userProfile) => {
     const result = await User.findOrCreate({
@@ -49,12 +51,13 @@ const UserModel = (Sequelize, DataTypes) => {
     User.hasMany(models.article, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
     });
-    User.hasMany(models.followers, {
+    User.hasMany(models.notifications, {
       foreignKey: 'userid', onDelete: 'CASCADE'
     });
     User.hasMany(models.followers, {
       foreignKey: 'userid', onDelete: 'CASCADE'
     });
+    
   };
   User.checkEmail = email => User.findOne({ where: { email } });
   User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
