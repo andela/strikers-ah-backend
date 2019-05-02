@@ -294,7 +294,7 @@ describe('reset password with an unexisting email', () => {
 
 describe('reset password with an existing email', () => {
   it('it should return error', (done) => {
-    chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email })
+    chai.request(app).post('/api/auth/forgetpassword').send({ email: ruser.email })
       .then((result) => {
         result.should.have.status(202);
         done();
