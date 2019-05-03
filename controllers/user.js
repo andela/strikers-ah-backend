@@ -232,11 +232,11 @@ class User {
     try {
       const { username } = req.params;
       const followedUser = await UserModel.checkUser(username);
-      if (req.user !== followedUser.id) {
-        const checker = await followingModel.findRecord(req.user, followedUser.id);
+      if (req.user.id !== followedUser.id) {
+        const checker = await followingModel.findRecord(req.user.id, followedUser.id);
         if (!checker) {
-          await followingModel.newRecord(req.user, followedUser.id);
-          await followersModel.newRecord(followedUser.id, req.user);
+          await followingModel.newRecord(req.user.id, followedUser.id);
+          await followersModel.newRecord(followedUser.id, req.user.id);
         }
         res.status(201).json({
           status: 201,
@@ -264,11 +264,11 @@ class User {
     try {
       const { username } = req.params;
       const unfollowedUser = await UserModel.checkUser(username);
-      if (req.user !== unfollowedUser.id) {
-        const checker = await followingModel.findRecord(req.user, unfollowedUser.id);
+      if (req.user.id !== unfollowedUser.id) {
+        const checker = await followingModel.findRecord(req.user.id, unfollowedUser.id);
         if (!checker) {
-          await followingModel.unfollow(req.user, unfollowedUser.id);
-          await followersModel.unfollow(unfollowedUser.id, req.user);
+          await followingModel.unfollow(req.user.id, unfollowedUser.id);
+          await followersModel.unfollow(unfollowedUser.id, req.user.id);
         }
         res.status(201).json({
           status: 201,

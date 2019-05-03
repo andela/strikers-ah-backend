@@ -41,8 +41,7 @@ class verifyToken {
         });
       }
       if (decoded) {
-        // console.log(this.req.user = decoded.id);
-        this.req.user = decoded.id;
+        this.req.user = decoded;
         this.next();
       } else {
         return this.res.status(401).json({
