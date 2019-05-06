@@ -15,7 +15,7 @@ const notificationModel = (sequelize, DataTypes) => {
     });
   };
   Notifications.findAllNotification = userid => Notifications.findAll({ where: { userid } });
-  Notifications.read = id => Notifications.update({ status: 'read' }, { where: { id } });
+  Notifications.read = (id, userid) => Notifications.update({ status: 'read' }, { where: { id, userid } });
   return Notifications;
 };
 

@@ -318,7 +318,8 @@ class User {
   static async readNotification(req, res) {
     try {
       const notificationId = req.params.id;
-      const notification = await notificationModel.read(notificationId);
+      const userId = req.user.id;
+      const notification = await notificationModel.read(notificationId, userId);
       res.status(201).json({
         status: 201,
         notification

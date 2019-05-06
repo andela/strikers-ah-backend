@@ -277,18 +277,6 @@ describe('reset password with an existing email', () => {
   });
 });
 
-/**
- * @author frank harerimana
- */
-describe('record a new user follow', () => {
-  it('it should return a new record', (done) => {
-    followingModel.newRecord(1, 1).then((result) => {
-      result.should.be.a('object');
-      done();
-    })
-      .catch(error => logError(error));
-  });
-});
 describe('find user by id', () => {
   it('it should be able return a user', async () => {
     try {
@@ -397,6 +385,20 @@ describe('user should follow another', () => {
   });
 });
 
+/**
+ * @author frank harerimana
+ */
+describe('record a new user follow', () => {
+  it('it should return a new record', async () => {
+    try {
+      const dbUser = await UserModel.checkEmail(UserObj.email);
+      const result = await followingModel.newRecord(dbUser.dataValues.id, dbUser.dataValues.id);
+      result.should.be.a('object');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
 describe('unfollow the user ', () => {
   it('should unfollow the user', async () => {
     try {
@@ -419,7 +421,8 @@ describe('unfollow the user ', () => {
 describe('follow user', () => {
   it('the method should be able insert data in database', async () => {
     try {
-      await followersModel.newRecord(1, 1);
+      const dbUser = await UserModel.checkEmail(UserObj.email);
+      await followersModel.newRecord(dbUser.dataValues.id, dbUser.dataValues.id);
     } catch (error) {
       logError(error);
     }
@@ -484,7 +487,8 @@ describe('follow user with invalid token', () => {
 describe('model method to unfollow follower', () => {
   it('should be able to delete in database', async () => {
     try {
-      const res = await followersModel.unfollow(1, 1);
+      const dbUser = await UserModel.checkEmail(UserObj.email);
+      const res = await followersModel.unfollow(dbUser.dataValues.id, dbUser.dataValues.id);
       res.should.eql(1);
     } catch (error) {
       logError(error);
@@ -498,7 +502,8 @@ describe('model method to unfollow follower', () => {
 describe('model method to unfollower user', () => {
   it('should be able to delete in database', async () => {
     try {
-      const res = await followingModel.unfollow(1, 1);
+      const dbUser = await UserModel.checkEmail(UserObj.email);
+      const res = await followingModel.unfollow(dbUser.dataValues.id, dbUser.dataValues.id);
       res.should.eql(1);
     } catch (error) {
       logError(error);
