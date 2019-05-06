@@ -40,15 +40,8 @@ class verifyToken {
           error: 'invalid token'
         });
       }
-      if (decoded) {
-        this.req.user = decoded;
-        this.next();
-      } else {
-        return this.res.status(401).json({
-          status: 401,
-          error: 'authentication failed'
-        });
-      }
+      this.req.user = decoded;
+      this.next();
     });
   }
 }

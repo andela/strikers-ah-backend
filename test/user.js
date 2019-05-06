@@ -16,7 +16,7 @@ import userEvents from '../helpers/userEvents';
  */
 const {
   user: UserModel, resetpassword: resetPassword, following: followingModel,
-  followers: followersModel
+  followers: followersModel, notifications: notificationModel
 } = models;
 
 dotenv.config();
@@ -530,6 +530,58 @@ describe('reset password helper notification', () => {
     try {
       const userEvent = new userEvents();
       userEvent.resetpassword(user.id);
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * get notifications
+ */
+describe('signed user notifications', () => {
+  it('should return all notifications for the user', async () => {
+    try {
+      const res = await chai.request(app).get('/api/profiles/notifications/').set('Authorization', `Bearer ${newtoken}`);
+      res.body.should.have.status(200);
+      res.body.should.have.property('notifications');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * update notification to read
+ */
+describe('signed user single notification', () => {
+  it('should update notification to read and return 1 for success', async () => {
+    try {
+      const res = await chai.request(app).put('/api/profiles/notifications/1').set('Authorization', `Bearer ${newtoken}`);
+      res.body.should.have.status(201);
+      res.body.should.have.property('notification');
+    } catch (error) {
+      logError(error);
+    }
+  });
+  it('should update notification to read and return 1 for success', async () => {
+    try {
+      const res = await chai.request(app).put('/api/profiles/notifications/adfs').set('Authorization', `Bearer ${newtoken}`);
+      res.body.should.have.status(400);
+      res.body.should.have.property('error');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * create notification model method
+ */
+describe('create notification model method', () => {
+  it('it should create a new notification', async () => {
+    try {
+      await notificationModel.newRecord(1, 'notification', 'test purpose', 'link for notification');
     } catch (error) {
       logError(error);
     }

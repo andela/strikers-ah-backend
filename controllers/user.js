@@ -21,7 +21,7 @@ dotenv.config();
 const {
   user: UserModel, userverification: UserVerificationModel,
   resetpassword: resetPassword, following: followingModel,
-  followers: followersModel
+  followers: followersModel, notifications: notificationModel
 } = model;
 
 /**
@@ -283,6 +283,51 @@ class User {
       }
     } catch (error) {
       res.status(400).json({ status: 400, error: 'bad request' });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} notifications
+   */
+  static async notifications(req, res) {
+    try {
+      const userid = req.user.id;
+      const result = await notificationModel.findAllNotification(userid);
+      res.status(200).json({
+        status: 200,
+        count: result.length,
+        notifications: result
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 400,
+        error
+      });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} read notification
+   */
+  static async readNotification(req, res) {
+    try {
+      const notificationId = req.params.id;
+      const notification = await notificationModel.read(notificationId);
+      res.status(201).json({
+        status: 201,
+        notification
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 400,
+        error: 'bad request'
+      });
     }
   }
 }
