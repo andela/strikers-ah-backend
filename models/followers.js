@@ -15,6 +15,7 @@ const followersModel = (sequelize, DataTypes) => {
   };
   Followers.newRecord = (userid, follower) => Followers.create({ userid, follower });
   Followers.unfollow = (userid, follower) => Followers.destroy({ where: { userid, follower } });
+  Followers.followers = userid => Followers.findAll({ where: { userid } });
   return Followers;
 };
 export default followersModel;

@@ -20,4 +20,16 @@ router.put('/notifications/:id', (req, res, next) => {
   new verifyToken(req, res, next).verify();
 }, user.readNotification);
 
+router.get('/followers', (req, res, next) => {
+  new verifyToken(req, res, next).verify();
+}, user.findAllFollowers);
+
+router.get('/following', (req, res, next) => {
+  new verifyToken(req, res, next).verify();
+}, user.findAllFollowing);
+
+router.get('/status/:username', (req, res, next) => {
+  new verifyToken(req, res, next).verify();
+}, user.findProfilestatus);
+
 export default router;

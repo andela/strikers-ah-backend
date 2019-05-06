@@ -16,6 +16,8 @@ const followingModel = (sequelize, DataTypes) => {
   Following.newRecord = (userid, following) => Following.create({ userid, following });
   Following.findRecord = (userid, following) => Following.findOne({ where: { userid, following } });
   Following.unfollow = (userid, following) => Following.destroy({ where: { userid, following } });
+  Following.followings = userid => Following.findAll({ where: { userid } });
+  Following.following = (userid, following) => Following.findOne({ where: { userid, following } });
   return Following;
 };
 export default followingModel;

@@ -557,6 +557,30 @@ describe('signed user notifications', () => {
 });
 
 /**
+ * get following bad request
+ */
+describe('signed user notifications bad request', () => {
+  it('should return an error for unexisting user', async () => {
+    try {
+      const userOb = {
+        id: faker.random.number(),
+        firstname: faker.name.firstName(),
+        lastname: faker.name.lastName(),
+        username: faker.name.findName(),
+        email: faker.internet.email(),
+        image: faker.image.imageUrl()
+      };
+      const Usertoken = jwt.sign(userOb, process.env.secretKey);
+      const res = await chai.request(app).get('/api/profiles/notifications/').set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(400);
+      res.body.should.have.property('error');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
  * update notification to read
  */
 describe('signed user single notification', () => {
@@ -587,6 +611,129 @@ describe('create notification model method', () => {
   it('it should create a new notification', async () => {
     try {
       await notificationModel.newRecord(1, 'notification', 'test purpose', 'link for notification');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * get followers
+ */
+describe('signed user followers', () => {
+  it('should return number of followers', async () => {
+    try {
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      const Usertoken = jwt.sign(fuser.dataValues, process.env.secretKey);
+      const res = await chai.request(app).get('/api/profiles/followers').set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(200);
+      res.body.should.have.property('followers');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * get followers bad request
+ */
+describe('signed user followers bad request', () => {
+  it('should return error for unexisting user', async () => {
+    try {
+      const userOb = {
+        id: faker.random.number(),
+        firstname: faker.name.firstName(),
+        lastname: faker.name.lastName(),
+        username: faker.name.findName(),
+        email: faker.internet.email(),
+        image: faker.image.imageUrl()
+      };
+      const Usertoken = jwt.sign(userOb, process.env.secretKey);
+      const res = await chai.request(app).get('/api/profiles/followers').set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(400);
+      res.body.should.have.property('error');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * get following
+ */
+describe('signed user following', () => {
+  it('should return number of following', async () => {
+    try {
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      const Usertoken = jwt.sign(fuser.dataValues, process.env.secretKey);
+      const res = await chai.request(app).get('/api/profiles/following').set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(200);
+      res.body.should.have.property('following');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * get following bad request
+ */
+describe('signed user following bad request', () => {
+  it('should return an error for unexisting user', async () => {
+    try {
+      const userOb = {
+        id: faker.random.number(),
+        firstname: faker.name.firstName(),
+        lastname: faker.name.lastName(),
+        username: faker.name.findName(),
+        email: faker.internet.email(),
+        image: faker.image.imageUrl()
+      };
+      const Usertoken = jwt.sign(userOb, process.env.secretKey);
+      const res = await chai.request(app).get('/api/profiles/following').set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(400);
+      res.body.should.have.property('error');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * profile following status
+ */
+describe('check if user follow another profile', () => {
+  it('should return true or false', async () => {
+    try {
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      const Usertoken = jwt.sign(fuser.dataValues, process.env.secretKey);
+      const res = await chai.request(app).get(`/api/profiles/status/${fuser.dataValues.username}`).set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(200);
+      res.body.should.have.property('response');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+/**
+ * profile following status bad request
+ */
+describe('check if user follow another profile', () => {
+  it('should return a bad request for unexting profile', async () => {
+    try {
+      const userOb = {
+        id: faker.random.number(),
+        firstname: faker.name.firstName(),
+        lastname: faker.name.lastName(),
+        username: faker.name.findName(),
+        email: faker.internet.email(),
+        image: faker.image.imageUrl()
+      };
+      const Usertoken = jwt.sign(userOb, process.env.secretKey);
+      const res = await chai.request(app).get(`/api/profiles/status/${faker.name.findName}`).set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(400);
+      res.body.should.have.property('error');
     } catch (error) {
       logError(error);
     }

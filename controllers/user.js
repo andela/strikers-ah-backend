@@ -266,7 +266,7 @@ class User {
       const unfollowedUser = await UserModel.checkUser(username);
       if (req.user.id !== unfollowedUser.id) {
         const checker = await followingModel.findRecord(req.user.id, unfollowedUser.id);
-        if (!checker) {
+        if (checker) {
           await followingModel.unfollow(req.user.id, unfollowedUser.id);
           await followersModel.unfollow(unfollowedUser.id, req.user.id);
         }
@@ -294,8 +294,9 @@ class User {
    */
   static async notifications(req, res) {
     try {
-      const userid = req.user.id;
-      const result = await notificationModel.findAllNotification(userid);
+      const { user } = req;
+      const profile = await UserModel.checkUser(user.username);
+      const result = await notificationModel.findAllNotification(profile.dataValues.id);
       res.status(200).json({
         status: 200,
         count: result.length,
@@ -328,6 +329,78 @@ class User {
       res.status(400).json({
         status: 400,
         error: 'bad request'
+      });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} followers
+   */
+  static async findAllFollowers(req, res) {
+    try {
+      const { user } = req;
+      const profile = await UserModel.checkUser(user.username);
+      const followers = await followersModel.followers(profile.dataValues.id);
+      res.status(200).json({
+        status: 200,
+        followers: followers.length
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 400,
+        error: 'bad request'
+      });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} followings
+   */
+  static async findAllFollowing(req, res) {
+    try {
+      const { user } = req;
+      const profile = await UserModel.checkUser(user.username);
+      const followings = await followingModel.followings(profile.dataValues.id);
+      res.status(200).json({
+        status: 200,
+        following: followings.length
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 400,
+        error: 'bad request'
+      });
+    }
+  }
+
+  /**
+   * @author frank harerimana
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} profile relationship status
+   */
+  static async findProfilestatus(req, res) {
+    try {
+      const { username } = req.params;
+      const profile = await UserModel.checkUser(username);
+      const { user } = req;
+      // check if user follows the profile
+      const profileId = profile.dataValues.id;
+      const following = await followingModel.following(user.id, profileId);
+      res.status(200).json({
+        status: 200,
+        response: following === null ? 'false' : 'true'
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 400,
+        error: 'incorrent profile'
       });
     }
   }
