@@ -27,7 +27,6 @@ chai.use(chaiHttp);
 chai.should();
 
 const user = {
-  id: 1,
   username: 'username',
   firstname: 'firstname',
   lastname: 'lastname',
@@ -83,7 +82,10 @@ describe('Test User', () => {
           res.body.user.should.have.property('email').eql('email@tes.com');
           done();
         })
-          .catch(error => logError(`error${error}`));
+          .catch((error) => {
+            console.log(error);
+          });
+        // .catch(error => logError(`error${error}`));
       });
     });
     describe('should be able to create a user', () => {
@@ -294,7 +296,7 @@ describe('reset password with an unexisting email', () => {
 
 describe('reset password with an existing email', () => {
   it('it should return error', (done) => {
-    chai.request(app).post('/api/auth/forgetpassword').send({ email: user.email })
+    chai.request(app).post('/api/auth/forgetpassword').send({ email: ruser.email })
       .then((result) => {
         result.should.have.status(202);
         done();

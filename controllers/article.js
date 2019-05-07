@@ -1,7 +1,7 @@
 import models from '../models';
 import Slug from '../helpers/slug';
 
-const { article: ArticleModel } = models;
+const { article: ArticleModel, user: UserModel } = models;
 /**
  * @description  CRUD for article Class
  */
@@ -22,6 +22,12 @@ class Article {
       return res.status(400).json({ error: 'body can not be null' });
     }
     const authorid = req.user;
+    const checkuser = await UserModel.checkuser(authorid);
+    if (!checkuser) {
+      return res.status(404).json({
+        error: 'Please register'
+      });
+    }
     const slugInstance = new Slug(req.body.title);
     const descriptData = req.body.description || `${req.body.body.substring(0, 100)}...`;
     const slug = slugInstance.returnSlug(title);
@@ -58,19 +64,37 @@ class Article {
   * @returns {object} it returns an object of articles
   */
   static async getAllArticles(req, res) {
-    try {
-      const getAll = await ArticleModel.getAll();
-      if (getAll.length === 0) {
-        res.status(404).json({
-          error: 'Not article found for now'
-        });
-      } else {
-        res.status(200).json({
-          article: getAll
-        });
-      }
-    } catch (err) {
-      return res.status(400).json({ message: err.errors[0].message });
+    const getAll = await ArticleModel.getAll();
+    if (getAll.length === 0) {
+      res.status(404).json({
+        error: 'Not article found for now'
+      });
+    } else {
+      res.status(200).json({
+        article: getAll
+      });
+    }
+  }
+
+  /**
+   *@author: Innocent Nkunzi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Article
+   */
+  static async deleteArticle(req, res) {
+    const { slug } = req.params;
+    const authorid = req.user;
+    const findArticle = await ArticleModel.findArticleSlug(authorid, slug);
+    if (!findArticle) {
+      return res.status(404).json({ error: 'No article found for you to delete' });
+    }
+    const articleId = findArticle.id;
+    const deleteArticle = await ArticleModel.deleteArticle(articleId);
+    if (deleteArticle.length !== 0) {
+      res.status(200).json({
+        message: 'Article deleted'
+      });
     }
   }
 }
