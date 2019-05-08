@@ -8,7 +8,7 @@ import fakeData from './mockData/articleMockData';
 import index from '../index';
 
 const articleModel = db.article;
-const userModel = db.user;
+// const userModel = db.user;
 
 chai.should();
 chai.use(chaiHttp);
@@ -29,13 +29,20 @@ describe('Cleaning the database', () => {
     // await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
   });
 });
-
+// A user to be used to create article
 const user = {
   username: 'nkunziinnocent',
   email: 'nkunzi@gmail.com',
   password: '@Nkunzi1234',
 };
-let userToken;
+
+// A user to be used to update an article that they didn't create
+const newUser = {
+  username: 'isharaketis',
+  email: 'ishara@gmail.com',
+  password: 'Ishara@123',
+};
+let userToken, testToken;
 describe('Create a user to be used in in creating article', () => {
   it('should create a user', (done) => {
     chai.request(index).post('/api/auth/signup').send(user).then((res) => {
@@ -45,7 +52,16 @@ describe('Create a user to be used in in creating article', () => {
       userToken = res.body.user.token;
       done();
     })
-      .catch(error => logError(error));
+      .catch(error => console.log(error));
+  });
+
+  it('should create another user to test article ownsershp', () => {
+    chai.request(index).post('/api/auth/signup').send(newUser).then((res) => {
+      res.should.have.status(200);
+      res.body.user.should.be.a('object');
+      res.body.user.should.have.property('username');
+      testToken = res.body.user.token;
+    });
   });
 });
 describe('Create an article', () => {
@@ -72,7 +88,6 @@ describe('It checks title errors', () => {
       title: '',
       description: faker.lorem.paragraph(),
       body: faker.lorem.paragraphs(),
-      authorid: 100
     };
     chai.request(index).post('/api/articles').set('x-access-token', `${userToken}`).send(newArticle)
       .then((res) => {
@@ -104,7 +119,6 @@ describe('Test the body', () => {
     const longTitleArticle = {
       title: faker.random.words(),
       description: faker.lorem.paragraph(),
-      authorid: 100
     };
     chai.request(index).post('/api/articles').send(longTitleArticle).set('x-access-token', `${userToken}`)
       .then((res) => {
@@ -236,6 +250,44 @@ describe('Test all articles', () => {
       res.should.have.status(404);
       res.body.should.have.property('error').eql('Not article found for now');
     })
+      .catch(error => logError(error));
+  });
+});
+describe('Update tests', () => {
+  let newSlug3;
+  const newArticle = {
+    title: faker.lorem.sentence(),
+    body: faker.lorem.paragraphs(),
+  };
+  it('should create an article to be updated', (done) => {
+    chai.request(index).post('/api/articles/').send(newArticle).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.have.property('article');
+        newSlug3 = res.body.article.slug;
+        done();
+      })
+      .catch(error => logError(error));
+  });
+
+  it('should not update an article if a user is not the owner of the article', (done) => {
+    chai.request(index).put(`/api/articles/${newSlug3}`).send(newArticle).set('x-access-token', `${testToken}`)
+      .then((res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error').eql('No article found for you to edit');
+        done();
+      })
+      .catch(error => logError(error));
+  });
+  it('should update an article', (done) => {
+    chai.request(index).put(`/api/articles/${newSlug3}`).send(newArticle).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message').eql('Article updated');
+        done();
+      })
       .catch(error => logError(error));
   });
 });

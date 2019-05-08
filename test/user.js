@@ -82,10 +82,7 @@ describe('Test User', () => {
           res.body.user.should.have.property('email').eql('email@tes.com');
           done();
         })
-          .catch((error) => {
-            console.log(error);
-          });
-        // .catch(error => logError(`error${error}`));
+          .catch(error => logError(`error${error}`));
       });
     });
     describe('should be able to create a user', () => {

@@ -24,6 +24,17 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
 
+  Article.updateFoundArticle = (id, data) => {
+    Article.update({
+      title: data.title,
+      body: data.body,
+      slug: data.slug,
+      taglist: data.taglist,
+      authorid: data.authorid
+    }, { where: { id } });
+    return data;
+  };
+
   Article.associate = (models) => {
     Article.belongsTo(models.user, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
