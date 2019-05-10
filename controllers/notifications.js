@@ -69,7 +69,11 @@ class Notifications {
     const message = `${author} published a new article`;
     for (let i = 0; i < users.length; i += 1) {
       this.NewNotification(users[i].id, message, notificationLink);
-      if (users[i].email === true) Mailer.messageMaker(users[i].email, notificationLink, message, 'read the new article');
+      if (users[i].email_notifications === true) {
+        Mailer.messageMaker(users[i].email, 'no-reply Authors haven', message, `
+    <strong>click the link below to view the article<strong> 
+    <a href='${notificationLink}'>Author's haven</a>`);
+      }
     }
     return 'success';
   }
