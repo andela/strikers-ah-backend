@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { EventEmitter } from 'events';
-import userNotification from '../controllers/userNotification';
+import userNotification from '../controllers/notifications';
 
 /**
  * notification handler
