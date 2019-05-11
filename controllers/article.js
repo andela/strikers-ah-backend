@@ -2,7 +2,7 @@ import models from '../models';
 import Slug from '../helpers/slug';
 import Description from '../helpers/makeDescription';
 
-const { article: ArticleModel, user: UserModel } = models;
+const { article: ArticleModel, user: UserModel, bookmark: bookmarkModel } = models;
 /**
  * @description  CRUD for article Class
  */
@@ -15,7 +15,7 @@ class Article {
    */
   static async createArticle(req, res) {
     const {
-      title, body, taglist
+      title, body, taglist, description
     } = req.body;
     if (!title) {
       return res.status(400).json({ error: 'title can not be null' });
@@ -29,9 +29,10 @@ class Article {
         error: 'Please register'
       });
     }
-    const slugInstance = new Slug(req.body.title);
-    const descriptData = req.body.description || `${req.body.body.substring(0, 100)}...`;
-    const slug = slugInstance.returnSlug(title);
+    const slugInstance = new Slug(title);
+    const descriptionInstance = new Description(description, body);
+    const descriptData = descriptionInstance.makeDescription();
+    const slug = slugInstance.returnSlug();
     const newArticle = {
       title, body, description: descriptData, slug, authorid, taglist
     };
@@ -134,6 +135,36 @@ class Article {
       res.status(200).json({
         message: 'Article updated',
         article: updateArticle
+      });
+    }
+  }
+
+  /**
+   *@author: Innocent Nkunzi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} return a bookmarked article
+   */
+  static async bookmarkArticle(req, res) {
+    const { slug } = req.params;
+    const userid = req.user;
+    const checkSlug = await ArticleModel.getOneArticle(slug);
+    if (!checkSlug) {
+      return res.status(404).json({
+        error: 'No article found with the specified slug'
+      });
+    }
+    const articleId = checkSlug.id;
+    const checkBookmark = await bookmarkModel.checkuser(userid, articleId);
+    if (!checkBookmark) {
+      const bookmark = await bookmarkModel.bookmark(userid, articleId);
+      res.status(201).json({
+        message: 'Bookmarked',
+        article: bookmark
+      });
+    } else {
+      res.status(403).json({
+        error: 'Already bookmarked'
       });
     }
   }
