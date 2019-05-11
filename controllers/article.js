@@ -168,5 +168,38 @@ class Article {
       });
     }
   }
+
+  /**
+ *
+ * @author Innocent Nkunzi
+ * @param {*} req
+ * @param {*} res
+ * @returns {object} it returns an object of articles
+ */
+  static async getAllArticlesPagination(req, res) {
+    const pageNumber = parseInt(req.query.page, 10);
+    const limit = parseInt(req.query.limit, 10);
+    if (pageNumber <= 0) {
+      return res.status(403).json({
+        error: 'Invalid page number'
+      });
+    } if (limit <= 0) {
+      return res.status(403).json({
+        error: 'Invalid page limit'
+      });
+    }
+    const offset = limit * (pageNumber - 1);
+    const getAll = await ArticleModel.getAll(limit, offset);
+    if (getAll.length) {
+      res.status(200).json({
+        article: getAll,
+        articlesCount: getAll.length
+      });
+    } else {
+      res.status(404).json({
+        error: 'No article found for now'
+      });
+    }
+  }
 }
 export default Article;

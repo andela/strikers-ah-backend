@@ -162,6 +162,25 @@ describe('Test description', () => {
       .catch(error => logError(error));
   });
 });
+describe('Pagination tests', () => {
+  it('should select apecified article on a given page', (done) => {
+    chai.request(index).get('/api/articles?page=1&limit=1').then((res) => {
+      res.should.have.status(200);
+      done();
+    })
+      .catch(error => logError(error));
+  });
+  it('should return an error if the page and limit specified are beyond limit', (done) => {
+    chai.request(index).get('/api/articles?page=9&limit=9').then((res) => {
+      res.should.have.status(404);
+      res.body.should.be.a('object');
+      res.body.should.have.property('error').eql('No article found for now');
+      done();
+    })
+      .catch(error => logError(error));
+  });
+});
+
 let newSlug;
 describe('Tests for get article', () => {
   const newArticle = {
