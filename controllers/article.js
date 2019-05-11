@@ -176,7 +176,7 @@ class Article {
  * @param {*} res
  * @returns {object} it returns an object of articles
  */
-  static async getAllArticlesPagination(req, res) {
+  static async articlePagination(req, res) {
     const pageNumber = parseInt(req.query.page, 10);
     const limit = parseInt(req.query.limit, 10);
     if (pageNumber <= 0) {

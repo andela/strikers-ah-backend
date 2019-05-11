@@ -1,5 +1,5 @@
 /**
- * @author Innocent Nkunzi
+ *
  * @param {object} cb
  * @param {object} req
  * @param {object} res
