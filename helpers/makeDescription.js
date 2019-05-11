@@ -4,11 +4,11 @@
 class Description {
   /**
        *
-       * @param {*} title
+       * @param {*} description
        * @param {*} body
        */
-  constructor(title, body) {
-    this.title = title;
+  constructor(description, body) {
+    this.description = description;
     this.body = body;
   }
 
@@ -17,7 +17,7 @@ class Description {
      * @returns {*} it returns a full slug with a hashed ID
      */
   makeDescription() {
-    const description = this.title || `${this.body.substring(0, 100)}...`;
+    const description = this.description || `${this.body.substring(0, 100)}...`;
     return description;
   }
 }

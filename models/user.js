@@ -63,6 +63,12 @@ const UserModel = (Sequelize, DataTypes) => {
   User.checkUser = username => User.findOne({ where: { username } });
   User.findUser = id => User.findOne({ where: { id } });
   User.checkuser = authorid => User.findOne({ where: { id: authorid } });
+  User.associate = (models) => {
+    User.hasMany(models.bookmark, {
+      foreignKey: 'userid', onDelete: 'CASCADE'
+    });
+  };
+
   return User;
 };
 export default UserModel;

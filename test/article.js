@@ -8,13 +8,12 @@ import fakeData from './mockData/articleMockData';
 import index from '../index';
 
 const articleModel = db.article;
-// const userModel = db.user;
+const userModel = db.user;
 
 chai.should();
 chai.use(chaiHttp);
 
 const logError = debug('app:*');
-
 /**
  * @author: Innocent Nkunzi
  * @description: tests related to article
@@ -26,7 +25,7 @@ process.env.NODE_ENV = 'test';
 describe('Cleaning the database', () => {
   before('Cleaning the database first', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
-    // await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
   });
 });
 // A user to be used to create article
@@ -52,7 +51,7 @@ describe('Create a user to be used in in creating article', () => {
       userToken = res.body.user.token;
       done();
     })
-      .catch(error => console.log(error));
+      .catch(error => logError(error));
   });
 
   it('should create another user to test article ownsershp', () => {
@@ -163,6 +162,25 @@ describe('Test description', () => {
       .catch(error => logError(error));
   });
 });
+describe('Pagination tests', () => {
+  it('should select apecified article on a given page', (done) => {
+    chai.request(index).get('/api/articles?page=1&limit=1').then((res) => {
+      res.should.have.status(200);
+      done();
+    })
+      .catch(error => logError(error));
+  });
+  it('should return an error if the page and limit specified are beyond limit', (done) => {
+    chai.request(index).get('/api/articles?page=9&limit=9').then((res) => {
+      res.should.have.status(404);
+      res.body.should.be.a('object');
+      res.body.should.have.property('error').eql('No article found for now');
+      done();
+    })
+      .catch(error => logError(error));
+  });
+});
+
 let newSlug;
 describe('Tests for get article', () => {
   const newArticle = {
@@ -253,8 +271,8 @@ describe('Test all articles', () => {
       .catch(error => logError(error));
   });
 });
+let newSlug3;
 describe('Update tests', () => {
-  let newSlug3;
   const newArticle = {
     title: faker.lorem.sentence(),
     body: faker.lorem.paragraphs(),
@@ -286,8 +304,27 @@ describe('Update tests', () => {
         res.should.have.status(200);
         res.body.should.be.a('object');
         res.body.should.have.property('message').eql('Article updated');
+        newSlug3 = res.body.article.slug;
         done();
       })
+      .catch(error => logError(error));
+  });
+});
+describe('Bookmark tests', () => {
+  it('should bookmark an article', (done) => {
+    chai.request(index).post(`/api/articles/${newSlug3}/bookmark`).set('x-access-token', `${userToken}`).then((res) => {
+      res.should.have.status(201);
+      res.body.should.be.a('object');
+      done();
+    })
+      .catch(error => logError(error));
+  });
+  it('should not bookmark an article for the second time', (done) => {
+    chai.request(index).post(`/api/articles/${newSlug3}/bookmark`).set('x-access-token', `${userToken}`).then((res) => {
+      res.should.have.status(403);
+      res.body.should.be.a('object');
+      done();
+    })
       .catch(error => logError(error));
   });
 });
