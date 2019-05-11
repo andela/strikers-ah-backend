@@ -1,6 +1,11 @@
 import models from '../models';
 import Slug from '../helpers/slug';
 import Description from '../helpers/makeDescription';
+import ArticleEvents from '../helpers/articleEvents';
+
+const notify = new ArticleEvents();
+
+notify.on('create', args => notify.create(args));
 
 const { article: ArticleModel, user: UserModel, bookmark: bookmarkModel } = models;
 /**
@@ -37,6 +42,7 @@ class Article {
       title, body, description: descriptData, slug, authorid, taglist
     };
     const article = await ArticleModel.createArticle(newArticle);
+    notify.emit('create', newArticle);
     return res.status(201).json({ article });
   }
 

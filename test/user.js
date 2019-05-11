@@ -8,7 +8,7 @@ import app from '../index';
 import helper from '../helpers/helper';
 import userController from '../controllers/user';
 import models from '../models/index';
-import usernotifications from '../controllers/userNotification';
+import usernotifications from '../controllers/notifications';
 import userEvents from '../helpers/userEvents';
 
 /**

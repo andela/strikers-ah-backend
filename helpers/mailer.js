@@ -62,7 +62,7 @@ class Mailer {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to,
-      from: 'harfrank2@gmail.com',
+      from: 'no-reply@author-haven.com',
       subject,
       html: `<strong>${subject}</strong><br> 
       <hr>
