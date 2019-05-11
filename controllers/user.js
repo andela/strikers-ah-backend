@@ -21,7 +21,7 @@ dotenv.config();
 const {
   user: UserModel, userverification: UserVerificationModel,
   resetpassword: resetPassword, following: followingModel,
-  followers: followersModel, notifications: notificationModel
+  followers: followersModel
 } = model;
 
 /**
@@ -232,11 +232,11 @@ class User {
     try {
       const { username } = req.params;
       const followedUser = await UserModel.checkUser(username);
-      if (req.user.id !== followedUser.id) {
-        const checker = await followingModel.findRecord(req.user.id, followedUser.id);
+      if (req.user !== followedUser.id) {
+        const checker = await followingModel.findRecord(req.user, followedUser.id);
         if (!checker) {
-          await followingModel.newRecord(req.user.id, followedUser.id);
-          await followersModel.newRecord(followedUser.id, req.user.id);
+          await followingModel.newRecord(req.user, followedUser.id);
+          await followersModel.newRecord(followedUser.id, req.user);
         }
         res.status(201).json({
           status: 201,
@@ -264,11 +264,11 @@ class User {
     try {
       const { username } = req.params;
       const unfollowedUser = await UserModel.checkUser(username);
-      if (req.user.id !== unfollowedUser.id) {
-        const checker = await followingModel.findRecord(req.user.id, unfollowedUser.id);
+      if (req.user !== unfollowedUser.id) {
+        const checker = await followingModel.findRecord(req.user, unfollowedUser.id);
         if (!checker) {
-          await followingModel.unfollow(req.user.id, unfollowedUser.id);
-          await followersModel.unfollow(unfollowedUser.id, req.user.id);
+          await followingModel.unfollow(req.user, unfollowedUser.id);
+          await followersModel.unfollow(unfollowedUser.id, req.user);
         }
         res.status(201).json({
           status: 201,
@@ -283,52 +283,6 @@ class User {
       }
     } catch (error) {
       res.status(400).json({ status: 400, error: 'bad request' });
-    }
-  }
-
-  /**
-   * @author frank harerimana
-   * @param {*} req
-   * @param {*} res
-   * @returns {*} notifications
-   */
-  static async notifications(req, res) {
-    try {
-      const userid = req.user.id;
-      const result = await notificationModel.findAllNotification(userid);
-      res.status(200).json({
-        status: 200,
-        count: result.length,
-        notifications: result
-      });
-    } catch (error) {
-      res.status(400).json({
-        status: 400,
-        error
-      });
-    }
-  }
-
-  /**
-   * @author frank harerimana
-   * @param {*} req
-   * @param {*} res
-   * @returns {*} read notification
-   */
-  static async readNotification(req, res) {
-    try {
-      const notificationId = req.params.id;
-      const userId = req.user.id;
-      const notification = await notificationModel.read(notificationId, userId);
-      res.status(201).json({
-        status: 201,
-        notification
-      });
-    } catch (error) {
-      res.status(400).json({
-        status: 400,
-        error: 'bad request'
-      });
     }
   }
 }

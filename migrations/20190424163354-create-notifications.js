@@ -12,7 +12,7 @@ module.exports = {
         model: 'users', key: 'id', onDelete: 'CASCADE'
       }
     },
-    category: {
+    type: {
       type: Sequelize.STRING
     },
     message: {
@@ -20,9 +20,6 @@ module.exports = {
     },
     link: {
       type: Sequelize.TEXT
-    },
-    status: {
-      type: Sequelize.STRING
     },
     createdAt: {
       allowNull: false,
