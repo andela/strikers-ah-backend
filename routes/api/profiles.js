@@ -12,4 +12,12 @@ router.delete('/:username/follow', (req, res, next) => {
   new verifyToken(req, res, next).verify();
 }, user.unfollow);
 
+router.get('/notifications', (req, res, next) => {
+  new verifyToken(req, res, next).verify();
+}, user.notifications);
+
+router.put('/notifications/:id', (req, res, next) => {
+  new verifyToken(req, res, next).verify();
+}, user.readNotification);
+
 export default router;
