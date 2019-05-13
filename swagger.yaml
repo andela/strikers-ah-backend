@@ -30,128 +30,126 @@ paths:
             type: object
             properties:
               Message:
-                type: 'String'
+                type: 'string'
                 example: 'Welcome to Author Haven'
-          '404':
-            description: Route not found
+        '404':
+          description: Route not found
           # responses may fall through to errors
-          default:
-            description: Unexpected Error,
   /api/users:
     # returns a jwt token after registration
-   post:
-    description: Returns a json web token after a Successfull registration
-    parameters:
-    - name: New user
-      in: body
-      required: true
-      description: The User json You want to create
-      schema:
-        type: object
-        properties:
-         firtsname:
-          type: 'String'
-          example: 'Firtsname'
-         lastname:
-          type: 'String'
-          example: 'Lastname'
-         email:
-          type: 'String'
-          example: 'email@host.com'
-         username:
-          type: 'String'
-          example: 'username'
-         password:
-          type: 'String'
-          example: '!23Secret'
-    responses:
-      '201':
-        description: created
-        schema:
-          type: object
-          properties:
-            user:
-              type: 'object'
-              properties:
-                firtsname:
-                  type: 'String'
-                  example: 'Firtsname'
-                lastname:
-                  type: 'String'
-                  example: 'Lastname'
-                email:
-                  type: 'String'
-                  example: 'email@host.com'
-                username:
-                  type: 'String'
-                  example: 'username'
-                bio:
-                 type: 'String'
-                 example: 'i like programming'
-                image:
-                 type: 'String'
-                 example: 'image1.png'
+    post:
+      description: Returns a json web token after a Successfull registration
+      parameters:
+        - name: New user
+          in: body
+          required: true
+          description: The User json You want to create
+          schema:
+            type: object
+            properties:
+              firtsname:
+                type: 'string'
+                example: 'Firtsname'
+              lastname:
+                type: 'string'
+                example: 'Lastname'
+              email:
+                type: 'string'
+                example: 'email@host.com'
+              username:
+                type: 'string'
+                example: 'username'
+              password:
+                type: 'string'
+                example: '!23Secret'
+      responses:
+        '201':
+          description: created
+          schema:
+            type: object
+            properties:
+              user:
+                type: 'object'
+                properties:
+                  firtsname:
+                    type: 'string'
+                    example: 'Firtsname'
+                  lastname:
+                    type: 'string'
+                    example: 'Lastname'
+                  email:
+                    type: 'string'
+                    example: 'email@host.com'
+                  username:
+                    type: 'string'
+                    example: 'username'
+                  bio:
+                    type: 'string'
+                    example: 'i like programming'
+                  image:
+                    type: 'string'
+                    example: 'image1.png'
 
-                token:
-                 type: 'String'
-                 example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW0yM2hpMjMxYXNmOSIsImVtYWlsIjoibWVAZ21haWwuY29zaGEiLCJmaXJzdG5hbWUiOiJGcmllZCIsImxhc3RuYW1lIjoiTWlrZWxyaCIsImlhdCI6MTU1NTA1OTc0NX0.NfmPq_sMaD9vmdA7VH0CV2ts_6_q4eql0TiqXQVoS0w'
-      '400':
-        description: Bad request
-      default:
-        description: Unexpected Error
+                  token:
+                    type: 'string'
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW0yM2hpMjMxYXNmOSIsImVtYWlsIjoibWVAZ21haWwuY29zaGEiLCJmaXJzdG5hbWUiOiJGcmllZCIsImxhc3RuYW1lIjoiTWlrZWxyaCIsImlhdCI6MTU1NTA1OTc0NX0.NfmPq_sMaD9vmdA7VH0CV2ts_6_q4eql0TiqXQVoS0w'
+        '400':
+          description: Bad request
+        default:
+          description: Unexpected Error
   /api/users/login:
-  # returns a jwt token after registration
-   post:
-    description: Returns a json web token after a Successfull registration
-    parameters:
-    - name: New user
-      in: body
-      required: true
-      description: The User json You want to create
-      schema:
-        type: object
-        properties:
-         email:
-          type: 'String'
-          example: 'email@host.com'
-         password:
-          type: 'String'
-          example: '!23Secret'
-    responses:
-      '200':
-        description: Ok
-        schema:
-          type: object
-          properties:
-            user:
-              type: 'object'
-              properties:
-                firtsname:
-                 type: 'String'
-                 example: 'Firtsname'
-                lastname:
-                 type: 'String'
-                 example: 'Lastname'
-                email:
-                 type: 'String'
-                 example: 'email@host.com'
-                username:
-                 type: 'String'
-                 example: 'username'
-                bio:
-                 type: 'String'
-                 example: 'i like programming'
-                image:
-                 type: 'String'
-                 example: 'image1.png'
+    # returns a jwt token after registration
+    post:
+      description: Returns a json web token after a Successfull registration
+      parameters:
+        - name: New user
+          in: body
+          required: true
+          description: The User json You want to create
+          schema:
+            type: object
+            properties:
+              email:
+                type: 'string'
+                example: 'email@host.com'
+              password:
+                type: 'string'
+                example: '!23Secret'
+      responses:
+        '200':
+          description: Ok
+          schema:
+            type: object
+            properties:
+              user:
+                type: 'object'
+                properties:
+                  firtsname:
+                    type: 'string'
+                    example: 'Firtsname'
+                  lastname:
+                    type: 'string'
+                    example: 'Lastname'
+                  email:
+                    type: 'string'
+                    example: 'email@host.com'
+                  username:
+                    type: 'string'
+                    example: 'username'
+                  bio:
+                    type: 'string'
+                    example: 'i like programming'
+                  image:
+                    type: 'string'
+                    example: 'image1.png'
 
-                token:
-                  type: 'String'
-                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW0yM2hpMjMxYXNmOSIsImVtYWlsIjoibWVAZ21haWwuY29zaGEiLCJmaXJzdG5hbWUiOiJGcmllZCIsImxhc3RuYW1lIjoiTWlrZWxyaCIsImlhdCI6MTU1NTA1OTc0NX0.NfmPq_sMaD9vmdA7VH0CV2ts_6_q4eql0TiqXQVoS0w'
-      '400':
-        description: Bad request
-      default:
-        description: Unexpected Error
+                  token:
+                    type: 'string'
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJuYW0yM2hpMjMxYXNmOSIsImVtYWlsIjoibWVAZ21haWwuY29zaGEiLCJmaXJzdG5hbWUiOiJGcmllZCIsImxhc3RuYW1lIjoiTWlrZWxyaCIsImlhdCI6MTU1NTA1OTc0NX0.NfmPq_sMaD9vmdA7VH0CV2ts_6_q4eql0TiqXQVoS0w'
+        '400':
+          description: Bad request
+        default:
+          description: Unexpected Error
   /api/auth/verify/{path}:
     # binds a127 app logic to a route
     get:
@@ -160,11 +158,10 @@ paths:
         - application/json
       parameters:
         - in: path
-          name: hash
+          name: path
           description: Verification Hash
           required: true
           type: string
-          example: 373b609f199159befdfsdsd79394df7cba76d9937824ad0b8b30228b6900878ac4832da0dff1682a48099b565dfs6d45
       responses:
         '200':
           description: Verified account successfully
@@ -173,30 +170,35 @@ paths:
             type: object
             properties:
               message:
-                type: 'Object'
+                type: 'object'
                 example: 'Account verified'
         '401':
           description: Verification token not found
-            description: Unexpected Error
   /api/auth/facebook:
     # social user login
     get:
       description: Returns user data from facebook
       responses:
         '200':
-          description: Success
+          description: success
           schema:
             type: object
             properties:
               user:
-                username: 'String'
-                email: 'abc@XZY.com'
-                bio: 'problem solver'
-                token: '....'
-                image: '....jpg'
+                type: object
+                properties:
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  bio:
+                    type: string
+                  token:
+                    type: string
+                  image:
+                    type: string
         '404':
           description: Route not found
-          default: Can't sign in
   /api/auth/google:
     # social user login
     get:
@@ -209,7 +211,7 @@ paths:
             type: object
             properties:
               error:
-                type: 'Object'
+                type: 'object'
                 example: 'Verification token not found'
   /api/auth/twitter:
     # binds a127 app logic to a route
@@ -239,271 +241,108 @@ paths:
       responses:
         '200':
           description: Returns an object with data from Github
-              username: 'String'
-              emial: 'abc@XZY.com'
-              bio: 'problem solver'
-              token: '....'
-              image: '....jpg'
-        '404':
-          description: Route not found
-            # responses may fall through to errors
-  /api/auth/forgetpassword:
-    # social user login
+  /api/articles/{articleSlug}/rate/{rating}:
+    # binds a127 app logic to a route
     post:
-      description: Returns emailed link
+      description: Returns an object with user who rated, title of a rated article, and rating of an article
+      produces:
+        - application/json
       parameters:
-        email: 'abc@XYZ.com'
-      responses:
-        '200':
-          description: Success
-          schema:
-            # a pointer to a definition
-            type: emails the link
-            properties:
-              user:
-                message: 'String'
-                emial: 'abc@XZY.com'
-        '404':
-          description: Email not found
-          # responses may fall through to errors
-          default:
-            description: Can not found URL
-  /api/auth/resetpassword:
-    # social user login
-    put:
-      description: Returns 1 on success or 0
+        - in: path
+          name: articleSlug
+          description: it's a slug of an already existing article
+          required: true
+          type: string
+        - in: path
+          name: rating
+          description: it's a rating of an article.
+          required: true
+          type: string
+        - name: authorization
+          in: header
+          type: string
+          required: true
+
       responses:
         '201':
-          description: Success
+          description: Article Rated
           schema:
             # a pointer to a definition
             type: object
             properties:
+              status:
+                type: 'integer'
+              id:
+                type: 'integer'
               user:
-                username: 'String'
-                emial: 'abc@XZY.com'
-                bio: 'problem solver'
-                token: '....'
-                image: '....jpg'
-        '400':
-          description: invalid token
-          # responses may fall through to errors
-        '201':
-          description: 1
-          # responses may fall through to errors
-          default:
-            description: Can not found URL
-  /api/articles:
-    post:
-      tags:
-        - Articles
-      description: Create an article
-      parameters: 
-        - in: header
-          name: authorization
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  example: 'How the universe is beautiful'
-                body:
-                  type: string
-                  example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. 
-                description: 
-                  type: string
-                  example: 'Lorem Ipsum is simply dummy text of the printing   and typesetting industry. Lorem Ipsum has been the industry'
-                tagList: 
-                  items:
-                    type: string
-                    example: Sport
-      responses:
-        201:
-          description: article created
-          content:
-            application/json:
-              schema: 
                 type: object
-                properties: 
-                  article:
-                    type: object
-                    properties:
-                      id: 
-                        type: integer
-                        example: 1
-                      title: 
-                        type: string
-                        example: Lorem Ipsum is simply dummy text
-                      slug: 
-                        type: string
-                        example: world-class-devs-77f5d72
-                      body:
-                        type: string
-                        example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                      createdAt:
-                        type: string
-                        example: "2019-04-29 15:36:48.352+02"
-                      updatedAt:
-                        type: string
-                        example: "2019-04-29 15:36:48.352+02"
-        400:
-            description: Error
-  /api/articles/{slug}:
-    get:
-      tags:
-        - Articles
-      description: get article by their slug
-      parameters:
-        - in: path
-          name: slug
-          required: true
+                properties:
+                  id:
+                    type: 'integer'
+                  username:
+                    type: 'string'
+              article:
+                type: object
+                properties:
+                  title:
+                    type: 'string'
+                  slug:
+                    type: 'string'
+              rating:
+                type: 'string'
+        '404':
+          description: Verify if a user exists
           schema:
-            type: string
-      responses:
-        200:
-          description: Found article
-          content:
-              application/json:
-                schema: 
-                  type: object
-                  properties: 
-                    article:
-                      type: object
-                      properties:
-                        id: 
-                          type: integer
-                          example: 1
-                        title: 
-                          type: string
-                          example: Lorem Ipsum is simply dummy text
-                        slug: 
-                          type: string
-                          example: world-class-devs-77f5d72
-                        body:
-                          type: string
-                          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                        createdAt:
-                          type: string
-                          example: "2019-04-29 15:36:48.352+02"
-                        updatedAt:
-                          type: string
-                          example: "2019-04-29 15:36:48.352+02"
-        404:
-          description: No article found with the specified slug
-    delete:
-      tags:
-        - Articles
-      description: detes an article by its slug
-      parameters:
-        - in: path
-          name: slug
-          required: true
+            # a pointer to a definition
+            type: object
+            properties:
+              status:
+                type: 'integer'
+              error:
+                type: 'string'
+        '400':
+          description: Check if rating is valid
           schema:
-            type: string
-      responses:
-        200:
-          description: article deleted
-        404:
-          description: no article for you to delete    
-    put:
-      tags:
-        - Articles
-      description: update a single article
-      parameters: 
-        - in: path
-          name:  slug
-          required: true
+            type: object
+            properties:
+              status:
+                type: 'integer'
+              error:
+                type: 'string'
+        '200':
+          description: Update Rating of an article
           schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  example: Lorem Ipsum is simply dummy text
-                body:
-                  type: string
-                  example: Lorem Ipsum is simply dummy text
-                description: 
-                  type: string
-                  example: 'Lorem Ipsum is simply dummy text of the printing   and typesetting industry. Lorem Ipsum has been the industry'
-                tagList: 
-                  items:
-                    type: string
-                    example: Sport
-      responses:
-        201:
-          description: article updated
-          content:
-              application/json:
-                schema: 
-                  type: object
-                  properties: 
-                    article:
-                      type: object
-                      properties:
-                        id: 
-                          type: integer
-                          example: 1
-                        title: 
-                          type: string
-                          example: Lorem Ipsum is simply dummy text
-                        slug: 
-                          type: string
-                          example: world-class-devs-77f5d72
-                        body:
-                          type: string
-                          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                        createdAt:
-                          type: string
-                          example: "2019-04-29 15:36:48.352+02"
-                        updatedAt:
-                          type: string
-                          example: "2019-04-29 15:36:48.352+02"
-  /api/articles/all:
-    get:
-      tags:
-        - Articles
-      description: get all article
-      responses:
-        200:
-          description: list of articles
-          content:
-              application/json:
-                schema: 
-                  type: object
-                  properties: 
-                    article:
-                      type: object
-                      properties:
-                        id: 
-                          type: integer
-                          example: 1
-                        title: 
-                          type: string
-                          example: Lorem Ipsum is simply dummy text
-                        slug: 
-                          type: string
-                          example: world-class-devs-77f5d72
-                        body:
-                          type: string
-                          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                        createdAt:
-                          type: string
-                          example: "2019-04-29 15:36:48.352+02"
-                        updatedAt:
-                          type: string
-                          example: "2019-04-29 15:36:48.352+02"
-        404:
-          description: No article found with the specified slug       
-  
+            # a pointer to a definition
+            type: object
+            properties:
+              status:
+                type: 'integer'
+              id:
+                type: 'integer'
+              user:
+                type: object
+                properties:
+                  id:
+                    type: 'integer'
+                  username:
+                    type: 'string'
+              article:
+                type: object
+                properties:
+                  title:
+                    type: 'string'
+                  slug:
+                    type: 'string'
+              rating:
+                type: 'string'
+              previousRating:
+                type: 'string'
+        '403':
+          description: Do not allow to rate an article more than once
+          schema:
+            type: object
+            properties:
+              status:
+                type: 'integer'
+              error:
+                type: 'string'

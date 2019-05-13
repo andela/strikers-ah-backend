@@ -2,12 +2,20 @@ import models from '../models';
 import Slug from '../helpers/slug';
 import Description from '../helpers/makeDescription';
 import ArticleEvents from '../helpers/articleEvents';
+import enumRate from '../helpers/enumeration';
+import objKey from '../helpers/enumKeyFinder';
 
 const notify = new ArticleEvents();
 
 notify.on('create', args => notify.create(args));
 
-const { article: ArticleModel, user: UserModel, bookmark: bookmarkModel } = models;
+const {
+  article: ArticleModel,
+  rating: ratingModel,
+  user: UserModel,
+  bookmark: bookmarkModel
+} = models;
+
 /**
  * @description  CRUD for article Class
  */
@@ -206,6 +214,96 @@ class Article {
         error: 'No article found for now'
       });
     }
+  }
+
+  /**
+   *@author: Clet Mwunguzi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Rate
+   */
+  static async rateArticle(req, res) {
+    const { rate, slug } = req.params;
+    const rating = enumRate[`${rate}`];
+    const userId = req.user;
+
+    const user = await UserModel.findUser(userId);
+    if (!user) {
+      return res.status(404).send({
+        status: 404,
+        error: 'User not found'
+      });
+    }
+    const { id, username } = user.dataValues;
+
+    if (typeof (rating) === 'undefined') {
+      return res.status(400).send({
+        status: 400,
+        error: 'invalid rating'
+      });
+    }
+
+    if (Number(slug)) {
+      return res.status(400).send({
+        status: 400,
+        error: 'slug of an article can not be a number.'
+      });
+    }
+
+    const results = await ArticleModel.verifyArticle(slug);
+    if (!results) {
+      return res.status(404).send({
+        status: 404,
+        error: 'Article can not be found.'
+      });
+    }
+    const { title: articleTitle } = results.dataValues;
+
+    const rateChecking = await ratingModel.addRate(rating, slug, userId);
+    const [dataResult, returnValue] = rateChecking;
+
+    if (returnValue) {
+      return res.status(201).send({
+        rated_article: {
+          status: 201,
+          id: dataResult.dataValues.id,
+          user: {
+            id,
+            username
+          },
+          article: {
+            title: articleTitle,
+            slug: dataResult.dataValues.articleSlug
+          },
+          rating: rate
+        }
+      });
+    }
+
+    if (!returnValue && dataResult.dataValues.rating !== rating) {
+      const updateRate = await ratingModel.rateUpdate(rateChecking[0].dataValues.id, rating);
+      const { userId: userid } = updateRate[1][0].dataValues;
+      return res.status(200).send({
+        rated_article: {
+          status: 200,
+          id: updateRate[1][0].dataValues.id,
+          user: {
+            id: userid,
+            username
+          },
+          article: {
+            title: articleTitle,
+            slug: updateRate[1][0].dataValues.articleSlug
+          },
+          rating: rate,
+          previousRating: objKey(dataResult.dataValues.rating)
+        }
+      });
+    }
+    return res.status(403).send({
+      status: 403,
+      error: 'Article can only be rated once.'
+    });
   }
 }
 export default Article;
