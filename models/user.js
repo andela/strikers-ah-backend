@@ -38,7 +38,8 @@ const UserModel = (Sequelize, DataTypes) => {
     provideruserid: { type: DataTypes.STRING, allowNull: true, },
     verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     inapp_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
-    email_notifications: { type: DataTypes.BOOLEAN, defaultValue: true }
+    email_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
+    role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'User' }
   });
   User.socialUsers = async (userProfile) => {
     const result = await User.findOrCreate({
@@ -58,16 +59,18 @@ const UserModel = (Sequelize, DataTypes) => {
       foreignKey: 'userid', onDelete: 'CASCADE'
     });
   };
-  User.checkEmail = email => User.findOne({ where: { email } });
-  User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
-  User.checkUser = username => User.findOne({ where: { username } });
-  User.findUser = id => User.findOne({ where: { id } });
-  User.checkuser = authorid => User.findOne({ where: { id: authorid } });
   User.associate = (models) => {
     User.hasMany(models.bookmark, {
       foreignKey: 'userid', onDelete: 'CASCADE'
     });
   };
+  User.checkEmail = email => User.findOne({ where: { email } });
+  User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
+  User.checkUser = username => User.findOne({ where: { username } });
+  User.findUser = id => User.findOne({ where: { id } });
+  User.checkuser = authorid => User.findOne({ where: { id: authorid } });
+  User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image', 'role'] });
+  User.singleUser = async username => User.findOne({ attributes: ['username', 'bio', 'image', 'role'], where: { username } });
   return User;
 };
 export default UserModel;

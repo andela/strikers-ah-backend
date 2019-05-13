@@ -17,7 +17,9 @@ const {
   rating: ratingModel,
   user: UserModel,
   bookmark: bookmarkModel,
-  ArticleLikesAndDislikes
+  ArticleLikesAndDislikes,
+  articlecomment: ArticleCommentModel,
+  articlereadingstats: ArticleReadingStats
 } = models;
 
 /**
@@ -79,6 +81,13 @@ class Article {
         error: 'No article found with the slug provided'
       });
     } else {
+      const { id: articleid } = article;
+      const [, created] = await ArticleReadingStats.findOrCreate({
+        where: { userid: req.user, articleid }
+      });
+      if (created) {
+        await ArticleModel.addViewer(articleid);
+      }
       res.status(200).json({ article });
     }
   }
@@ -220,7 +229,7 @@ class Article {
       });
     }
     const offset = limit * (pageNumber - 1);
-    const getAll = await ArticleModel.getAll(limit, offset);
+    const getAll = await ArticleModel.getAllPages(limit, offset);
     if (getAll.length) {
       res.status(200).json({
         article: getAll,
@@ -397,6 +406,119 @@ class Article {
       });
       res.status(201).json({ article: helper.combineWithArticle(article, { likes, dislikes }) });
     }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Add Article Comments
+   */
+  static async addComment(req, res) {
+    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    if (!articleDetails) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+    if (!req.body.comment.body.trim()) {
+      return res.status(400).json({ message: 'Provide comment' });
+    }
+    const commentBody = req.body.comment.body.trim();
+    const { id: articleid } = articleDetails;
+    try {
+      const newComment = {
+        userid: req.user,
+        articleid,
+        comment: commentBody
+      };
+      let comment = await ArticleCommentModel.create(newComment);
+      const author = await UserModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: newComment.userid } });
+      comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
+      comment.author = author;
+      return res.status(201).json({ comment });
+    } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get Article Comments
+   */
+  static async getComments(req, res) {
+    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    if (!articleDetails) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+    try {
+      const comment = await ArticleCommentModel.listComments(articleDetails.id);
+      const comments = [];
+      await (comment.map(async (entry) => {
+        const author = select.pick(entry, ['username', 'bio', 'image']);
+        entry = select.pick(entry, ['id', 'comment', 'createdAt', 'updatedAt']);
+        entry.author = author;
+        comments.push(entry);
+      }));
+
+      return res.status(200).json({ comment: comments, commentsCount: comments.length });
+    } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Add Article Comments
+   */
+  static async updateComment(req, res) {
+    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    if (!articleDetails) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+    const { commentid } = req.params;
+    const articleId = articleDetails.id;
+    let articleCommentDetails = await ArticleCommentModel.singleComment(articleId, commentid);
+    if (!articleCommentDetails) {
+      return res.status(404).json({ message: 'Article comment not found' });
+    }
+    if (!req.body.comment.body.trim()) {
+      return res.status(400).json({ message: 'Provide comment' });
+    }
+    [articleCommentDetails] = articleCommentDetails;
+    if (articleCommentDetails.userid !== req.user) {
+      return res.status(400).json({ message: 'You are not comment author' });
+    }
+    const commentBody = req.body.comment.body.trim();
+    const { id } = articleCommentDetails;
+    try {
+      let comment = await ArticleCommentModel.update(
+        { comment: commentBody },
+        { where: { id }, returning: true }
+      );
+      [, [comment]] = comment;
+      const author = await UserModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: req.user } });
+      comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
+      comment.author = author;
+      return res.status(200).json({ comment });
+    } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get Article readers
+   */
+  static async getReadingStats(req, res) {
+    if (!req.params.slug) { return helper.jsonResponse(res, 400, { message: 'Provide article slug' }); }
+    const { slug } = req.params;
+    const articleDetails = await ArticleModel.findOne({ where: { slug } });
+    if (!articleDetails) { return helper.jsonResponse(res, 404, { message: 'Article not found' }); }
+    try {
+      let stats = await ArticleReadingStats.readingStats('article', articleDetails.id);
+      let statsCount = stats.length;
+      if (!stats || stats.length === 0) { stats = 'Articles not read '; statsCount = 0; }
+      return helper.jsonResponse(res, 200, { stats, statsCount });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
 }
 export default Article;

@@ -271,6 +271,7 @@ describe('Tests for get article', () => {
     chai
       .request(index)
       .get(`/api/articles/${newSlug}`)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -287,6 +288,7 @@ describe('Get article errors', () => {
     chai
       .request(index)
       .get(`/api/articles/${invalid}`)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(404);
         res.body.should.be.a('object');
@@ -455,5 +457,42 @@ describe('Bookmark tests', () => {
         done();
       })
       .catch(error => logError(error));
+  });
+});
+
+describe('Get users information', () => {
+  it('Should get all users', (done) => {
+    chai.request(index).get('/api/users').set('x-access-token', userToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('profiles').be.a('array');
+        res.body.should.have.property('profileCount');
+        done();
+      })
+      .catch(err => err);
+  });
+  it('Should get user information', (done) => {
+    chai.request(index).get(`/api/users/${user.username}`).set('x-access-token', userToken)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('profile').be.a('object');
+        done();
+      })
+      .catch(err => err);
+  });
+  it('Assign user new role', (done) => {
+    const newRole = {
+      role: 'Moderator'
+    };
+    chai.request(index).post(`/api/users/${user.username}/role`).set('x-access-token', userToken).send(newRole)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message').eql(`${user.username}'s role is now ${newRole.role}`);
+        done();
+      })
+      .catch(err => err);
   });
 });

@@ -13,6 +13,7 @@ module.exports = {
     body: { type: Sequelize.TEXT, required: true },
     taglist: { type: Sequelize.ARRAY(Sequelize.STRING), defaultValue: [] },
     authorid: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'users', key: 'id', onDelete: 'CASCADE' } },
+    views: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
     createdAt: { allowNull: false, type: Sequelize.DATE },
     updatedAt: { allowNull: false, type: Sequelize.DATE },
   }),

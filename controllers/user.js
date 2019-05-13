@@ -26,8 +26,12 @@ const {
   resetpassword: resetPassword,
   following: followingModel,
   followers: followersModel,
-  notifications: notificationModel
+  notification: notificationModel,
+  articlereadingstats: ArticleReadingStats,
+  roleassignment: AssignRoleModel
 } = model;
+
+
 /**
  * @param { class } User -- User }
  */
@@ -479,6 +483,77 @@ class User {
         error: 'incorrent profile'
       });
     }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get User Reading History
+   */
+  static async getReadingHistory(req, res) {
+    if (!req.params.username) { return helper.jsonResponse(res, 400, { message: 'Provide username' }); }
+    const userDetails = await UserModel.findOne({ where: { username: req.params.username } });
+    if (!userDetails) { return helper.jsonResponse(res, 404, { message: 'User not found' }); }
+    try {
+      const stats = await ArticleReadingStats.readingStats('user', userDetails.id);
+      if (!stats || stats.length === 0) { return helper.jsonResponse(res, 404, { message: 'No article read' }); }
+      return helper.jsonResponse(res, 200, { stats, statsCount: stats.length });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get All Users
+   */
+  static async getAllUsers(req, res) {
+    try {
+      const profiles = await UserModel.allUsers();
+      return helper.jsonResponse(res, 200, { profiles, profileCount: profiles.length });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get User Information
+   */
+  static async getUserInformation(req, res) {
+    if (!req.params.username) { return helper.jsonResponse(res, 400, { message: 'Provide username' }); }
+    try {
+      const profile = await UserModel.singleUser(req.params.username);
+      if (!profile) { return helper.jsonResponse(res, 404, { message: 'User not found' }); }
+      return helper.jsonResponse(res, 200, { profile });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Assign role to user
+   */
+  static async assignRole(req, res) {
+    if (!req.params.username) { return helper.jsonResponse(res, 400, { message: 'Provide username' }); }
+    const { role } = req.body;
+    if (!role || !role.trim()) { return helper.jsonResponse(res, 400, { message: 'Provide new role' }); }
+    const roles = ['User', 'Admin', 'Moderator'];
+    if (!roles.includes(role)) { return helper.jsonResponse(res, 400, { message: 'Role not known' }); }
+    try {
+      const profile = await UserModel.findOne({ where: { username: req.params.username } });
+      if (!profile) { return helper.jsonResponse(res, 404, { message: 'User not found' }); }
+      const { id: userid } = profile;
+      let message = `${profile.username}'s role is already ${role}`;
+      if (role === profile.role) { return helper.jsonResponse(res, 404, { message }); }
+      const assigned = await AssignRoleModel.create({ userid, role, assignedby: req.user });
+      if (!assigned) { return helper.jsonResponse(res, 400, { message: 'Something went wrong' }); }
+      await UserModel.update({ role }, { where: { id: userid }, returning: true });
+      message = `${profile.username}'s role is now ${role}`;
+      return helper.jsonResponse(res, 200, { message });
+    } catch (error) { return helper.jsonResponse(res, 400, { error }); }
   }
 }
 export default User;

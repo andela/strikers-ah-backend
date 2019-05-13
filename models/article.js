@@ -20,16 +20,17 @@ const ArticleModel = (sequelize, DataTypes) => {
     },
     taglist: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true, defaultValue: [] },
     description: { type: DataTypes.TEXT, trim: true },
-    authorid: { type: DataTypes.INTEGER, allowNull: false }
+    authorid: { type: DataTypes.INTEGER, allowNull: false },
+    views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }
   }, {});
 
   sequelizeTrasform(Article);
   Article.createArticle = article => Article.create(article);
-  Article.getAll = article => Article.findAll(article);
+  Article.getAll = () => Article.findAll();
   Article.getOneArticle = slug => Article.findOne({ where: { slug } });
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
-  Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
+  Article.getAllPages = (limit, offset) => Article.findAll({ limit, offset });
   Article.verifyArticle = slug => Article.findOne({ where: { slug } });
 
   Article.updateFoundArticle = (id, data) => {
@@ -42,6 +43,7 @@ const ArticleModel = (sequelize, DataTypes) => {
     }, { where: { id } });
     return data;
   };
+  Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
 
   Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
   Article.associate = (models) => {
