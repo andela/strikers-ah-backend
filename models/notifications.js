@@ -13,6 +13,8 @@ const notificationModel = (sequelize, DataTypes) => {
       userid, category, message, link
     });
   };
+  Notifications.findAllNotification = userid => Notifications.findAll({ where: { userid } });
+  Notifications.read = (id, userid) => Notifications.update({ status: 'read' }, { where: { id, userid } });
   return Notifications;
 };
 
