@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import select from 'lodash';
 
 dotenv.config();
 
@@ -80,6 +81,16 @@ const uploadImage = async req => new Promise((resolve, reject) => {
   }
   resolve(fileName);
 });
+const articleReadTime = article => Math.ceil((article.split(' ').length) / 275);
+const combineHelper = (combinedObj, obj2) => ({ ...combinedObj, ...obj2 });
+const combineWithArticle = (article, ...rest) => {
+  const articleObject = select.pick(article, ['id', 'slug', 'taglist', 'title', 'body', 'description', 'authorid', 'createdAt', 'updatedAt']);
+  return {
+    ...articleObject,
+    ...rest.reduce(combineHelper),
+    readTimeMinutes: articleReadTime(articleObject.body)
+  };
+};
 const asyncHandler = callBackFunction => async (req, res, next) => {
   try {
     await callBackFunction(req, res, next);
@@ -100,5 +111,8 @@ export default {
   authenticationResponse,
   decodeToken,
   uploadImage,
-  asyncHandler
+  asyncHandler,
+  articleReadTime,
+  combineWithArticle,
+  combineHelper
 };

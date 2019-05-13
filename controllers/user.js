@@ -7,7 +7,6 @@ import model from '../models/index';
 import Mailer from '../helpers/mailer';
 import helper from '../helpers/helper';
 import blacklist from '../helpers/redis';
-import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 import UserEvents from '../helpers/userEvents';
 
 // const debugLogger = debug('app:*');

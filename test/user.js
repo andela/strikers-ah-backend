@@ -1,4 +1,6 @@
 import chai from 'chai';
+import fs from 'fs';
+import path from 'path';
 import chaiHttp from 'chai-http';
 import debug from 'debug';
 import dotenv from 'dotenv';
@@ -28,6 +30,7 @@ const logError = debug('app:*');
 
 chai.use(chaiHttp);
 chai.should();
+let uploadedImage;
 
 const user = {
   username: 'username',
@@ -116,6 +119,30 @@ describe('Test User', () => {
           done();
         })
         .catch(error => logError(error));
+    });
+    it('should be able to upload an image', () => {
+      chai.request(app)
+        .post('/api/auth/profile').set('x-auth-token', userToken)
+        .attach('image', fs.readFileSync('images/profile-images/image.jpg'), { filename: 'image.png', contentType: 'multipart/form-data' })
+        .then((res) => {
+          res.body.should.have.property('image');
+          res.body.image.should.be.a('string').contains('.png');
+        });
+    });
+    console.log(uploadedImage);
+    after(() => {
+      const dir = 'images/profile-images';
+      fs.readdir(dir, (err, files) => {
+        files.forEach((file) => {
+          if (!(path.join(dir, file) === 'images/profile-images/image.jpg')) {
+            fs.unlink(path.join(dir, file), (err) => {
+              if (err) {
+                console.log(err);
+              }
+            });
+          }
+        });
+      });
     });
   });
   describe('POST /api/auth/login', () => {

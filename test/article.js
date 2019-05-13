@@ -9,7 +9,13 @@ import index from '../index';
 
 const articleModel = db.article;
 const userModel = db.user;
-
+let slug;
+let userId;
+const newArticle1 = {
+  title: faker.random.words(),
+  description: faker.lorem.paragraph(),
+  body: ''
+};
 chai.should();
 chai.use(chaiHttp);
 
@@ -26,6 +32,15 @@ const user = {
   email: 'nkunzi@gmail.com',
   password: '@Nkunzi1234'
 };
+dotenv.config();
+process.env.NODE_ENV = 'test';
+
+describe('Cleaning the database', () => {
+  before('Cleaning the database first', async () => {
+    await articleModel.destroy({ truncate: true, cascade: true });
+    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+  });
+});
 
 // A user to be used to update an article that they didn't create
 const newUser = {
@@ -112,12 +127,12 @@ describe('It checks title errors', () => {
   });
 });
 describe('Test the body', () => {
+  const newArticle = {
+    title: faker.random.words(),
+    description: faker.lorem.paragraph(),
+    body: ''
+  };
   it('should not create and article if the body is empty', (done) => {
-    const newArticle = {
-      title: faker.random.words(),
-      description: faker.lorem.paragraph(),
-      body: ''
-    };
     chai
       .request(index)
       .post('/api/articles')
