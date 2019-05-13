@@ -36,8 +36,10 @@ class Article {
    */
   static async createArticle(req, res) {
     const {
-      title, body, taglist, description
+      title, body, taglist, description,
     } = req.body;
+    const image = (req.file ? req.file.url : 'null');
+
     if (!title) {
       return res.status(400).json({ error: 'title can not be null' });
     }
@@ -45,7 +47,7 @@ class Article {
       return res.status(400).json({ error: 'body can not be null' });
     }
     const authorid = req.user;
-    const checkuser = await UserModel.checkuser(authorid);
+    const checkuser = await UserModel.checkuserExistance(authorid);
     if (!checkuser) {
       return res.status(404).json({
         error: 'Please register'
@@ -56,16 +58,24 @@ class Article {
     const descriptData = descriptionInstance.makeDescription();
     const slug = slugInstance.returnSlug();
     const newArticle = {
-      title,
-      body,
-      description: descriptData,
-      slug,
-      authorid,
-      taglist
+      title, body, description: descriptData, slug, authorid, taglist, image
     };
     const article = await ArticleModel.createArticle(newArticle);
     notify.emit('create', newArticle);
-    return res.status(201).json({ article });
+    return res.status(201).json({
+      article: {
+        id: article.id,
+        title: article.title,
+        body: article.body,
+        description: article.description,
+        slug: article.slug,
+        author: checkuser,
+        taglist: article.taglist,
+        image: article.image,
+        updatedAt: article.updatedAt,
+        createdAt: article.createdAt
+      },
+    });
   }
 
   /**
@@ -146,38 +156,29 @@ class Article {
     const {
       title, body, taglist, description
     } = req.body;
-    if (!title) {
-      return res.status(400).json({ error: 'title can not be null' });
-    }
-    if (!body) {
-      return res.status(400).json({ error: 'body can not be null' });
-    }
     const authorid = req.user;
     const searchArticle = await ArticleModel.findArticleSlug(authorid, slug);
     if (!searchArticle) {
-      res.status(404).json({
+      return res.status(404).json({
         error: 'No article found for you to edit'
       });
-    } else {
-      const { id } = searchArticle;
-      const slugInstance = new Slug(title);
-      const descripInstance = new Description(description, body);
-      const descriptData = descripInstance.makeDescription();
-      const newSlug = slugInstance.returnSlug();
-      const updatedArticle = {
-        title,
-        body,
-        description: descriptData,
-        slug: newSlug,
-        authorid,
-        taglist
-      };
-      const updateArticle = await ArticleModel.updateFoundArticle(id, updatedArticle);
-      res.status(200).json({
-        message: 'Article updated',
-        article: updateArticle
-      });
     }
+    const slugInstance = new Slug(title);
+    const newSlug = slugInstance.returnSlug();
+    const { id } = searchArticle;
+    const updatedArticle = {
+      title: (title.length !== 0) ? title : searchArticle.title,
+      body: (body.length !== 0) ? body : searchArticle.body,
+      description: description || searchArticle.description,
+      slug: (newSlug.length === 8) ? searchArticle.slug : newSlug,
+      authorid,
+      taglist: (!taglist) ? taglist : searchArticle.taglist
+    };
+    const updateArticle = await ArticleModel.updateFoundArticle(id, updatedArticle);
+    res.status(200).json({
+      message: 'Article updated',
+      article: updateArticle
+    });
   }
 
   /**

@@ -387,7 +387,8 @@ let newSlug3;
 describe('Update tests', () => {
   const newArticle = {
     title: faker.lorem.sentence(),
-    body: faker.lorem.paragraphs()
+    body: faker.lorem.paragraphs(),
+    description: 'Adipisci sed sit est deserunt. Et doloremque ullam eius incidunt ipsum minima et aperiam consectetur. Ex architecto corrupti.',
   };
   it('should create an article to be updated', (done) => {
     chai

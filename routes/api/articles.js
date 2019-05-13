@@ -5,13 +5,13 @@ import articleCommentController from '../../controllers/articlecomment';
 import errorHandler from '../../middlewares/errorHandler';
 import Strategy from '../../middlewares/auth';
 import helper from '../../helpers/helper';
-import cloudinary from '../../middlewares/cloudinary';
+import imageUpload from '../../middlewares/imageUpload';
 
 const router = express.Router();
 
 router.get('/all', errorHandler(articleController.getAllArticles));
 router.get('/reports', AuthToken, articleController.getReportedArticle);
-router.post('/', AuthToken, cloudinary, errorHandler(articleController.createArticle));
+router.post('/', AuthToken, imageUpload, articleController.createArticle);
 router.get('/:slug', AuthToken, errorHandler(articleController.getArticle));
 router.get('/', errorHandler(articleController.articlePagination));
 router.post('/:slug/bookmark', AuthToken, errorHandler(articleController.bookmarkArticle));
