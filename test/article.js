@@ -32,40 +32,53 @@ describe('Cleaning the database', () => {
 const user = {
   username: 'nkunziinnocent',
   email: 'nkunzi@gmail.com',
-  password: '@Nkunzi1234',
+  password: '@Nkunzi1234'
 };
 
 // A user to be used to update an article that they didn't create
 const newUser = {
   username: 'isharaketis',
   email: 'ishara@gmail.com',
-  password: 'Ishara@123',
+  password: 'Ishara@123'
 };
 let userToken, testToken;
 describe('Create a user to be used in in creating article', () => {
   it('should create a user', (done) => {
-    chai.request(index).post('/api/auth/signup').send(user).then((res) => {
-      res.should.have.status(200);
-      res.body.user.should.be.a('object');
-      res.body.user.should.have.property('username');
-      userToken = res.body.user.token;
-      done();
-    })
+    chai
+      .request(index)
+      .post('/api/auth/signup')
+      .send(user)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.user.should.be.a('object');
+        res.body.user.should.have.property('username');
+        userToken = res.body.user.token;
+        done();
+      })
       .catch(error => logError(error));
   });
 
   it('should create another user to test article ownsershp', () => {
-    chai.request(index).post('/api/auth/signup').send(newUser).then((res) => {
-      res.should.have.status(200);
-      res.body.user.should.be.a('object');
-      res.body.user.should.have.property('username');
-      testToken = res.body.user.token;
-    });
+    chai
+      .request(index)
+      .post('/api/auth/signup')
+      .send(newUser)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.user.should.be.a('object');
+        res.body.user.should.have.property('username');
+        testToken = res.body.user.token;
+      })
+      .catch(error => logError(error));
   });
 });
 describe('Create an article', () => {
   it('should create an article', (done) => {
-    chai.request(index).post('/api/articles').send(fakeData).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles')
+      .send(fakeData)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -86,10 +99,13 @@ describe('It checks title errors', () => {
     const newArticle = {
       title: '',
       description: faker.lorem.paragraph(),
-      body: faker.lorem.paragraphs(),
-      authorid: 100
+      body: faker.lorem.paragraphs()
     };
-    chai.request(index).post('/api/articles').set('x-access-token', `${userToken}`).send(newArticle)
+    chai
+      .request(index)
+      .post('/api/articles')
+      .set('x-access-token', `${userToken}`)
+      .send(newArticle)
       .then((res) => {
         res.should.have.status(400);
         res.body.should.be.a('object');
@@ -104,9 +120,13 @@ describe('Test the body', () => {
     const newArticle = {
       title: faker.random.words(),
       description: faker.lorem.paragraph(),
-      body: '',
+      body: ''
     };
-    chai.request(index).post('/api/articles').send(newArticle).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles')
+      .send(newArticle)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(400);
         res.body.should.be.a('object');
@@ -118,10 +138,13 @@ describe('Test the body', () => {
   it('should return an error if the body is not predefined', (done) => {
     const longTitleArticle = {
       title: faker.random.words(),
-      description: faker.lorem.paragraph(),
-      authorid: 100
+      description: faker.lorem.paragraph()
     };
-    chai.request(index).post('/api/articles').send(longTitleArticle).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles')
+      .send(longTitleArticle)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(400);
         res.body.should.be.a('object');
@@ -134,11 +157,16 @@ describe('Test the body', () => {
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title: 'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
+      title:
+        'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
       body: faker.lorem.paragraphs(),
-      description: faker.lorem.paragraph(),
+      description: faker.lorem.paragraph()
     };
-    chai.request(index).post('/api/articles').send(longTitleArticle).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles')
+      .send(longTitleArticle)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.be.a('object');
@@ -151,10 +179,14 @@ describe('Test the title', () => {
 describe('Test description', () => {
   const newArticle = {
     title: faker.lorem.sentence(),
-    body: faker.lorem.paragraphs(),
+    body: faker.lorem.paragraphs()
   };
   it('should provide a description if not provided', (done) => {
-    chai.request(index).post('/api/articles').send(newArticle).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles')
+      .send(newArticle)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -166,7 +198,11 @@ describe('Test description', () => {
 });
 describe('Pagination tests', () => {
   it('should create an article to be used in pagination test', (done) => {
-    chai.request(index).post('/api/articles').send(fakeData).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles')
+      .send(fakeData)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -176,19 +212,25 @@ describe('Pagination tests', () => {
       .catch(error => logError(error));
   });
   it('should select apecified article on a given page', (done) => {
-    chai.request(index).get('/api/articles?page=1&limit=1').then((res) => {
-      res.should.have.status(200);
-      done();
-    })
+    chai
+      .request(index)
+      .get('/api/articles?page=1&limit=1')
+      .then((res) => {
+        res.should.have.status(200);
+        done();
+      })
       .catch(error => logError(error));
   });
   it('should return an error if the page and limit specified are beyond limit', (done) => {
-    chai.request(index).get('/api/articles?page=9&limit=9').then((res) => {
-      res.should.have.status(404);
-      res.body.should.be.a('object');
-      res.body.should.have.property('error').eql('No article found for now');
-      done();
-    })
+    chai
+      .request(index)
+      .get('/api/articles?page=9&limit=9')
+      .then((res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error').eql('No article found for now');
+        done();
+      })
       .catch(error => logError(error));
   });
 });
@@ -198,10 +240,14 @@ describe('Tests for get article', () => {
   const newArticle = {
     title: 'hello world',
     description: faker.lorem.paragraph(),
-    body: faker.lorem.paragraphs(),
+    body: faker.lorem.paragraphs()
   };
   it('should create an article to be used in get', (done) => {
-    chai.request(index).post('/api/articles/').set('x-access-token', `${userToken}`).send(newArticle)
+    chai
+      .request(index)
+      .post('/api/articles/')
+      .set('x-access-token', `${userToken}`)
+      .send(newArticle)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -211,24 +257,32 @@ describe('Tests for get article', () => {
       .catch(error => logError(error));
   });
   it('should return an article created', (done) => {
-    chai.request(index).get(`/api/articles/${newSlug}`).then((res) => {
-      res.should.have.status(200);
-      res.body.should.be.a('object');
-      res.body.should.have.property('article');
-      res.body.article.should.have.property('slug').eql(newSlug);
-      done();
-    }).catch(error => logError(error));
+    chai
+      .request(index)
+      .get(`/api/articles/${newSlug}`)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('article');
+        res.body.article.should.have.property('slug').eql(newSlug);
+        done();
+      })
+      .catch(error => logError(error));
   });
 });
 describe('Get article errors', () => {
   const invalid = 'jkfaljfalj';
   it('should not return an article if the article slug is not in the database', (done) => {
-    chai.request(index).get(`/api/articles/${invalid}`).then((res) => {
-      res.should.have.status(404);
-      res.body.should.be.a('object');
-      res.body.should.have.property('error').eql('No article found with the slug provided');
-      done();
-    }).catch(error => logError(error));
+    chai
+      .request(index)
+      .get(`/api/articles/${invalid}`)
+      .then((res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        res.body.should.have.property('error').eql('No article found with the slug provided');
+        done();
+      })
+      .catch(error => logError(error));
   });
 });
 describe('Delete article', () => {
@@ -236,10 +290,14 @@ describe('Delete article', () => {
   const newArticle = {
     title: 'hello world devs',
     description: faker.lorem.paragraph(),
-    body: faker.lorem.paragraphs(),
+    body: faker.lorem.paragraphs()
   };
   it('should create an article to be deleted', (done) => {
-    chai.request(index).post('/api/articles/').send(newArticle).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles/')
+      .send(newArticle)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -250,25 +308,37 @@ describe('Delete article', () => {
   });
 
   it('should delete an article', (done) => {
-    chai.request(index).delete(`/api/articles/${newSlug2}`).set('x-access-token', `${userToken}`).then((res) => {
-      res.should.have.status(200);
-      res.body.should.have.property('message').eql('Article deleted');
-      done();
-    })
+    chai
+      .request(index)
+      .delete(`/api/articles/${newSlug2}`)
+      .set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.have.property('message').eql('Article deleted');
+        done();
+      })
       .catch(error => logError(error));
   });
   it('should not delete an article if it is not existing', (done) => {
-    chai.request(index).delete(`/api/articles/${newSlug2}`).set('x-access-token', `${userToken}`).then((res) => {
-      res.should.have.status(404);
-      res.body.should.have.property('error').eql('No article found for you to delete');
-      done();
-    })
+    chai
+      .request(index)
+      .delete(`/api/articles/${newSlug2}`)
+      .set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(404);
+        res.body.should.have.property('error').eql('No article found for you to delete');
+        done();
+      })
       .catch(error => logError(error));
   });
 });
 describe('Test all articles', () => {
   it('should create an article', (done) => {
-    chai.request(index).post('/api/articles').send(fakeData).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles')
+      .send(fakeData)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -278,18 +348,24 @@ describe('Test all articles', () => {
       .catch(error => logError(error));
   });
   it('should return all the articles', () => {
-    chai.request(index).get('/api/articles/all').then((res) => {
-      res.should.have.status(200);
-      res.body.should.be.a('object');
-    })
+    chai
+      .request(index)
+      .get('/api/articles/all')
+      .then((res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+      })
       .catch(error => logError(error));
   });
   it('should return an error message if there is no article', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
-    chai.request(index).get('/api/articles/all').then((res) => {
-      res.should.have.status(404);
-      res.body.should.have.property('error').eql('Not article found for now');
-    })
+    chai
+      .request(index)
+      .get('/api/articles/all')
+      .then((res) => {
+        res.should.have.status(404);
+        res.body.should.have.property('error').eql('Not article found for now');
+      })
       .catch(error => logError(error));
   });
 });
@@ -297,10 +373,14 @@ let newSlug3;
 describe('Update tests', () => {
   const newArticle = {
     title: faker.lorem.sentence(),
-    body: faker.lorem.paragraphs(),
+    body: faker.lorem.paragraphs()
   };
   it('should create an article to be updated', (done) => {
-    chai.request(index).post('/api/articles/').send(newArticle).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post('/api/articles/')
+      .send(newArticle)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -311,7 +391,11 @@ describe('Update tests', () => {
   });
 
   it('should not update an article if a user is not the owner of the article', (done) => {
-    chai.request(index).put(`/api/articles/${newSlug3}`).send(newArticle).set('x-access-token', `${testToken}`)
+    chai
+      .request(index)
+      .put(`/api/articles/${newSlug3}`)
+      .send(newArticle)
+      .set('x-access-token', `${testToken}`)
       .then((res) => {
         res.should.have.status(404);
         res.body.should.be.a('object');
@@ -321,7 +405,11 @@ describe('Update tests', () => {
       .catch(error => logError(error));
   });
   it('should update an article', (done) => {
-    chai.request(index).put(`/api/articles/${newSlug3}`).send(newArticle).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .put(`/api/articles/${newSlug3}`)
+      .send(newArticle)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -334,19 +422,27 @@ describe('Update tests', () => {
 });
 describe('Bookmark tests', () => {
   it('should bookmark an article', (done) => {
-    chai.request(index).post(`/api/articles/${newSlug3}/bookmark`).set('x-access-token', `${userToken}`).then((res) => {
-      res.should.have.status(201);
-      res.body.should.be.a('object');
-      done();
-    })
+    chai
+      .request(index)
+      .post(`/api/articles/${newSlug3}/bookmark`)
+      .set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        done();
+      })
       .catch(error => logError(error));
   });
   it('should not bookmark an article for the second time', (done) => {
-    chai.request(index).post(`/api/articles/${newSlug3}/bookmark`).set('x-access-token', `${userToken}`).then((res) => {
-      res.should.have.status(403);
-      res.body.should.be.a('object');
-      done();
-    })
+    chai
+      .request(index)
+      .post(`/api/articles/${newSlug3}/bookmark`)
+      .set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        done();
+      })
       .catch(error => logError(error));
   });
 });

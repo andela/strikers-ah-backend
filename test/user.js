@@ -56,7 +56,7 @@ describe('Test User', () => {
           done();
         })
         .catch(error => logError(error));
-    }).timeout(15000);
+    });
 
     it('Should not create user if both email and username are taken', (done) => {
       chai
@@ -69,7 +69,7 @@ describe('Test User', () => {
           done();
         })
         .catch(error => logError(error));
-    }).timeout(15000);
+    });
 
     it('Should not create user if username is taken', (done) => {
       user.email = 'email@tes1.com';
@@ -165,15 +165,6 @@ describe('Test User', () => {
         });
       });
 
-      userController.socialLogin(userObj).then(() => {
-        UserModel.findAll({
-          limit: 1,
-          order: [['createdAt', 'DESC']]
-        }).then((res) => {
-          res.should.be.a('array');
-        });
-      });
-      done();
       const provider = providerList[Math.floor(Math.random() * providerList.length)];
       const userObj = {
         user: {

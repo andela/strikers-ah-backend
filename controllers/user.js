@@ -9,6 +9,9 @@ import helper from '../helpers/helper';
 import blacklist from '../helpers/redis';
 import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 import UserEvents from '../helpers/userEvents';
+
+// const debugLogger = debug('app:*');
+
 /* eslint-disable class-methods-use-this */
 
 const notify = new UserEvents();
@@ -259,6 +262,44 @@ class User {
   }
 
   /**
+   * @author Mwibutsa Floribert
+   * @param {Object} req request containing new user details
+   * @param {Object} res response containing edit user details
+   * @returns { Object } updated user details
+   */
+  static async editProfile(req, res) {
+    const { body: data } = req;
+    const { id, email, username } = helper.decodeToken(req);
+    const userProfileImage = await helper.uploadImage(req);
+    const updatedUser = await UserModel.update(
+      {
+        ...data,
+        email: email.length ? email : data.email,
+        username: username.length ? username : data.username,
+        image: userProfileImage
+      },
+      {
+        where: {
+          id
+        },
+        returning: true
+      }
+    );
+    res
+      .status(201)
+      .json(
+        select.pick(updatedUser[1][0], [
+          'firstname',
+          'lastname',
+          'email',
+          'username',
+          'bio',
+          'image'
+        ])
+      );
+  }
+
+  /**
    * @author frank harerimana
    * @param {*} req
    * @param {*} res
@@ -439,55 +480,6 @@ class User {
         error: 'incorrent profile'
       });
     }
-  }
-
-  /** @author Mwibutsa Floribert
-   * @param {Object} req request containing new user details
-   * @param {Object} res response containing edit user details
-   * @returns { Object } updated user details
-   */
-  static async editProfile(req, res) {
-    const { body: data } = req;
-    const { id, email, username } = helper.decodeToken(req);
-    const userProfileImage = await helper.uploadImage(req);
-    const updatedUser = await UserModel.update(
-      {
-        ...data,
-        email: email.length ? email : data.email,
-        username: username.length ? username : data.username,
-        image: userProfileImage
-      },
-      {
-        where: {
-          id
-        },
-        returning: true
-      }
-    );
-    res
-      .status(201)
-      .json(
-        select.pick(updatedUser[1][0], [
-          'firstname',
-          'lastname',
-          'email',
-          'username',
-          'bio',
-          'image'
-        ])
-      );
-    res
-      .status(202)
-      .json(
-        select.pick(updatedUser[1][0], [
-          'firstname',
-          'lastname',
-          'email',
-          'username',
-          'bio',
-          'image'
-        ])
-      );
   }
 }
 export default User;

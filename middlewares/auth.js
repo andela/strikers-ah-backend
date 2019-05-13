@@ -8,9 +8,7 @@ import GithubStrategy from './passportStrategy/github';
 import models from '../models/index';
 import helper from '../helpers/helper';
 
-const {
-  user
-} = models;
+const { user } = models;
 
 dotenv.config();
 /**
