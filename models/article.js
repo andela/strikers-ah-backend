@@ -26,11 +26,11 @@ const ArticleModel = (sequelize, DataTypes) => {
 
   sequelizeTrasform(Article);
   Article.createArticle = article => Article.create(article);
-  Article.getAll = article => Article.findAll(article);
+  Article.getAll = () => Article.findAll();
   Article.getOneArticle = slug => Article.findOne({ where: { slug } });
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
-  Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
+  Article.getAllPages = (limit, offset) => Article.findAll({ limit, offset });
   Article.verifyArticle = slug => Article.findOne({ where: { slug } });
 
   Article.updateFoundArticle = (id, data) => {

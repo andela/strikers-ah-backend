@@ -9,7 +9,7 @@ import helper from '../../helpers/helper';
 const router = express.Router();
 
 router.get('/all', errorHandler(articleController.getAllArticles));
-router.get('/:slug', errorHandler(articleController.getArticle));
+router.get('/:slug', AuthToken, errorHandler(articleController.getArticle));
 router.get('/', errorHandler(articleController.articlePagination));
 router.post('/:slug/bookmark', AuthToken, errorHandler(articleController.bookmarkArticle));
 router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);

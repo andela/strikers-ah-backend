@@ -271,6 +271,7 @@ describe('Tests for get article', () => {
     chai
       .request(index)
       .get(`/api/articles/${newSlug}`)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -287,6 +288,7 @@ describe('Get article errors', () => {
     chai
       .request(index)
       .get(`/api/articles/${invalid}`)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(404);
         res.body.should.be.a('object');
@@ -460,7 +462,7 @@ describe('Bookmark tests', () => {
 
 describe('Get users information', () => {
   it('Should get all users', (done) => {
-    chai.request(index).get('/api/users').set('x-access-token', issuedToken)
+    chai.request(index).get('/api/users').set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -471,7 +473,7 @@ describe('Get users information', () => {
       .catch(err => err);
   });
   it('Should get user information', (done) => {
-    chai.request(index).get(`/api/users/${user.username}`).set('x-access-token', issuedToken)
+    chai.request(index).get(`/api/users/${user.username}`).set('x-access-token', userToken)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -484,7 +486,7 @@ describe('Get users information', () => {
     const newRole = {
       role: 'Moderator'
     };
-    chai.request(index).post(`/api/users/${user.username}/role`).set('x-access-token', issuedToken).send(newRole)
+    chai.request(index).post(`/api/users/${user.username}/role`).set('x-access-token', userToken).send(newRole)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');

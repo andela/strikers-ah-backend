@@ -175,7 +175,7 @@ describe('Article commenting', () => {
       .catch(err => err);
   });
   it('Should get all articles', (done) => {
-    chai.request(index).get('/api/articles').set('x-access-token', tokenIssued)
+    chai.request(index).get('/api/articles/all').set('x-access-token', tokenIssued)
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
@@ -194,7 +194,7 @@ describe('Article commenting', () => {
       .catch(err => err);
   });
 
-  it('Should get user\'s reading history', (done) => {
+  it('Should get user reading history', (done) => {
     chai.request(index).get(`/api/users/${user.username}/stats`).set('x-access-token', tokenIssued)
       .then((res) => {
         res.should.have.status(200);
@@ -206,7 +206,7 @@ describe('Article commenting', () => {
       .catch(err => err);
   });
 
-  it('Should get article\'s readers', (done) => {
+  it('Should get article readers', (done) => {
     chai.request(index).get(`/api/articles/${articleSlug}/stats`).set('x-access-token', tokenIssued)
       .then((res) => {
         res.should.have.status(200);

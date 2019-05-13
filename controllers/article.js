@@ -229,7 +229,7 @@ class Article {
       });
     }
     const offset = limit * (pageNumber - 1);
-    const getAll = await ArticleModel.getAll(limit, offset);
+    const getAll = await ArticleModel.getAllPages(limit, offset);
     if (getAll.length) {
       res.status(200).json({
         article: getAll,
@@ -459,7 +459,7 @@ class Article {
         comments.push(entry);
       }));
 
-      return res.status(201).json({ comment: comments, commentsCount: comments.length });
+      return res.status(200).json({ comment: comments, commentsCount: comments.length });
     } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
   }
 
@@ -498,7 +498,7 @@ class Article {
       const author = await UserModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: req.user } });
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
-      return res.status(201).json({ comment });
+      return res.status(200).json({ comment });
     } catch (error) { return res.status(400).json({ error: error.errors[0].message }); }
   }
 
