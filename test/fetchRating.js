@@ -19,14 +19,12 @@ chai.use(chaiHttp);
  */
 
 const user = {
-  id: 3,
   username: 'mwunguzi',
   email: 'clet@hjih.com',
   password: '@Cletw1234',
 };
 
 const mockUser = {
-  id: 2,
   username: 'George',
   email: 'username@ui.com',
   password: '@Username19#'
@@ -154,7 +152,6 @@ describe('Fetch rate for an article', () => {
         res.body.rated_article.should.have.property('status').equal(201);
         res.body.rated_article.should.have.property('id');
         res.body.rated_article.should.have.property('user');
-        res.body.rated_article.user.should.have.property('id').equal(2);
         res.body.rated_article.user.should.have.property('username').equal('George');
         res.body.rated_article.should.have.property('article');
         res.body.rated_article.article.should.have.property('title').equal(fakeData.title);
@@ -176,7 +173,6 @@ describe('Fetch rate for an article', () => {
         res.body.rated_article.should.have.property('status').equal(201);
         res.body.rated_article.should.have.property('id');
         res.body.rated_article.should.have.property('user');
-        res.body.rated_article.user.should.have.property('id').equal(3);
         res.body.rated_article.user.should.have.property('username').equal('mwunguzi');
         res.body.rated_article.should.have.property('article');
         res.body.rated_article.article.should.have.property('title').equal(fakeData.title);

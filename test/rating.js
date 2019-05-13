@@ -25,7 +25,6 @@ const user = {
 };
 
 const mockUser = {
-  id: 2,
   username: 'George',
   email: 'username@ui.com',
   password: '@Username19#'
@@ -36,8 +35,8 @@ let userToken, userTokenId;
 let articleSlug;
 describe('Create a user for rating an article', () => {
   before('Cleaning the database first', async () => {
-    await articleModel.destroy({ truncate: true, cascade: true });
     await userModel.destroy({ truncate: true, cascade: true });
+    await articleModel.destroy({ truncate: true, cascade: true });
     await ratingModel.destroy({ truncate: true, cascade: true });
   });
   it('should create a user', (done) => {
@@ -100,7 +99,7 @@ describe('Create an article', () => {
         res.body.article.should.have.property('title').equal(fakeData.title);
         res.body.article.should.have.property('description');
         res.body.article.should.have.property('body').equal(fakeData.body);
-        res.body.article.should.have.property('authorid').equal(3);
+        res.body.article.should.have.property('authorid');
         res.body.article.should.have.property('taglist');
         res.body.article.should.have.property('createdAt');
         res.body.article.should.have.property('updatedAt');
