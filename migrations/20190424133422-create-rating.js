@@ -9,11 +9,21 @@ module.exports = {
     },
     userId: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      },
+      onDelete: 'CASCADE',
     },
     articleSlug: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'articles',
+        key: 'slug'
+      },
+      onDelete: 'CASCADE',
     },
     rating: {
       type: Sequelize.INTEGER,
@@ -28,5 +38,5 @@ module.exports = {
       type: Sequelize.DATE
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('ratings')
+  down: queryInterface => queryInterface.dropTable('ratings')
 };

@@ -417,7 +417,8 @@ describe('create user model method', () => {
 describe('find follow record', () => {
   it('should be able return the record', async () => {
     try {
-      const result = await followingModel.findRecord(1, 1);
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      const result = await followingModel.findRecord(fuser.dataValues.id, fuser.dataValues.id);
       result.should.be.a('object');
     } catch (error) {
       logError(error);
@@ -572,7 +573,8 @@ describe('follow user with invalid token', () => {
 describe('delete follower record', () => {
   it('it should be able delete follow record', async () => {
     try {
-      await followersModel.unfollow(1, 1);
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      await followersModel.unfollow(fuser.dataValues.id, fuser.dataValues.id);
     } catch (error) {
       logError(error);
     }
@@ -709,7 +711,8 @@ describe('signed user single notification', () => {
 describe('create notification model method', () => {
   it('it should create a new notification', async () => {
     try {
-      await followingModel.unfollow(1, 1);
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      await followingModel.unfollow(fuser.dataValues.id, fuser.dataValues.id);
     } catch (error) {
       logError(error);
     }

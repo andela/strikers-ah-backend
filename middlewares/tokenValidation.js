@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import promiseResolver from '../helpers/promiseResolver';
+import client from '../config/redisConfig';
 
 dotenv.config();
 
@@ -15,12 +16,11 @@ const validateToken = async (req, res, next) => {
   }
   if (token) {
     try {
-      const decoded = await jwt.verify(token, process.env.SECRETKEY);
-      const resolver = await promiseResolver(token);
-      if (resolver === 'blacklisted') {
-        return res.send({ status: 401, error: 'Token is no longer valid' });
+      const decoded = await jwt.verify(token, process.env.secretKey);
+      if (client.connected) {
+        const resolver = await promiseResolver(token);
+        if (resolver === 'blacklisted') { return res.send({ status: 401, error: 'Token is no longer valid' }); }
       }
-
       const { id: userid } = decoded;
       req.user = userid;
       next();

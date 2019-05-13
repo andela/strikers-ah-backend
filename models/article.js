@@ -3,7 +3,12 @@ import sequelizeTrasform from 'sequelize-transforms';
 const ArticleModel = (sequelize, DataTypes) => {
   const Article = sequelize.define('article', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    slug: { type: DataTypes.STRING, allowNull: false, unique: true },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      onUpdate: 'CASCADE'
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -25,7 +30,6 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
   Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
-  Article.verifyArticle = id => Article.findOne({ where: { id } });
   Article.verifyArticle = slug => Article.findOne({ where: { slug } });
 
   Article.updateFoundArticle = (id, data) => {
@@ -44,6 +48,7 @@ const ArticleModel = (sequelize, DataTypes) => {
     Article.belongsTo(models.user, {
       foreignKey: 'authorid', onDelete: 'CASCADE'
     });
+    Article.hasMany(models.rating, { foreignKey: 'articleSlug', onDelete: 'CASCADE' });
   };
   Article.associate = (models) => {
     Article.hasMany(models.bookmark, {

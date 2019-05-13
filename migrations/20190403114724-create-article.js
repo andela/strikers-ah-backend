@@ -2,7 +2,12 @@
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable('articles', {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    slug: { type: Sequelize.STRING, allowNull: false, unique: true },
+    slug:
+    {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+    },
     title: { type: Sequelize.STRING, required: true },
     description: { type: Sequelize.TEXT, allowNull: true },
     body: { type: Sequelize.TEXT, required: true },
