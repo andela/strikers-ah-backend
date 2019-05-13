@@ -27,7 +27,7 @@ const {
   resetpassword: resetPassword,
   following: followingModel,
   followers: followersModel,
-  notification: notificationModel
+  notifications: notificationModel
 } = model;
 /**
  * @param { class } User -- User }
