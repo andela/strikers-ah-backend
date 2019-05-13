@@ -9,6 +9,7 @@ import helper from '../../helpers/helper';
 const router = express.Router();
 
 router.get('/all', errorHandler(articleController.getAllArticles));
+router.get('/reports', AuthToken, articleController.getReportedArticle);
 router.get('/:slug', AuthToken, errorHandler(articleController.getArticle));
 router.get('/', errorHandler(articleController.articlePagination));
 router.post('/:slug/bookmark', AuthToken, errorHandler(articleController.bookmarkArticle));
@@ -26,11 +27,15 @@ router.post('/:slug/comments', AuthToken, articleController.addComment);
 router.get('/:slug/comments', AuthToken, articleController.getComments);
 router.put('/:slug/comments/:commentid', AuthToken, articleController.updateComment);
 router.delete('/:slug/comments/:commentid', AuthToken, articleCommentController.deleteComment);
-router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.post('/:slug/comments/:commentid/like', AuthToken, articleCommentController.likeComment);
 router.get('/:slug/comments/popular', AuthToken, (req, res, next) => { req.commenttype = 'popular'; next(); }, articleCommentController.getComments);
 router.get('/:slug/comments/:commentid/history', AuthToken, articleCommentController.commentEditHistory);
 router.get('/:slug/stats', AuthToken, articleController.getReadingStats);
+router.post('/report/category', AuthToken, articleController.AddReportingCategory);
+router.get('/report/category', AuthToken, articleController.reportingCategories);
+router.put('/report/category/:id', AuthToken, articleController.editReportingCategory);
+router.delete('/report/category/:id', AuthToken, articleController.deleteReportingCategory);
+router.post('/:slug/report/', AuthToken, articleController.reportingArticle);
 
 
 export default router;

@@ -19,7 +19,9 @@ const {
   bookmark: bookmarkModel,
   ArticleLikesAndDislikes,
   articlecomment: ArticleCommentModel,
-  articlereadingstats: ArticleReadingStats
+  articlereadingstats: ArticleReadingStats,
+  reportingcategory: articleReportingCategory,
+  articlereporting: articleReporting
 } = models;
 
 /**
@@ -519,6 +521,158 @@ class Article {
       if (!stats || stats.length === 0) { stats = 'Articles not read '; statsCount = 0; }
       return helper.jsonResponse(res, 200, { stats, statsCount });
     } catch (error) { return helper.jsonResponse(res, 400, { error }); }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Add reporting category
+   */
+  static async AddReportingCategory(req, res) {
+    const { category } = req.body;
+    if (!category) {
+      return res.status(400).json({ message: 'Provide category name' });
+    }
+    try {
+      const [categoryInfo, created] = await articleReportingCategory.findOrCreate({
+        where: { name: category }
+      });
+      if (created) {
+        return res.status(201).json({ category: categoryInfo });
+      }
+      return res.status(409).json({ message: 'Category already exists' });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} View reporting categories
+   */
+  static async reportingCategories(req, res) {
+    try {
+      const categories = await articleReportingCategory.findAll({ attributes: ['id', 'name'] });
+      if (categories) {
+        return res.status(200).json({ categories });
+      }
+      return res.status(404).json({ message: 'No category found' });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Edit reporting category
+   */
+  static async editReportingCategory(req, res) {
+    const { id } = req.params;
+    const { category } = req.body;
+    if (!category) {
+      return res.status(400).json({ message: 'Provide new category name' });
+    }
+    const findCategory = await articleReportingCategory.findOne({ where: { name: category } });
+    if (findCategory) {
+      return res.status(409).json({ message: 'Category with same name exists' });
+    }
+    try {
+      let reportingCategory = await articleReportingCategory.update(
+        { name: category },
+        { where: { id }, returning: true }
+      );
+      [, [reportingCategory]] = reportingCategory;
+      if (!reportingCategory) {
+        return res.status(200).json({ message: 'Category not found' });
+      }
+      return res.status(200).json({ category: reportingCategory });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Delete reporting category
+   */
+  static async deleteReportingCategory(req, res) {
+    const { id } = req.params;
+    try {
+      await articleReportingCategory.destroy({ where: { id } });
+      return res.status(200).json({ message: 'Category deleted' });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Reporting an article
+   */
+  static async reportingArticle(req, res) {
+    const articleDetails = await ArticleModel.findOne({ where: { slug: req.params.slug } });
+    if (!articleDetails) { return res.status(404).json({ message: 'Article not found' }); }
+    if (!req.body.category) { return res.status(400).json({ message: 'Provide reporting category' }); }
+    const category = await articleReportingCategory.findOne({ where: { name: req.body.category } });
+    if (!category) { return res.status(404).json({ message: 'Reporting category not found' }); }
+    try {
+      const report = {
+        articleid: articleDetails.id,
+        categoryid: category.id,
+        userid: req.user,
+        description: req.body.description || ''
+      };
+      const reported = await articleReporting.create(report);
+      const response = {
+        id: reported.id,
+        category: req.body.category,
+        description: report.description,
+        article: {
+          id: articleDetails.id,
+          slug: req.params.slug,
+          title: articleDetails.title
+        },
+      };
+      return res.status(201).json({ report: response });
+    } catch (error) { return res.status(500).json({ error }); }
+  }
+
+
+  /**
+   *@author: Jacques Nyilinkindi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Get reported articles
+   */
+  static async getReportedArticle(req, res) {
+    try {
+      const reported = await articleReporting.reportedArticles();
+      if (!reported) { return res.status(404).json({ message: 'No reported article found!' }); }
+      const response = reported.map(({
+        id, description, name, articleid, title, slug
+      }) => ({
+        id,
+        category: name,
+        description,
+        article: {
+          id: articleid,
+          slug,
+          title
+        }
+      }));
+      return res.status(200).json({ report: response });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
   }
 }
 export default Article;
