@@ -995,3 +995,301 @@ paths:
               error:
                 type: 'String'
                 example: 'The token you provided is invalid'
+  /api/articles:
+    post:
+      tags:
+        - Articles
+      description: Create an article
+      parameters: 
+        - in: header
+          name: authorization
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: 'How the universe is beautiful'
+                body:
+                  type: string
+                  example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. 
+                description: 
+                  type: string
+                  example: 'Lorem Ipsum is simply dummy text of the printing   and typesetting industry. Lorem Ipsum has been the industry'
+                tagList: 
+                  items:
+                    type: string
+                    example: Sport
+      responses:
+        201:
+          description: article created
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties: 
+                  article:
+                    type: object
+                    properties:
+                      id: 
+                        type: integer
+                        example: 1
+                      title: 
+                        type: string
+                        example: Lorem Ipsum is simply dummy text
+                      slug: 
+                        type: string
+                        example: world-class-devs-77f5d72
+                      body:
+                        type: string
+                        example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                      createdAt:
+                        type: string
+                        example: "2019-04-29 15:36:48.352+02"
+                      updatedAt:
+                        type: string
+                        example: "2019-04-29 15:36:48.352+02"
+        400:
+            description: Error
+  /api/articles/{slug}:
+    get:
+      tags:
+        - Articles
+      description: get article by their slug
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Found article
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties: 
+                    article:
+                      type: object
+                      properties:
+                        id: 
+                          type: integer
+                          example: 1
+                        title: 
+                          type: string
+                          example: Lorem Ipsum is simply dummy text
+                        slug: 
+                          type: string
+                          example: world-class-devs-77f5d72
+                        body:
+                          type: string
+                          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                        createdAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+                        updatedAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+        404:
+          description: No article found with the specified slug
+    delete:
+      tags:
+        - Articles
+      description: detes an article by its slug
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: article deleted
+        404:
+          description: no article for you to delete    
+    put:
+      tags:
+        - Articles
+      description: update a single article
+      parameters: 
+        - in: path
+          name:  slug
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Lorem Ipsum is simply dummy text
+                body:
+                  type: string
+                  example: Lorem Ipsum is simply dummy text
+                description: 
+                  type: string
+                  example: 'Lorem Ipsum is simply dummy text of the printing   and typesetting industry. Lorem Ipsum has been the industry'
+                tagList: 
+                  items:
+                    type: string
+                    example: Sport
+      responses:
+        201:
+          description: article updated
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties: 
+                    article:
+                      type: object
+                      properties:
+                        id: 
+                          type: integer
+                          example: 1
+                        title: 
+                          type: string
+                          example: Lorem Ipsum is simply dummy text
+                        slug: 
+                          type: string
+                          example: world-class-devs-77f5d72
+                        body:
+                          type: string
+                          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                        createdAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+                        updatedAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+  /api/articles/all:
+    get:
+      tags:
+        - Articles
+      description: get all article
+      responses:
+        200:
+          description: list of articles
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties: 
+                    article:
+                      type: object
+                      properties:
+                        id: 
+                          type: integer
+                          example: 1
+                        title: 
+                          type: string
+                          example: Lorem Ipsum is simply dummy text
+                        slug: 
+                          type: string
+                          example: world-class-devs-77f5d72
+                        body:
+                          type: string
+                          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                        createdAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+                        updatedAt:
+                          type: string
+                          example: "2019-04-29 15:36:48.352+02"
+        404:
+          description: No article found with the specified slug
+  /api/articles/rating/articles:
+    get:
+      tags:
+        - Pagination
+      description: Should return a list of article rating per specified page
+      parameters:
+        - in: path
+          name: page
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: should return a list of aricle ratings depending on the page
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  articles:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      userId:
+                        type: integer
+                        example: 2
+                      articleSlug:
+                        type: string
+                        example: hello-world-5baafd3,
+                      rating:
+                        type: integer
+                        example: 1
+                      createdAt:
+                        type: string
+                        example: "2019-05-02T08:01:26.302Z"
+                      updatedAt: 
+                        type: string
+                        example: "2019-05-02T08:01:26.302Z"
+        400:
+          description: No article found
+          
+  /api/articles/rating/articles:
+    get:
+      tags:
+        - Pagination
+      description: Should return a list of article rating per specified page
+      parameters:
+        - in: path
+          name: page and limit
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: should return a list of aricle ratings depending on the page
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  articles:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      userId:
+                        type: integer
+                        example: 2
+                      articleSlug:
+                        type: string
+                        example: hello-world-5baafd3,
+                      rating:
+                        type: integer
+                        example: 1
+                      createdAt:
+                        type: string
+                        example: "2019-05-02T08:01:26.302Z"
+                      updatedAt: 
+                        type: string
+                        example: "2019-05-02T08:01:26.302Z"
+        400:
+          description: No article found

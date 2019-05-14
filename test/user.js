@@ -375,6 +375,7 @@ describe('reset password with an existing email', () => {
       .post('/api/auth/forgetpassword')
       .send({ email: ruser.email })
       .then((result) => {
+        console.log(result.body);
         result.should.have.status(202);
         done();
       })

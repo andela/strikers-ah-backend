@@ -85,15 +85,11 @@ describe('Create a user to be used in in creating article', () => {
 });
 describe('Create an article', () => {
   it('should create an article', (done) => {
-<<<<<<< HEAD
     chai
       .request(index)
       .post('/api/articles')
       .send(fakeData)
       .set('x-access-token', `${userToken}`)
-=======
-    chai.request(index).post('/api/articles').set('x-access-token', `${userToken}`).send(fakeData)
->>>>>>> [Feature rate-article] document this feature with swagger
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('article');
@@ -347,6 +343,32 @@ describe('Delete article', () => {
         done();
       })
       .catch(error => logError(error));
+  });
+});
+describe('Test for ratings pagination', () => {
+  it('should rate an article', (done) => {
+    chai.request(index).post(`/api/articles/${newSlug}/rate/Good`).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.have.property('rated_article');
+        res.body.rated_article.should.be.a('object');
+        done();
+      })
+      .catch(error => logError(error));
+  });
+  it('Paginates article ratings', (done) => {
+    chai.request(index).get('/api/articles/rating/articles?page=1&limit=1').then((res) => {
+      res.should.have.status(200);
+      done();
+    })
+      .catch(error => logError(error));
+  });
+  it('should display an error if the article is not found', (done) => {
+    chai.request(index).get('/api/articles/rating/articles?page=10&limit=10').then((res) => {
+      res.should.have.status(404);
+      res.body.should.have.property('error').eql('No article found');
+      done();
+    }).catch(error => logError(error));
   });
 });
 describe('Test all articles', () => {
