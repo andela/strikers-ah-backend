@@ -37,7 +37,6 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.createArticle = article => Article.create(article);
   Article.getAll = () => Article.findAll();
   Article.getOneArticle = slug => Article.findOne({ where: { slug } });
-<<<<<<< HEAD
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
   Article.getAllPages = (limit, offset) => Article.findAll({ limit, offset });
@@ -55,9 +54,6 @@ const ArticleModel = (sequelize, DataTypes) => {
     return data;
   };
   Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
-=======
-  Article.verifyArticle = slug => Article.findOne({ where: { slug } });
->>>>>>> get user from token
 
   Article.associate = (models) => {
     Article.belongsTo(models.user, {

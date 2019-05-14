@@ -10,18 +10,6 @@ module.exports = {
     token: {
       type: Sequelize.STRING
     },
-    userId: {
-      type: Sequelize.INTEGER,
-      allowNull: false
-    },
-    articleSlug: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    rating: {
-      type: Sequelize.INTEGER,
-      allowNull: false
-    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

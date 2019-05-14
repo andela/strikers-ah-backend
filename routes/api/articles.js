@@ -19,6 +19,7 @@ router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.get('/:slug/rates', AuthToken, articleController.fetchArticleRating);
 router.delete('/:slug', AuthToken, errorHandler(articleController.deleteArticle));
 router.put('/:slug', AuthToken, errorHandler(articleController.updateArticle));
+router.get('/rating/articles', errorHandler(articleController.articleRatingPagination));
 router.patch(
   '/:slug/:likeState',
   Strategy.verifyToken,
