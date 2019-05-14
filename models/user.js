@@ -71,6 +71,7 @@ const UserModel = (Sequelize, DataTypes) => {
   };
   User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image', 'role'] });
   User.singleUser = async username => User.findOne({ attributes: ['username', 'bio', 'image', 'role'], where: { username } });
+  User.verifyUser = id => User.findOne({ where: { id } });
   return User;
 };
 export default UserModel;

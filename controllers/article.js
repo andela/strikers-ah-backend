@@ -308,7 +308,6 @@ class Article {
         }
       });
     }
-
     if (!returnValue && dataResult.dataValues.rating !== rating) {
       const updateRate = await ratingModel.rateUpdate(rateChecking[0].dataValues.id, rating);
       const { userId: userid } = updateRate[1][0].dataValues;
@@ -698,7 +697,6 @@ class Article {
         error: 'Article can not be found.'
       });
     }
-
     const allArticles = await ratingModel.allRatings(UserModel, ArticleModel, slug);
     const { rows } = allArticles;
     if (rows.length === 0) {
@@ -720,6 +718,38 @@ class Article {
       },
       averageRating: objKey(Math.ceil(AvgRate))
     });
+  }
+
+  /**
+  * @author Innocent Nkunzi
+  * @param {*} req
+  * @param {*} res
+  * @returns {object} it returns an object of articles
+  */
+  static async articleRatingPagination(req, res) {
+    const pageNumber = parseInt(req.query.page, 10);
+    const limitRatings = parseInt(req.query.limit, 10);
+
+    if (pageNumber <= 0) {
+      return res.status(403).json({
+        error: 'Invalid page number'
+      });
+    }
+    if (limitRatings <= 0) {
+      return res.status(403).json({
+        error: 'Invalid limit'
+      });
+    }
+    const offset = limitRatings * (pageNumber - 1);
+    const listOfRatings = await ratingModel.paginateArticleRatings(limitRatings, offset);
+    if (listOfRatings.length) {
+      res.status(200).json({
+        articles: listOfRatings,
+        ratingCounts: listOfRatings.length
+      });
+    } else {
+      res.status(404).json({ error: 'No article found' });
+    }
   }
 }
 export default Article;

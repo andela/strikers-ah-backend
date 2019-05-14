@@ -1,4 +1,3 @@
-
 module.exports = (sequelize, DataTypes) => {
   const rating = sequelize.define('rating', {
     userId: {
@@ -55,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
     }
     ],
   });
-
+  rating.paginateArticleRatings = (limit, offset) => rating.findAll({ limit, offset });
   rating.associate = (models) => {
     rating.belongsTo(models.user, { foreignKey: 'userId', onDelete: 'CASCADE' });
     rating.belongsTo(models.article, { foreignKey: 'articleSlug', onDelete: 'CASCADE' });

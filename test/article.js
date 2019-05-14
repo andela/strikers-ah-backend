@@ -19,10 +19,11 @@ process.env.NODE_ENV = 'test';
  * @author: Innocent Nkunzi
  * @description: tests related to article
  */
-
-before('Cleaning the database first', async () => {
-  await articleModel.destroy({ truncate: true, cascade: true });
-  await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+describe('Clean the databse', () => {
+  before('Cleaning the database first', async () => {
+    await articleModel.destroy({ truncate: true, cascade: true });
+    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+  });
 });
 const user = {
   username: 'nkunziinnocent',
@@ -101,8 +102,8 @@ describe('Create an article', () => {
         res.body.article.should.have.property('updatedAt');
         done();
       })
-      .catch(error => logError(error));
-  });
+      .catch(err => err);
+  }).timeout(15000);
 });
 describe('It checks title errors', () => {
   it('Should not create an article if the title is empty', (done) => {
@@ -167,8 +168,7 @@ describe('Test the body', () => {
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title:
-        'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
+      title: 'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
       body: faker.lorem.paragraphs(),
       description: faker.lorem.paragraph()
     };
@@ -343,6 +343,32 @@ describe('Delete article', () => {
         done();
       })
       .catch(error => logError(error));
+  });
+});
+describe('Test for ratings pagination', () => {
+  it('should rate an article', (done) => {
+    chai.request(index).post(`/api/articles/${newSlug}/rate/Good`).set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.have.property('rated_article');
+        res.body.rated_article.should.be.a('object');
+        done();
+      })
+      .catch(error => logError(error));
+  });
+  it('Paginates article ratings', (done) => {
+    chai.request(index).get('/api/articles/rating/articles?page=1&limit=1').then((res) => {
+      res.should.have.status(200);
+      done();
+    })
+      .catch(error => logError(error));
+  });
+  it('should display an error if the article is not found', (done) => {
+    chai.request(index).get('/api/articles/rating/articles?page=10&limit=10').then((res) => {
+      res.should.have.status(404);
+      res.body.should.have.property('error').eql('No article found');
+      done();
+    }).catch(error => logError(error));
   });
 });
 describe('Test all articles', () => {

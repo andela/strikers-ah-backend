@@ -11,15 +11,15 @@ const router = express.Router();
 
 router.get('/all', errorHandler(articleController.getAllArticles));
 router.get('/reports', AuthToken, articleController.getReportedArticle);
-router.post('/', AuthToken, imageUpload, articleController.createArticle);
+router.post('/', AuthToken, imageUpload, errorHandler(articleController.createArticle));
 router.get('/:slug', AuthToken, errorHandler(articleController.getArticle));
 router.get('/', errorHandler(articleController.articlePagination));
 router.post('/:slug/bookmark', AuthToken, errorHandler(articleController.bookmarkArticle));
 router.post('/:slug/rate/:rate', AuthToken, articleController.rateArticle);
 router.get('/:slug/rates', AuthToken, articleController.fetchArticleRating);
-router.post('/', AuthToken, errorHandler(articleController.createArticle));
 router.delete('/:slug', AuthToken, errorHandler(articleController.deleteArticle));
 router.put('/:slug', AuthToken, errorHandler(articleController.updateArticle));
+router.get('/rating/articles', errorHandler(articleController.articleRatingPagination));
 router.patch(
   '/:slug/:likeState',
   Strategy.verifyToken,
