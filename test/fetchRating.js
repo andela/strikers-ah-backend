@@ -93,7 +93,7 @@ describe('/Fetching ratings --> Create an article', () => {
         res.body.article.should.have.property('title').equal(fakeData.title);
         res.body.article.should.have.property('description');
         res.body.article.should.have.property('body').equal(fakeData.body);
-        res.body.article.should.have.property('authorid');
+        res.body.article.should.have.property('author');
         res.body.article.should.have.property('taglist');
         res.body.article.should.have.property('createdAt');
         res.body.article.should.have.property('updatedAt');
