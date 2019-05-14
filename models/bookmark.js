@@ -2,8 +2,22 @@
 module.exports = (sequelize, DataTypes) => {
   const bookmark = sequelize.define('bookmark', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    userid: DataTypes.INTEGER,
-    articleid: DataTypes.INTEGER
+    userid: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'users',
+        key: 'id',
+        onDelete: 'CASCADE'
+      }
+    },
+    articleid: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'articles',
+        key: 'id',
+        onDelete: 'CASCADE'
+      }
+    }
   }, {});
   bookmark.bookmark = (userid, articleid) => bookmark.create({ userid, articleid });
   bookmark.checkuser = (userid, articleid) => bookmark.findOne({ where: { userid, articleid } });

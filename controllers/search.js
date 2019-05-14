@@ -21,7 +21,7 @@ class Search {
       attributes: { exclude: ['id', 'provider', 'provideruserid', 'password', 'createdAt', 'updatedAt'] },
       where: {
         [Op.or]: {
-          title: { [Op.like]: `%${keyword}%` }, slug: { [Op.like]: `%${keyword}%` }, body: { [Op.like]: `%${keyword}%` }, description: { [Op.like]: `%${keyword}%` }
+          title: { [Op.like]: `%${keyword}%` }, slug: { [Op.like]: `%${keyword}%` }, body: { [Op.like]: `%${keyword}%` }, description: { [Op.like]: `%${keyword}%` },
         }
       }
     });

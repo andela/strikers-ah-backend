@@ -13,15 +13,24 @@ const ArticleModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       trim: true,
-      validate: { len: { args: 5 }, notEmpty: true }
+      validate: { len: { args: 4 }, notEmpty: true }
     },
     body: {
       type: DataTypes.TEXT, trim: true, allowNull: false, validate: { len: { args: 255, msg: 'Body needs to be above 255 characters' }, notEmpty: true }
     },
     taglist: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true, defaultValue: [] },
     description: { type: DataTypes.TEXT, trim: true },
-    authorid: { type: DataTypes.INTEGER, allowNull: false },
-    views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }
+    views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    authorid: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+        onDelete: 'CASCADE'
+      }
+    },
+    image: { type: DataTypes.STRING, allowNull: true }
   }, {});
 
   sequelizeTrasform(Article);
@@ -40,12 +49,11 @@ const ArticleModel = (sequelize, DataTypes) => {
       slug: data.slug,
       taglist: data.taglist,
       authorid: data.authorid
-    }, { where: { id } });
+    }, { returning: true, where: { id } });
     return data;
   };
   Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
 
-  Article.getAll = (limit, offset) => Article.findAll({ limit, offset });
   Article.associate = (models) => {
     Article.belongsTo(models.user, {
       foreignKey: 'authorid', onDelete: 'CASCADE'

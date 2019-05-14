@@ -23,7 +23,9 @@ class Slug {
    */
   slugMaker() {
     if (this.strings.length <= 40) {
-      return slugify(this.strings);
+      const slugifyTitle = slugify(this.strings);
+      const toLowerCase = slugifyTitle.toLowerCase();
+      return toLowerCase;
     }
     const slug = this.strings.substring(0, 40);
     return slugify(slug);
