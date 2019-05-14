@@ -6,7 +6,7 @@ import client from '../config/redisConfig';
 dotenv.config();
 
 const validateToken = async (req, res, next) => {
-  let token = req.headers['x-access-token'] || req.headers.authorization;
+  let token = req.headers['x-access-token'] || req.headers.authorization || req.headers['x-auth-token'];
   if (!token) {
     return res.status(401).send({ status: 401, error: 'Token is not Supplied' });
   }
@@ -16,10 +16,12 @@ const validateToken = async (req, res, next) => {
   }
   if (token) {
     try {
-      const decoded = await jwt.verify(token, process.env.secretKey);
+      const decoded = await jwt.verify(token, process.env.SECRETKEY);
       if (client.connected) {
         const resolver = await promiseResolver(token);
-        if (resolver === 'blacklisted') { return res.send({ status: 401, error: 'Token is no longer valid' }); }
+        if (resolver === 'blacklisted') {
+          return res.send({ status: 401, error: 'Token is no longer valid' });
+        }
       }
       const { id: userid } = decoded;
       req.user = userid;

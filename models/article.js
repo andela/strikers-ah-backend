@@ -1,37 +1,38 @@
 import sequelizeTrasform from 'sequelize-transforms';
 
 const ArticleModel = (sequelize, DataTypes) => {
-  const Article = sequelize.define('article', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    slug: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      onUpdate: 'CASCADE'
+  const Article = sequelize.define(
+    'article',
+    {
+      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        onUpdate: 'CASCADE'
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        trim: true,
+        validate: { len: { args: 5 }, notEmpty: true }
+      },
+      body: {
+        type: DataTypes.TEXT,
+        trim: true,
+        allowNull: false,
+        validate: {
+          len: { args: 255, msg: 'Body needs to be above 255 characters' },
+          notEmpty: true
+        }
+      },
+      taglist: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true, defaultValue: [] },
+      description: { type: DataTypes.TEXT, trim: true },
+      authorid: { type: DataTypes.INTEGER, allowNull: false },
+      views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }
     },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      trim: true,
-      validate: { len: { args: 4 }, notEmpty: true }
-    },
-    body: {
-      type: DataTypes.TEXT, trim: true, allowNull: false, validate: { len: { args: 255, msg: 'Body needs to be above 255 characters' }, notEmpty: true }
-    },
-    taglist: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true, defaultValue: [] },
-    description: { type: DataTypes.TEXT, trim: true },
-    views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    authorid: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id',
-        onDelete: 'CASCADE'
-      }
-    },
-    image: { type: DataTypes.STRING, allowNull: true }
-  }, {});
+    {}
+  );
 
   sequelizeTrasform(Article);
   Article.createArticle = article => Article.create(article);
@@ -44,27 +45,33 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.verifyArticle = id => Article.findOne({ where: { id } });
 
   Article.updateFoundArticle = (id, data) => {
-    Article.update({
-      title: data.title,
-      body: data.body,
-      slug: data.slug,
-      taglist: data.taglist,
-      authorid: data.authorid
-    }, { returning: true, where: { id } });
+    Article.update(
+      {
+        title: data.title,
+        body: data.body,
+        slug: data.slug,
+        taglist: data.taglist,
+        authorid: data.authorid
+      },
+      { returning: true, where: { id } }
+    );
     return data;
   };
   Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
 
   Article.associate = (models) => {
     Article.belongsTo(models.user, {
-      foreignKey: 'authorid', onDelete: 'CASCADE'
+      foreignKey: 'authorid',
+      onDelete: 'CASCADE'
     });
     Article.hasMany(models.rating, { foreignKey: 'articleSlug', onDelete: 'CASCADE' });
   };
   Article.associate = (models) => {
     Article.hasMany(models.bookmark, {
-      foreignKey: 'articleid', onDelete: 'CASCADE'
+      foreignKey: 'articleid',
+      onDelete: 'CASCADE'
     });
+    Article.hasMany(models.highlights, { foreignKey: 'articleid', onDelete: 'CASCADE' });
   };
   return Article;
 };

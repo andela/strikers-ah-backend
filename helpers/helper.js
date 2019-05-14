@@ -14,7 +14,6 @@ const hashPassword = (password) => {
     return false;
   }
 };
-// compare password
 const comparePassword = (password, hashedPassword) => {
   try {
     return bcrypt.compareSync(password, hashedPassword);
@@ -81,10 +80,20 @@ const uploadImage = async req => new Promise((resolve, reject) => {
   }
   resolve(fileName);
 });
-const articleReadTime = article => Math.ceil((article.split(' ').length) / 275);
+const articleReadTime = article => Math.ceil(article.split(' ').length / 275);
 const combineHelper = (combinedObj, obj2) => ({ ...combinedObj, ...obj2 });
 const combineWithArticle = (article, ...rest) => {
-  const articleObject = select.pick(article, ['id', 'slug', 'taglist', 'title', 'body', 'description', 'authorid', 'createdAt', 'updatedAt']);
+  const articleObject = select.pick(article, [
+    'id',
+    'slug',
+    'taglist',
+    'title',
+    'body',
+    'description',
+    'authorid',
+    'createdAt',
+    'updatedAt'
+  ]);
   return {
     ...articleObject,
     ...rest.reduce(combineHelper),
@@ -103,7 +112,7 @@ const asyncHandler = callBackFunction => async (req, res, next) => {
 };
 const decodeToken = req => jwt.verify(req.header('x-auth-token'), process.env.SECRETKEY);
 const jsonResponse = (res, statusCode, message) => res.status(statusCode).json(message);
-
+const compareAction = (action1, action2) => action1 || action2;
 export default {
   hashPassword,
   comparePassword,
@@ -117,5 +126,6 @@ export default {
   articleReadTime,
   combineWithArticle,
   combineHelper,
-  jsonResponse
+  jsonResponse,
+  compareAction
 };

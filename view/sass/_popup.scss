@@ -1,0 +1,19 @@
+$color-black: #333;
+$color-white: #fff;
+.popup {
+  background: $color-black;
+  display: inline-block;
+  height: 50px;
+  border-radius: 4px;
+  position: absolute;
+  button {
+    border: none;
+    background: $color-black;
+    color: $color-white;
+    font-size: 14px;
+    cursor: pointer;
+  }
+}
+.hide {
+  display: none;
+}
