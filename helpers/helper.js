@@ -106,7 +106,7 @@ const asyncHandler = callBackFunction => async (req, res, next) => {
   } catch (error) {
     const statusCode = error.name === 'SequelizeValidationError' ? 400 : 500;
     res.status(statusCode).json({
-      error
+      error: error.message
     });
   }
 };

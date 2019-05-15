@@ -9,10 +9,6 @@ const router = express.Router();
 
 // eslint-disable-next-line no-unused-vars
 const strategy = new Strategy();
-
-router.post('/login', user.loginWithEmail);
-router.post('/signup', user.signUpWithEmail);
-
 router.get(
   '/google',
   passport.authenticate('google', { session: false, scope: ['email', 'profile'] })
