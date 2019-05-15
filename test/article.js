@@ -30,7 +30,8 @@ describe('Clean the databse', () => {
 const user = {
   username: 'nkunziinnocent',
   email: 'nkunzi@gmail.com',
-  password: '@Nkunzi1234'
+  password: '@Nkunzi1234',
+  role: 'Admin'
 };
 dotenv.config();
 process.env.NODE_ENV = 'test';
