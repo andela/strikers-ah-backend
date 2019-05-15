@@ -552,6 +552,9 @@ class User {
    * @returns {Object} Assign role to user
    */
   static async assignRole(req, res) {
+    if (req.userRole !== 'Admin') {
+      return helper.jsonResponse(res, 401, { message: 'Unauthorized access' });
+    }
     if (!req.params.username) {
       return helper.jsonResponse(res, 400, { message: 'Provide username' });
     }

@@ -153,8 +153,8 @@ describe('Rate an article', () => {
       .set('Authorization', userTokenId)
       .then((res) => {
         res.body.should.be.a('object');
-        res.body.should.have.property('status').equal(404);
-        res.body.should.have.property('error').equal('User not found');
+        res.body.should.have.property('status').equal(403);
+        res.body.should.have.property('error').equal('Forbidden Access');
         done();
       })
       .catch(err => err);

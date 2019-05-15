@@ -12,7 +12,6 @@ const router = express.Router();
 router.get('/all', errorHandler(articleController.getAllArticles));
 router.get('/reports', AuthToken, articleController.getReportedArticle);
 router.post('/', AuthToken, imageUpload, errorHandler(articleController.createArticle));
-router.post('/', AuthToken, imageUpload, articleController.createArticle);
 router.get(
   '/:slug/highlight/:highlightId/user-comments',
   helper.asyncHandler(articleController.getUserCommentsOnHightlight)
