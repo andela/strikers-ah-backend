@@ -29,7 +29,8 @@ const ArticleModel = (sequelize, DataTypes) => {
       taglist: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true, defaultValue: [] },
       description: { type: DataTypes.TEXT, trim: true },
       authorid: { type: DataTypes.INTEGER, allowNull: false },
-      views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }
+      views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+      image: { type: DataTypes.STRING, allowNull: true }
     },
     {}
   );

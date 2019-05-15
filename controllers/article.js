@@ -39,10 +39,10 @@ class Article {
    */
   static async createArticle(req, res) {
     const {
-      title, body, taglist, description
+      title, body, taglist, description,
     } = req.body;
-    const image = req.file ? req.file.url : 'null';
 
+    const image = (req.file ? req.file.url : 'null');
     if (!title) {
       return res.status(400).json({ error: 'title can not be null' });
     }
@@ -61,13 +61,7 @@ class Article {
     const descriptData = descriptionInstance.makeDescription();
     const slug = slugInstance.returnSlug();
     const newArticle = {
-      title,
-      body,
-      description: descriptData,
-      slug,
-      authorid,
-      taglist,
-      image
+      title, body, description: descriptData, slug, authorid, taglist, image
     };
     const article = await ArticleModel.createArticle(newArticle);
     notify.emit('create', newArticle);

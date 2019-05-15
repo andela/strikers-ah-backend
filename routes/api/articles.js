@@ -10,7 +10,7 @@ import imageUpload from '../../middlewares/imageUpload';
 const router = express.Router();
 
 router.get('/all', errorHandler(articleController.getAllArticles));
-router.get('/reports', AuthToken, articleController.getReportedArticle);
+router.get('/reports', AuthToken, errorHandler(articleController.getReportedArticle));
 router.post('/', AuthToken, imageUpload, errorHandler(articleController.createArticle));
 router.get(
   '/:slug/highlight/:highlightId/user-comments',
