@@ -29,7 +29,6 @@ router.get(
 );
 router.post('/login', helper.asyncHandler(user.loginWithEmail));
 router.post('/signup', helper.asyncHandler(user.signUpWithEmail));
-router.post('/profile', Strategy.verifyToken, helper.asyncHandler(user.editProfile));
 
 router.get(
   '/google',

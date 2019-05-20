@@ -271,18 +271,17 @@ class User {
    */
   static async editProfile(req, res) {
     const { body: data } = req;
-    const { id, email, username } = helper.decodeToken(req);
-    const userProfileImage = await helper.uploadImage(req);
+    const { email, username } = helper.decodeToken(req);
     const updatedUser = await UserModel.update(
       {
         ...data,
         email: email.length ? email : data.email,
         username: username.length ? username : data.username,
-        image: userProfileImage
+        image: data.image
       },
       {
         where: {
-          id
+          username
         },
         returning: true
       }
@@ -585,6 +584,25 @@ class User {
       return helper.jsonResponse(res, 200, { message });
     } catch (error) {
       return helper.jsonResponse(res, 400, { error });
+    }
+  }
+
+  /**
+   * @author Mwibutsa Floribert
+   * @param { object } req
+   * @param { object} res
+   * @returns { null } --
+   */
+  static async getUserProfile(req, res) {
+    const { username } = req.params;
+    const profile = await UserModel.findOne({
+      where: { username },
+      include: [{ model: followersModel }, { model: followingModel }]
+    });
+    if (profile) {
+      res.status(200).json({ status: 200, profile });
+    } else {
+      res.status(404).json({ stats: 404, error: 'This page is not available' });
     }
   }
 }

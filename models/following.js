@@ -3,6 +3,7 @@ const followingModel = (sequelize, DataTypes) => {
     userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: { model: 'user', key: 'id' }
     },
     following: {
       type: DataTypes.INTEGER,

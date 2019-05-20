@@ -50,7 +50,34 @@ const UserModel = (Sequelize, DataTypes) => {
     });
     return result[0].dataValues;
   };
+  User.checkEmail = email => User.findOne({ where: { email } });
+  User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
+  User.checkUser = username => User.findOne({ where: { username } });
+  User.findUser = id => User.findOne({ where: { id } });
+  User.checkuserExistance = authorid => User.findOne({
+    attributes: {
+      exclude: [
+        'id',
+        'firstname',
+        'lastname',
+        'email',
+        'password',
+        'provider',
+        'provideruserid',
+        'verified',
+        'inapp_notifications',
+        'email_notifications',
+        'createdAt',
+        'updatedAt'
+      ]
+    },
+    where: { id: authorid }
+  });
   User.associate = (models) => {
+    User.hasMany(models.bookmark, {
+      foreignKey: 'userid',
+      onDelete: 'CASCADE'
+    });
     User.hasMany(models.article, {
       foreignKey: 'authorid',
       onDelete: 'CASCADE'
@@ -59,22 +86,16 @@ const UserModel = (Sequelize, DataTypes) => {
       foreignKey: 'userid',
       onDelete: 'CASCADE'
     });
+    User.hasMany(models.following, {
+      foreignKey: 'userid',
+      onDelete: 'CASCADE'
+    });
     User.hasMany(models.followers, {
       foreignKey: 'userid',
       onDelete: 'CASCADE'
     });
-    User.hasMany(models.article_highlights, { foreignKey: 'userId', onDelete: 'CASCADE' });
+    User.hasMany(models.highlights, { foreignKey: 'userid', onDelete: 'CASCADE' });
     User.hasMany(models.articleHighLightComments, { foreignKey: 'userId', onDelete: 'CASCADE' });
-  };
-  User.checkEmail = email => User.findOne({ where: { email } });
-  User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
-  User.checkUser = username => User.findOne({ where: { username } });
-  User.findUser = id => User.findOne({ where: { id } });
-  User.checkuserExistance = authorid => User.findOne({ attributes: { exclude: ['id', 'firstname', 'lastname', 'email', 'password', 'provider', 'provideruserid', 'verified', 'inapp_notifications', 'email_notifications', 'createdAt', 'updatedAt'] }, where: { id: authorid } });
-  User.associate = (models) => {
-    User.hasMany(models.bookmark, {
-      foreignKey: 'userid', onDelete: 'CASCADE'
-    });
   };
   User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image', 'role'] });
   User.singleUser = async username => User.findOne({ attributes: ['username', 'bio', 'image', 'role'], where: { username } });

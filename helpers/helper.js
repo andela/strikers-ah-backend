@@ -66,20 +66,6 @@ const authenticationResponse = (res, token, userData) => res
       token
     }
   });
-
-const uploadImage = async req => new Promise((resolve, reject) => {
-  let fileName = '';
-  if (req.files) {
-    const avatarIMage = req.files.image;
-    fileName = `images/profile-images/${new Date().getTime()}-${avatarIMage.name}`;
-    avatarIMage.mv(fileName, (error) => {
-      if (error) {
-        reject(new Error('The intended Image was not uploaded'));
-      }
-    });
-  }
-  resolve(fileName);
-});
 const articleReadTime = article => Math.ceil(article.split(' ').length / 275);
 const combineHelper = (combinedObj, obj2) => ({ ...combinedObj, ...obj2 });
 const combineWithArticle = (article, ...rest) => {
@@ -121,7 +107,6 @@ export default {
   validatePassword,
   authenticationResponse,
   decodeToken,
-  uploadImage,
   asyncHandler,
   articleReadTime,
   combineWithArticle,
