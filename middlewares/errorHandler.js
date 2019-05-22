@@ -10,7 +10,7 @@ function ErrorHander(cb) {
     try {
       await cb(req, res, nex);
     } catch (err) {
-      return res.status(400).json({ message: err });
+      return res.status(400).json({ error: err.name === 'SequelizeValidationError' ? err.message : err });
     }
   };
 }
