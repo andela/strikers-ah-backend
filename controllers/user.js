@@ -176,7 +176,7 @@ class User {
     ]);
     const token = helper.generateToken(userAccount);
     userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
-    return helper.authenticationResponse(res, token, userAccount);
+    return res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
   }
 
   /**
