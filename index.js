@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import express from 'express';
 import path from 'path';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import passport from 'passport';
 import session from 'express-session';
@@ -14,6 +15,7 @@ dotenv.config();
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
