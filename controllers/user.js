@@ -6,6 +6,7 @@ import mailLinkMaker from '../helpers/mailLinkMaker';
 import model from '../models/index';
 import Mailer from '../helpers/mailer';
 import helper from '../helpers/helper';
+import { sendAccountVerification as mailingHelper } from '../helpers/mailing';
 import blacklist from '../helpers/redis';
 import UserEvents from '../helpers/userEvents';
 
@@ -60,6 +61,15 @@ class User {
     const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
     if (uniqueEmailUsername === true) {
       const result = await UserModel.create(newUser);
+      // Email verification
+      const verificationHash = mailingHelper(result.email, `${result.firstname} ${result.lastname}`);
+      const verification = {
+        userid: result.id,
+        hash: verificationHash,
+        status: 'Pending'
+      };
+      await UserVerificationModel.create(verification);
+
       let userAccount = select.pick(result, [
         'id',
         'firstname',
