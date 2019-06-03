@@ -11,7 +11,7 @@ router.post(
   (req, res, next) => {
     new verifyToken(req, res, next).verify();
   },
-  user.follow
+  user.follow,
 );
 
 router.delete(
@@ -19,7 +19,7 @@ router.delete(
   (req, res, next) => {
     new verifyToken(req, res, next).verify();
   },
-  user.unfollow
+  user.unfollow,
 );
 router.get('/:username', helper.asyncHandler(user.getUserProfile));
 router.put('/:username', Strategy.verifyToken, helper.asyncHandler(user.editProfile));
@@ -28,7 +28,7 @@ router.get(
   (req, res, next) => {
     new verifyToken(req, res, next).verify();
   },
-  user.notifications
+  user.notifications,
 );
 
 router.put(
@@ -36,7 +36,7 @@ router.put(
   (req, res, next) => {
     new verifyToken(req, res, next).verify();
   },
-  user.readNotification
+  user.readNotification,
 );
 
 router.get(
@@ -44,7 +44,7 @@ router.get(
   (req, res, next) => {
     new verifyToken(req, res, next).verify();
   },
-  user.findAllFollowers
+  user.findAllFollowers,
 );
 
 router.get(
@@ -52,7 +52,7 @@ router.get(
   (req, res, next) => {
     new verifyToken(req, res, next).verify();
   },
-  user.findAllFollowing
+  user.findAllFollowing,
 );
 
 router.get(
@@ -60,7 +60,7 @@ router.get(
   (req, res, next) => {
     new verifyToken(req, res, next).verify();
   },
-  user.findProfilestatus
+  user.findProfilestatus,
 );
 
 export default router;

@@ -5,14 +5,14 @@ const ArticleReportingModel = (Sequelize, DataTypes) => {
     userid: { type: DataTypes.INTEGER, allowNull: false },
     description: { type: DataTypes.STRING, allowNull: true },
   }, {
-    freezeTableName: true // Model tableName will be the same as the model name
+    freezeTableName: true, // Model tableName will be the same as the model name
   });
   ArticleReporting.reportedArticles = async () => {
     const result = await Sequelize.query(
       `SELECT articlereporting.id, articlereporting.description, reportingcategory.name,
        articles.id as articleid, articles.title, articles.slug FROM articlereporting, reportingcategory,
        articles WHERE articlereporting.articleid = articles.id AND articlereporting.categoryid = reportingcategory.id`,
-      { type: Sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT },
     );
     return result;
   };

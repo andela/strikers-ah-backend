@@ -9,13 +9,13 @@ const ArticleModel = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        onUpdate: 'CASCADE'
+        onUpdate: 'CASCADE',
       },
       title: {
         type: DataTypes.STRING,
         allowNull: false,
         trim: true,
-        validate: { len: { args: 5 }, notEmpty: true }
+        validate: { len: { args: 5 }, notEmpty: true },
       },
       body: {
         type: DataTypes.TEXT,
@@ -23,21 +23,30 @@ const ArticleModel = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           len: { args: 255, msg: 'Body needs to be above 255 characters' },
-          notEmpty: true
-        }
+          notEmpty: true,
+        },
       },
       taglist: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true, defaultValue: [] },
       description: { type: DataTypes.TEXT, trim: true },
       authorid: { type: DataTypes.INTEGER, allowNull: false },
       views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-      image: { type: DataTypes.STRING, allowNull: true }
+      image: { type: DataTypes.STRING, allowNull: true },
     },
     {}
   );
 
   sequelizeTrasform(Article);
   Article.createArticle = article => Article.create(article);
-  Article.getAll = () => Article.findAll();
+  Article.getAll = userModel => Article.findAll({
+    include: [
+      {
+        model: userModel,
+        attributes: {
+          exclude: ['password'],
+        },
+      },
+    ],
+  });
   Article.getOneArticle = slug => Article.findOne({ where: { slug } });
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
@@ -52,7 +61,7 @@ const ArticleModel = (sequelize, DataTypes) => {
         body: data.body,
         slug: data.slug,
         taglist: data.taglist,
-        authorid: data.authorid
+        authorid: data.authorid,
       },
       { returning: true, where: { id } }
     );
@@ -63,14 +72,12 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.associate = (models) => {
     Article.belongsTo(models.user, {
       foreignKey: 'authorid',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     Article.hasMany(models.rating, { foreignKey: 'articleSlug', onDelete: 'CASCADE' });
-  };
-  Article.associate = (models) => {
     Article.hasMany(models.bookmark, {
       foreignKey: 'articleid',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     Article.hasMany(models.highlights, { foreignKey: 'articleid', onDelete: 'CASCADE' });
   };

@@ -29,7 +29,7 @@ const {
   followers: followersModel,
   notifications: notificationModel,
   articlereadingstats: ArticleReadingStats,
-  roleassignment: AssignRoleModel
+  roleassignment: AssignRoleModel,
 } = model;
 
 /**
@@ -45,18 +45,18 @@ class User {
   static async signUpWithEmail(req, res) {
     const data = req.body;
     const newUser = {
-      ...data
+      ...data,
     };
     // check if the user does not already exist
     const emailUsed = await UserModel.findOne({
       where: {
-        email: newUser.email
-      }
+        email: newUser.email,
+      },
     });
     const userNameUsed = await UserModel.findOne({
       where: {
-        username: newUser.username
-      }
+        username: newUser.username,
+      },
     });
     const uniqueEmailUsername = helper.handleUsed(emailUsed, userNameUsed);
     if (uniqueEmailUsername === true) {
@@ -66,24 +66,17 @@ class User {
       const verification = {
         userid: result.id,
         hash: verificationHash,
-        status: 'Pending'
+        status: 'Pending',
       };
       await UserVerificationModel.create(verification);
 
-      let userAccount = select.pick(result, [
-        'id',
-        'firstname',
-        'lastname',
-        'username',
-        'email',
-        'image'
-      ]);
+      let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
       const token = helper.generateToken(userAccount);
       userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
       return helper.authenticationResponse(res, token, userAccount);
     }
     return res.status(400).json({
-      error: uniqueEmailUsername
+      error: uniqueEmailUsername,
     });
   }
 
@@ -99,31 +92,24 @@ class User {
       where: {
         [Op.or]: [
           {
-            email
+            email,
           },
           {
-            username: email
-          }
-        ]
-      }
+            username: email,
+          },
+        ],
+      },
     });
     // verify password
     if (user && helper.comparePassword(password, user.password)) {
       // return user and token
-      let userAccount = select.pick(user, [
-        'id',
-        'firstname',
-        'lastname',
-        'username',
-        'email',
-        'image'
-      ]);
+      let userAccount = select.pick(user, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
       const token = helper.generateToken(userAccount);
       userAccount = select.pick(user, ['username', 'email', 'bio', 'image']);
       return helper.authenticationResponse(res, token, userAccount);
     }
     return res.status(401).json({
-      error: 'Invalid username or password'
+      error: 'Invalid username or password',
     });
   }
 
@@ -139,12 +125,12 @@ class User {
     if (blacklisting) {
       return res.status(200).send({
         status: 200,
-        message: 'Successfully logged out'
+        message: 'Successfully logged out',
       });
     }
     return res.status(500).send({
       status: 500,
-      error: 'Something went wrong'
+      error: 'Something went wrong',
     });
   }
 
@@ -173,17 +159,10 @@ class User {
       bio: req.user.bio,
       image: req.user.image,
       provider: req.user.provider,
-      provideruserid: req.user.provideruserid
+      provideruserid: req.user.provideruserid,
     };
     const result = await UserModel.socialUsers(ruser);
-    let userAccount = select.pick(result, [
-      'id',
-      'firstname',
-      'lastname',
-      'username',
-      'email',
-      'image'
-    ]);
+    let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
     const token = helper.generateToken(userAccount);
     userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
     return res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
@@ -213,7 +192,7 @@ class User {
       const result = await new Mailer(email, 'Password reset', resetLink).sender();
       res.status(202).json({
         message: result,
-        email
+        email,
       });
     }
   }
@@ -240,7 +219,7 @@ class User {
       const result = await UserModel.resetpassword(password, decode.id);
       notify.emit('resetpassword', decode.id);
       res.status(201).json({
-        data: result
+        data: result,
       });
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -287,27 +266,18 @@ class User {
         ...data,
         email: email.length ? email : data.email,
         username: username.length ? username : data.username,
-        image: data.image
+        image: data.image,
       },
       {
         where: {
-          username
+          username,
         },
-        returning: true
-      }
+        returning: true,
+      },
     );
     res
       .status(201)
-      .json(
-        select.pick(updatedUser[1][0], [
-          'firstname',
-          'lastname',
-          'email',
-          'username',
-          'bio',
-          'image'
-        ])
-      );
+      .json(select.pick(updatedUser[1][0], ['firstname', 'lastname', 'email', 'username', 'bio', 'image']));
   }
 
   /**
@@ -329,12 +299,12 @@ class User {
         res.status(201).json({
           status: 201,
           message: 'followed',
-          follower: followedUser.username
+          follower: followedUser.username,
         });
       } else {
         res.status(409).json({
           status: 409,
-          message: "you can't follow you self"
+          message: "you can't follow you self",
         });
       }
     } catch (error) {
@@ -361,12 +331,12 @@ class User {
         res.status(201).json({
           status: 201,
           message: 'unfollowed',
-          follower: unfollowedUser.username
+          follower: unfollowedUser.username,
         });
       } else {
         res.status(409).json({
           status: 409,
-          message: "you can't unfollow you self"
+          message: "you can't unfollow you self",
         });
       }
     } catch (error) {
@@ -388,12 +358,12 @@ class User {
       res.status(200).json({
         status: 200,
         count: result.length,
-        notifications: result
+        notifications: result,
       });
     } catch (error) {
       res.status(400).json({
         status: 400,
-        error: 'bad request'
+        error: 'bad request',
       });
     }
   }
@@ -411,12 +381,12 @@ class User {
       const notification = await notificationModel.read(notificationId, userId);
       res.status(201).json({
         status: 201,
-        notification
+        notification,
       });
     } catch (error) {
       res.status(400).json({
         status: 400,
-        error: 'bad request'
+        error: 'bad request',
       });
     }
   }
@@ -434,12 +404,12 @@ class User {
       const followers = await followersModel.followers(profile.dataValues.id);
       res.status(200).json({
         status: 200,
-        followers: followers.length
+        followers: followers.length,
       });
     } catch (error) {
       res.status(400).json({
         status: 400,
-        error: 'bad request'
+        error: 'bad request',
       });
     }
   }
@@ -457,12 +427,12 @@ class User {
       const followings = await followingModel.followings(profile.dataValues.id);
       res.status(200).json({
         status: 200,
-        following: followings.length
+        following: followings.length,
       });
     } catch (error) {
       res.status(400).json({
         status: 400,
-        error: 'bad request'
+        error: 'bad request',
       });
     }
   }
@@ -483,12 +453,12 @@ class User {
       const following = await followingModel.following(user.id, profileId);
       res.status(200).json({
         status: 200,
-        response: following === null ? 'false' : 'true'
+        response: following === null ? 'false' : 'true',
       });
     } catch (error) {
       res.status(400).json({
         status: 400,
-        error: 'incorrent profile'
+        error: 'incorrent profile',
       });
     }
   }
@@ -607,9 +577,10 @@ class User {
     const { username } = req.params;
     const profile = await UserModel.findOne({
       where: { username },
-      include: [{ model: followersModel }, { model: followingModel }]
+      include: [{ model: followersModel }, { model: followingModel }],
     });
     if (profile) {
+      delete profile.dataValues.password;
       res.status(200).json({ status: 200, profile });
     } else {
       res.status(404).json({ stats: 404, error: 'This page is not available' });

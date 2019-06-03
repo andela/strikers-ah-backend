@@ -6,29 +6,29 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
       },
       user_id: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
       },
       article_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       like_value: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: DataTypes.DATE
-      }
+        type: DataTypes.DATE,
+      },
     },
-    {}
+    {},
   );
   ArticleLikesAndDislikes.saveLike = async (data, likeValue) => {
     let likedObject = null;
@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       likedObject = await ArticleLikesAndDislikes.create({ ...data, like_value: likeValue });
     } else {
       likedObject = await ArticleLikesAndDislikes.update({
-        like_value: likeValue
+        like_value: likeValue,
       }, { where: data, returning: true });
     }
     if (likedObject) {

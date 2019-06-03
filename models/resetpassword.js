@@ -6,7 +6,7 @@
  */
 const ResetPassword = (sequelize, DataTypes) => {
   const resetpassword = sequelize.define('resetpassword', {
-    token: { type: DataTypes.TEXT, allowNull: false }
+    token: { type: DataTypes.TEXT, allowNull: false },
   });
   resetpassword.recordNewReset = token => resetpassword.create({ token });
   resetpassword.checkToken = token => resetpassword.findOne({ where: { token } });

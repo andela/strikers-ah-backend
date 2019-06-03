@@ -3,14 +3,14 @@ const notificationModel = (sequelize, DataTypes) => {
     userid: DataTypes.INTEGER,
     category: DataTypes.STRING,
     message: DataTypes.STRING,
-    link: DataTypes.TEXT
+    link: DataTypes.TEXT,
   }, {});
   Notifications.associate = (models) => {
     Notifications.belongsTo(models.user, { foreignKey: 'userid', onDelete: 'CASCADE' });
   };
   Notifications.newRecord = (userid, category, message, link) => {
     Notifications.create({
-      userid, category, message, link
+      userid, category, message, link,
     });
   };
   Notifications.findAllNotification = userid => Notifications.findAll({ where: { userid } });

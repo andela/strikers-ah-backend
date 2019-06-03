@@ -2,35 +2,35 @@ module.exports = (sequelize, DataTypes) => {
   const rating = sequelize.define('rating', {
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     articleSlug: {
       type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: 'article',
-        key: 'slug'
+        key: 'slug',
       },
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     },
     rating: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
 
   }, {});
 
   rating.addRate = (rate, article, id) => rating.findOrCreate({
     where: { userId: id, articleSlug: article },
-    defaults: { rating: rate }
+    defaults: { rating: rate },
   });
 
   rating.rateUpdate = (rateId, rate) => rating.update({
-    rating: rate
+    rating: rate,
   },
   {
     returning: true,
-    where: { id: rateId }
+    where: { id: rateId },
   });
 
   rating.avgFind = (slug, articleModel) => rating.findAll({
@@ -38,11 +38,11 @@ module.exports = (sequelize, DataTypes) => {
     include: [{
       model: articleModel,
       on: { '$article.slug$': { $col: 'rating.articleSlug' } },
-      attributes: ['title']
-    }
+      attributes: ['title'],
+    },
     ],
     attributes: ['articleSlug', [sequelize.fn('AVG', sequelize.col('rating')), 'avgRating']],
-    group: ['article.id', 'rating.articleSlug']
+    group: ['article.id', 'rating.articleSlug'],
   });
 
   rating.allRatings = (userModel, articleModel, slug) => rating.findAndCountAll({
@@ -50,8 +50,8 @@ module.exports = (sequelize, DataTypes) => {
     attributes: ['rating'],
     include: [{
       model: userModel,
-      attributes: ['id', 'firstname', 'lastname', 'username']
-    }
+      attributes: ['id', 'firstname', 'lastname', 'username'],
+    },
     ],
   });
   rating.paginateArticleRatings = (limit, offset) => rating.findAll({ limit, offset });

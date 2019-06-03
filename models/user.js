@@ -16,8 +16,8 @@ const UserModel = (Sequelize, DataTypes) => {
               throw new Error('Please enter a valid email address');
             }
           }
-        }
-      }
+        },
+      },
     },
     bio: { type: DataTypes.STRING, allowNull: true },
     image: { type: DataTypes.TEXT, allowNull: true },
@@ -33,20 +33,20 @@ const UserModel = (Sequelize, DataTypes) => {
             }
             this.password = helper.hashPassword(this.password);
           }
-        }
-      }
+        },
+      },
     },
     provider: { type: DataTypes.STRING, allowNull: true, defaultValue: '' },
     provideruserid: { type: DataTypes.STRING, allowNull: true },
     verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     inapp_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
     email_notifications: { type: DataTypes.BOOLEAN, defaultValue: true },
-    role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'User' }
+    role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'User' },
   });
   User.socialUsers = async (userProfile) => {
     const result = await User.findOrCreate({
       where: { provideruserid: userProfile.provideruserid },
-      defaults: userProfile
+      defaults: userProfile,
     });
     return result[0].dataValues;
   };
@@ -68,31 +68,31 @@ const UserModel = (Sequelize, DataTypes) => {
         'inapp_notifications',
         'email_notifications',
         'createdAt',
-        'updatedAt'
-      ]
+        'updatedAt',
+      ],
     },
-    where: { id: authorid }
+    where: { id: authorid },
   });
   User.associate = (models) => {
     User.hasMany(models.bookmark, {
       foreignKey: 'userid',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     User.hasMany(models.article, {
       foreignKey: 'authorid',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     User.hasMany(models.notifications, {
       foreignKey: 'userid',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     User.hasMany(models.following, {
       foreignKey: 'userid',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     User.hasMany(models.followers, {
       foreignKey: 'userid',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     User.hasMany(models.highlights, { foreignKey: 'userid', onDelete: 'CASCADE' });
     User.hasMany(models.articleHighLightComments, { foreignKey: 'userId', onDelete: 'CASCADE' });

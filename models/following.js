@@ -3,12 +3,12 @@ const followingModel = (sequelize, DataTypes) => {
     userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: 'user', key: 'id' }
+      references: { model: 'user', key: 'id' },
     },
     following: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    }
+      allowNull: false,
+    },
   });
   Following.associate = (models) => {
     Following.belongsTo(models.user, { foreignKey: 'userid', onDelete: 'CASCADE' });
