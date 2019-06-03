@@ -3,20 +3,20 @@ const followersModel = (sequelize, DataTypes) => {
     userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: 'user', key: 'id' }
+      references: { model: 'user', key: 'id' },
     },
     follower: {
-      type: DataTypes.INTEGER
-    }
+      type: DataTypes.INTEGER,
+    },
   });
   Followers.associate = (models) => {
     Followers.belongsTo(models.user, {
       foreignKey: 'userid',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     Followers.belongsTo(models.user, {
       foreignKey: 'follower',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
   };
   Followers.newRecord = (userid, follower) => Followers.create({ userid, follower });

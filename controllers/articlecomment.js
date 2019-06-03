@@ -25,7 +25,7 @@ class ArticleComment {
       const newComment = {
         userid: req.user,
         articleid,
-        comment: commentBody
+        comment: commentBody,
       };
       let comment = await ArticleCommentModel.create(newComment);
       const author = await userModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: newComment.userid } });
@@ -80,7 +80,7 @@ class ArticleComment {
     try {
       let comment = await ArticleCommentModel.update(
         { comment: commentBody },
-        { where: { id: commentid }, returning: true }
+        { where: { id: commentid }, returning: true },
       );
       [, [comment]] = comment;
       const author = await userModel.findOne({ attributes: ['id', 'username', 'bio', 'image'], where: { id: req.user } });
