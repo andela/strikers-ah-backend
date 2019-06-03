@@ -31,7 +31,7 @@ const user = {
   username: 'nkunziinnocent',
   email: 'nkunzi@gmail.com',
   password: '@Nkunzi1234',
-  role: 'Admin'
+  role: 'Admin',
 };
 dotenv.config();
 process.env.NODE_ENV = 'test';
@@ -47,9 +47,10 @@ describe('Cleaning the database', () => {
 const newUser = {
   username: 'isharaketis',
   email: 'ishara@gmail.com',
-  password: 'Ishara@123'
+  password: 'Ishara@123',
 };
-let userToken, testToken;
+let userToken;
+let testToken;
 let categoryId;
 let articleData;
 describe('Create a user to be used in in creating article', () => {
@@ -114,7 +115,7 @@ describe('It checks title errors', () => {
     const newArticle = {
       title: '',
       description: faker.lorem.paragraph(),
-      body: faker.lorem.paragraphs()
+      body: faker.lorem.paragraphs(),
     };
     chai
       .request(index)
@@ -134,7 +135,7 @@ describe('Test the body', () => {
   const newArticle = {
     title: faker.random.words(),
     description: faker.lorem.paragraph(),
-    body: ''
+    body: '',
   };
   it('should not create and article if the body is empty', (done) => {
     chai
@@ -153,7 +154,7 @@ describe('Test the body', () => {
   it('should return an error if the body is not predefined', (done) => {
     const longTitleArticle = {
       title: faker.random.words(),
-      description: faker.lorem.paragraph()
+      description: faker.lorem.paragraph(),
     };
     chai
       .request(index)
@@ -172,9 +173,10 @@ describe('Test the body', () => {
 describe('Test the title', () => {
   it('should substring a long title to only 40 characters', (done) => {
     const longTitleArticle = {
-      title: 'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
+      title:
+        'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
       body: faker.lorem.paragraphs(),
-      description: faker.lorem.paragraph()
+      description: faker.lorem.paragraph(),
     };
     chai
       .request(index)
@@ -193,7 +195,7 @@ describe('Test the title', () => {
 describe('Test description', () => {
   const newArticle = {
     title: faker.lorem.sentence(),
-    body: faker.lorem.paragraphs()
+    body: faker.lorem.paragraphs(),
   };
   it('should provide a description if not provided', (done) => {
     chai
@@ -254,7 +256,7 @@ describe('Tests for get article', () => {
   const newArticle = {
     title: 'hello world',
     description: faker.lorem.paragraph(),
-    body: faker.lorem.paragraphs()
+    body: faker.lorem.paragraphs(),
   };
   it('should create an article to be used in get', (done) => {
     chai
@@ -306,7 +308,7 @@ describe('Delete article', () => {
   const newArticle = {
     title: 'hello world devs',
     description: faker.lorem.paragraph(),
-    body: faker.lorem.paragraphs()
+    body: faker.lorem.paragraphs(),
   };
   it('should create an article to be deleted', (done) => {
     chai
@@ -350,7 +352,10 @@ describe('Delete article', () => {
 });
 describe('Test for ratings pagination', () => {
   it('should rate an article', (done) => {
-    chai.request(index).post(`/api/articles/${newSlug}/rate/Good`).set('x-access-token', `${userToken}`)
+    chai
+      .request(index)
+      .post(`/api/articles/${newSlug}/rate/Good`)
+      .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(201);
         res.body.should.have.property('rated_article');
@@ -360,18 +365,25 @@ describe('Test for ratings pagination', () => {
       .catch(error => logError(error));
   });
   it('Paginates article ratings', (done) => {
-    chai.request(index).get('/api/articles/rating/articles?page=1&limit=1').then((res) => {
-      res.should.have.status(200);
-      done();
-    })
+    chai
+      .request(index)
+      .get('/api/articles/rating/articles?page=1&limit=1')
+      .then((res) => {
+        res.should.have.status(200);
+        done();
+      })
       .catch(error => logError(error));
   });
   it('should display an error if the article is not found', (done) => {
-    chai.request(index).get('/api/articles/rating/articles?page=10&limit=10').then((res) => {
-      res.should.have.status(404);
-      res.body.should.have.property('error').eql('No article found');
-      done();
-    }).catch(error => logError(error));
+    chai
+      .request(index)
+      .get('/api/articles/rating/articles?page=10&limit=10')
+      .then((res) => {
+        res.should.have.status(404);
+        res.body.should.have.property('error').eql('No article found');
+        done();
+      })
+      .catch(error => logError(error));
   });
 });
 describe('Test all articles', () => {
@@ -416,7 +428,8 @@ describe('Update tests', () => {
   const newArticle = {
     title: faker.lorem.sentence(),
     body: faker.lorem.paragraphs(),
-    description: 'Adipisci sed sit est deserunt. Et doloremque ullam eius incidunt ipsum minima et aperiam consectetur. Ex architecto corrupti.',
+    description:
+      'Adipisci sed sit est deserunt. Et doloremque ullam eius incidunt ipsum minima et aperiam consectetur. Ex architecto corrupti.',
   };
   it('should create an article to be updated', (done) => {
     chai
@@ -478,7 +491,7 @@ describe('Update tests', () => {
 describe('Test article reporting', () => {
   it('should save reporting category', (done) => {
     const newCategory = {
-      category: 'Abuse'
+      category: 'Abuse',
     };
     chai
       .request(index)
@@ -512,7 +525,7 @@ describe('Test article reporting', () => {
   });
   it('should edit reporting category', (done) => {
     const newCategory = {
-      category: 'Abusing'
+      category: 'Abusing',
     };
     chai
       .request(index)
@@ -531,15 +544,11 @@ describe('Test article reporting', () => {
 });
 describe('Bookmark tests', () => {
   it('should bookmark an article', (done) => {
-    chai
-      .request(index)
-      .post(`/api/articles/${newSlug3}/bookmark`)
-      .set('x-access-token', `${userToken}`)
-      .then((res) => {
-        res.should.have.status(201);
-        res.body.should.be.a('object');
-        done();
-      });
+    chai.request(index).post(`/api/articles/${newSlug3}/bookmark`).set('x-access-token', `${userToken}`).then((res) => {
+      res.should.have.status(201);
+      res.body.should.be.a('object');
+      done();
+    });
   });
   it('should not bookmark an article for the second time', (done) => {
     chai
@@ -585,7 +594,7 @@ describe('Get users information', () => {
   });
   it('Assign user new role', (done) => {
     const newRole = {
-      role: 'Moderator'
+      role: 'Moderator',
     };
     chai
       .request(index)
@@ -595,9 +604,7 @@ describe('Get users information', () => {
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
-        res.body.should.have
-          .property('message')
-          .eql(`${user.username}'s role is now ${newRole.role}`);
+        res.body.should.have.property('message').eql(`${user.username}'s role is now ${newRole.role}`);
         done();
       })
       .catch(err => err);
@@ -669,7 +676,7 @@ describe('====ARTILCE TESTS', () => {
           endPosition: 20,
           highlightedText: fakeArticle.body.substr(0, 20),
           action: 'both',
-          comment: 'Wow this is killing!'
+          comment: 'Wow this is killing!',
         })
         .then((res) => {
           higlightWIthComment = res.body;
@@ -834,6 +841,61 @@ describe('====ARTILCE TESTS', () => {
             done();
           })
           .catch(err => logError(err));
+      });
+    });
+    describe('TEST BOOKMARKED ARTICLES', () => {
+      it('Should be able to get bookmarked articles', (done) => {
+        chai
+          .request(index)
+          .get('/api/articles/bookmarked')
+          .set('x-auth-token', `${userToken}`)
+          .then((res) => {
+            res.should.have.status(200);
+            done();
+          })
+          .catch(err => logError(err));
+      });
+      it('Should not be able to get bookmarked articles when not logged in', (done) => {
+        chai
+          .request(index)
+          .get('/api/articles/bookmarked')
+          .set('x-auth-token', `${userToken}a`)
+          .then((res) => {
+            res.should.have.status(400);
+            done();
+          })
+          .catch(err => logError(err));
+      });
+      describe('Test bookmared articles', () => {
+        let newUserToken;
+        beforeEach((done) => {
+          chai
+            .request(index)
+            .post('/api/auth/signup')
+            .send({
+              username: 'ausername',
+              email: 'anemail@host.com',
+              password: 'UserPassword@123',
+              firstname: 'Firstname',
+              lastname: 'Lastname',
+            })
+            .then((res) => {
+              newUserToken = res.body.user.token;
+              done();
+            })
+            .catch(err => logError(err));
+        });
+        it('Should return not found when no user bookmarks are found', (done) => {
+          chai
+            .request(index)
+            .get('/api/articles/bookmarked')
+            .set('x-auth-token', `${newUserToken}`)
+            .then((res) => {
+              res.should.have.status(404);
+              done();
+            })
+            .catch(err => logError(err));
+        });
       });
     });
   });

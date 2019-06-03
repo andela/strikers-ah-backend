@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
       userid: { type: DataTypes.INTEGER },
       articleid: { type: DataTypes.INTEGER },
@@ -15,21 +15,21 @@ module.exports = (sequelize, DataTypes) => {
       highlighted: { type: DataTypes.BOOLEAN },
       createdAt: {
         allowNull: false,
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: DataTypes.DATE
-      }
+        type: DataTypes.DATE,
+      },
     },
-    {}
+    {},
   );
   highlights.associate = (models) => {
     highlights.belongsTo(models.article, { foreignKey: 'articleid', onDelete: 'CASCADE' });
     highlights.belongsTo(models.user, { foreignKey: 'userid', onDelete: 'CASCADE' });
     highlights.hasMany(models.articleHighLightComments, {
       foreignKey: 'articleHighlightId',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
   };
   return highlights;

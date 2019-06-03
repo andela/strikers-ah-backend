@@ -6,24 +6,24 @@ module.exports = (sequelize, DataTypes) => {
       userId: { type: DataTypes.INTEGER },
       articleHighlightId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       comment: { type: DataTypes.STRING, allowNull: false },
       createdAt: {
         allowNull: false,
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: DataTypes.DATE
-      }
+        type: DataTypes.DATE,
+      },
     },
-    {}
+    {},
   );
   articleHighLightComments.associate = (models) => {
     articleHighLightComments.belongsTo(models.highlights, {
       foreignKey: 'articleHighlightId',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     });
     articleHighLightComments.belongsTo(models.user, { foreignKey: 'userId', onDelete: 'CASCADE' });
   };

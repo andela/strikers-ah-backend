@@ -24,7 +24,7 @@ const {
   articlereporting: articleReporting,
   highlights: articleHighLights,
   articleHighLightComments,
-  sequelize
+  sequelize,
 } = models;
 
 /**
@@ -39,10 +39,10 @@ class Article {
    */
   static async createArticle(req, res) {
     const {
-      title, body, taglist, description,
-    } = req.body;
+ title, body, taglist, description 
+} = req.body;
 
-    const image = (req.file ? req.file.url : 'null');
+    const image = req.file ? req.file.url : 'null';
     if (!title) {
       return res.status(400).json({ error: 'title can not be null' });
     }
@@ -53,7 +53,7 @@ class Article {
     const checkuser = await UserModel.checkuserExistance(authorid);
     if (!checkuser) {
       return res.status(404).json({
-        error: 'Please register'
+        error: 'Please register',
       });
     }
     const slugInstance = new Slug(title);
@@ -61,7 +61,13 @@ class Article {
     const descriptData = descriptionInstance.makeDescription();
     const slug = slugInstance.returnSlug();
     const newArticle = {
-      title, body, description: descriptData, slug, authorid, taglist, image
+      title,
+      body,
+      description: descriptData,
+      slug,
+      authorid,
+      taglist,
+      image,
     };
     const article = await ArticleModel.createArticle(newArticle);
     notify.emit('create', newArticle);
@@ -76,8 +82,8 @@ class Article {
         taglist: article.taglist,
         image: article.image,
         updatedAt: article.updatedAt,
-        createdAt: article.createdAt
-      }
+        createdAt: article.createdAt,
+      },
     });
   }
 
@@ -93,12 +99,12 @@ class Article {
     const article = await ArticleModel.getOneArticle(slug);
     if (!article) {
       res.status(404).json({
-        error: 'No article found with the slug provided'
+        error: 'No article found with the slug provided',
       });
     } else {
       const { id: articleid } = article;
       const [, created] = await ArticleReadingStats.findOrCreate({
-        where: { userid: req.user, articleid }
+        where: { userid: req.user, articleid },
       });
       if (created) {
         await ArticleModel.addViewer(articleid);
@@ -114,14 +120,14 @@ class Article {
    * @returns {object} it returns an object of articles
    */
   static async getAllArticles(req, res) {
-    const getAll = await ArticleModel.getAll();
+    const getAll = await ArticleModel.getAll(UserModel);
     if (getAll.length === 0) {
       res.status(404).json({
-        error: 'Not article found for now'
+        error: 'Not article found for now',
       });
     } else {
       res.status(200).json({
-        article: getAll
+        article: getAll,
       });
     }
   }
@@ -143,7 +149,7 @@ class Article {
     const deleteArticle = await ArticleModel.deleteArticle(articleId);
     if (deleteArticle.length !== 0) {
       res.status(200).json({
-        message: 'Article deleted'
+        message: 'Article deleted',
       });
     }
   }
@@ -157,13 +163,13 @@ class Article {
   static async updateArticle(req, res) {
     const { slug } = req.params;
     const {
-      title, body, taglist, description
-    } = req.body;
+ title, body, taglist, description 
+} = req.body;
     const authorid = req.user;
     const searchArticle = await ArticleModel.findArticleSlug(authorid, slug);
     if (!searchArticle) {
       return res.status(404).json({
-        error: 'No article found for you to edit'
+        error: 'No article found for you to edit',
       });
     }
     const slugInstance = new Slug(title);
@@ -175,12 +181,12 @@ class Article {
       description: description || searchArticle.description,
       slug: newSlug.length === 8 ? searchArticle.slug : newSlug,
       authorid,
-      taglist: !taglist ? taglist : searchArticle.taglist
+      taglist: !taglist ? taglist : searchArticle.taglist,
     };
     const updateArticle = await ArticleModel.updateFoundArticle(id, updatedArticle);
     res.status(200).json({
       message: 'Article updated',
-      article: updateArticle
+      article: updateArticle,
     });
   }
 
@@ -194,8 +200,8 @@ class Article {
     const { slug } = req.params;
     const { id: userId } = helper.decodeToken(req);
     const {
-      comment, startPosition, endPosition, highlightedText, action
-    } = req.body;
+ comment, startPosition, endPosition, highlightedText, action 
+} = req.body;
 
     const highlighted = helper.compareAction(action === 'highlight', action === 'both');
     const commented = helper.compareAction(action === 'commented', action === 'both');
@@ -209,13 +215,13 @@ class Article {
         userid: userId,
         articleid: article.id,
         textcontent: highlightedText,
-        highlighted
+        highlighted,
       });
       if (commented) {
         highlightComment = await articleHighLightComments.create({
           comment,
           userId,
-          articleHighlightId: hightLight.id
+          articleHighlightId: hightLight.id,
         });
       }
       res.status(201).json({
@@ -225,7 +231,7 @@ class Article {
         startPostion: hightLight.startposition,
         endPosition: hightLight.endposition,
         hightlightedText: hightLight.textcontent,
-        comment: commented ? highlightComment.comment : ''
+        comment: commented ? highlightComment.comment : '',
       });
     }
   }
@@ -242,7 +248,7 @@ class Article {
     const checkSlug = await ArticleModel.getOneArticle(slug);
     if (!checkSlug) {
       return res.status(404).json({
-        error: 'No article found with the specified slug'
+        error: 'No article found with the specified slug',
       });
     }
     const articleId = checkSlug.id;
@@ -251,11 +257,11 @@ class Article {
       const bookmark = await bookmarkModel.bookmark(userid, articleId);
       res.status(201).json({
         message: 'Bookmarked',
-        article: bookmark
+        article: bookmark,
       });
     } else {
       res.status(403).json({
-        error: 'Already bookmarked'
+        error: 'Already bookmarked',
       });
     }
   }
@@ -272,7 +278,7 @@ class Article {
     const article = await ArticleModel.findOne({ where: { slug } });
     if (article) {
       const highlights = await articleHighLights.findAll({
-        where: { articleid: article.id, userid: userId }
+        where: { articleid: article.id, userid: userId },
       });
       res.status(200).json({ status: 200, highlights });
     } else {
@@ -292,12 +298,12 @@ class Article {
     const limit = parseInt(req.query.limit, 10);
     if (pageNumber <= 0) {
       return res.status(403).json({
-        error: 'Invalid page number'
+        error: 'Invalid page number',
       });
     }
     if (limit <= 0) {
       return res.status(403).json({
-        error: 'Invalid page limit'
+        error: 'Invalid page limit',
       });
     }
     const offset = limit * (pageNumber - 1);
@@ -305,11 +311,11 @@ class Article {
     if (getAll.length) {
       res.status(200).json({
         article: getAll,
-        articlesCount: getAll.length
+        articlesCount: getAll.length,
       });
     } else {
       res.status(404).json({
-        error: 'No article found for now'
+        error: 'No article found for now',
       });
     }
   }
@@ -329,7 +335,7 @@ class Article {
     if (!user) {
       return res.status(404).send({
         status: 404,
-        error: 'User not found'
+        error: 'User not found',
       });
     }
     const { id, username } = user.dataValues;
@@ -337,14 +343,14 @@ class Article {
     if (typeof rating === 'undefined') {
       return res.status(400).send({
         status: 400,
-        error: 'invalid rating'
+        error: 'invalid rating',
       });
     }
 
     if (Number(slug)) {
       return res.status(400).send({
         status: 400,
-        error: 'slug of an article can not be a number.'
+        error: 'slug of an article can not be a number.',
       });
     }
 
@@ -352,7 +358,7 @@ class Article {
     if (!results) {
       return res.status(404).send({
         status: 404,
-        error: 'Article can not be found.'
+        error: 'Article can not be found.',
       });
     }
     const { title: articleTitle } = results.dataValues;
@@ -367,14 +373,14 @@ class Article {
           id: dataResult.dataValues.id,
           user: {
             id,
-            username
+            username,
           },
           article: {
             title: articleTitle,
-            slug: dataResult.dataValues.articleSlug
+            slug: dataResult.dataValues.articleSlug,
           },
-          rating: rate
-        }
+          rating: rate,
+        },
       });
     }
     if (!returnValue && dataResult.dataValues.rating !== rating) {
@@ -386,20 +392,20 @@ class Article {
           id: updateRate[1][0].dataValues.id,
           user: {
             id: userid,
-            username
+            username,
           },
           article: {
             title: articleTitle,
-            slug: updateRate[1][0].dataValues.articleSlug
+            slug: updateRate[1][0].dataValues.articleSlug,
           },
           rating: rate,
-          previousRating: objKey(dataResult.dataValues.rating)
-        }
+          previousRating: objKey(dataResult.dataValues.rating),
+        },
       });
     }
     return res.status(403).send({
       status: 403,
-      error: 'Article can only be rated once.'
+      error: 'Article can only be rated once.',
     });
   }
 
@@ -415,7 +421,7 @@ class Article {
     if (Number(slug)) {
       return res.status(400).send({
         status: 400,
-        error: 'slug of an article can not be a number.'
+        error: 'slug of an article can not be a number.',
       });
     }
 
@@ -423,7 +429,7 @@ class Article {
     if (!results) {
       return res.status(404).send({
         status: 404,
-        error: 'Article can not be found.'
+        error: 'Article can not be found.',
       });
     }
     const { title, slug: articleSlug } = results.dataValues;
@@ -433,17 +439,17 @@ class Article {
     if (rows.length === 0) {
       return res.status(404).send({
         status: 404,
-        error: 'No rating found for this article'
+        error: 'No rating found for this article',
       });
     }
     return res.status(200).send({
       status: 200,
       article: {
         title,
-        slug: articleSlug
+        slug: articleSlug,
       },
       who_rated: rows,
-      UsersCount: count
+      UsersCount: count,
     });
   }
 
@@ -458,7 +464,7 @@ class Article {
     const { highlightId } = req.params;
 
     const comments = await articleHighLightComments.findAll({
-      where: { userId, articleHighlightId: highlightId }
+      where: { userId, articleHighlightId: highlightId },
     });
     if (comments.length) {
       res.status(200).json({ status: 200, comments });
@@ -483,17 +489,14 @@ class Article {
     // check if the article exists
     const article = await ArticleModel.findOne({ where: { slug } });
     if (article) {
-      await ArticleLikesAndDislikes.saveLike(
-        { user_id: userId, article_id: article.id },
-        `${likeState}`
-      );
+      await ArticleLikesAndDislikes.saveLike({ user_id: userId, article_id: article.id }, `${likeState}`);
       // get article likes count
       const { count: likes } = await ArticleLikesAndDislikes.findAndCountAll({
-        where: { article_id: article.id, like_value: 'like' }
+        where: { article_id: article.id, like_value: 'like' },
       });
       // get article dislikes count
       const { count: dislikes } = await ArticleLikesAndDislikes.findAndCountAll({
-        where: { article_id: article.id, like_value: 'dislike' }
+        where: { article_id: article.id, like_value: 'dislike' },
       });
       res.status(201).json({ article: helper.combineWithArticle(article, { likes, dislikes }) });
     }
@@ -519,12 +522,12 @@ class Article {
       const newComment = {
         userid: req.user,
         articleid,
-        comment: commentBody
+        comment: commentBody,
       };
       let comment = await ArticleCommentModel.create(newComment);
       const author = await UserModel.findOne({
         attributes: ['id', 'username', 'bio', 'image'],
-        where: { id: newComment.userid }
+        where: { id: newComment.userid },
       });
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
@@ -588,14 +591,11 @@ class Article {
     const commentBody = req.body.comment.body.trim();
     const { id } = articleCommentDetails;
     try {
-      let comment = await ArticleCommentModel.update(
-        { comment: commentBody },
-        { where: { id }, returning: true }
-      );
+      let comment = await ArticleCommentModel.update({ comment: commentBody }, { where: { id }, returning: true });
       [, [comment]] = comment;
       const author = await UserModel.findOne({
         attributes: ['id', 'username', 'bio', 'image'],
-        where: { id: req.user }
+        where: { id: req.user },
       });
       comment = select.pick(comment, ['id', 'comment', 'createdAt', 'updatedAt']);
       comment.author = author;
@@ -646,7 +646,7 @@ class Article {
     }
     try {
       const [categoryInfo, created] = await articleReportingCategory.findOrCreate({
-        where: { name: category }
+        where: { name: category },
       });
       if (created) {
         return res.status(201).json({ category: categoryInfo });
@@ -740,9 +740,7 @@ class Article {
       // });
       res.status(200).json({ status: 200, top: topHighlight[0][0] });
     } else {
-      res
-        .status(404)
-        .json({ status: 404, error: 'No top highlights can be found on non-existing article' });
+      res.status(404).json({ status: 404, error: 'No top highlights can be found on non-existing article' });
     }
   }
 
@@ -787,7 +785,7 @@ class Article {
         articleid: articleDetails.id,
         categoryid: category.id,
         userid: req.user,
-        description: req.body.description || ''
+        description: req.body.description || '',
       };
       const reported = await articleReporting.create(report);
       const response = {
@@ -797,8 +795,8 @@ class Article {
         article: {
           id: articleDetails.id,
           slug: req.params.slug,
-          title: articleDetails.title
-        }
+          title: articleDetails.title,
+        },
       };
       return res.status(201).json({ report: response });
     } catch (error) {
@@ -819,16 +817,16 @@ class Article {
         return res.status(404).json({ message: 'No reported article found!' });
       }
       const response = reported.map(({
-        id, description, name, articleid, title, slug
-      }) => ({
+ id, description, name, articleid, title, slug 
+}) => ({
         id,
         category: name,
         description,
         article: {
           id: articleid,
           slug,
-          title
-        }
+          title,
+        },
       }));
       return res.status(200).json({ report: response });
     } catch (error) {
@@ -845,7 +843,7 @@ class Article {
   static async getHighlightComments(req, res) {
     const { higlightId } = req.params;
     const comments = await articleHighLightComments.findAll({
-      where: { articleHighlightId: higlightId }
+      where: { articleHighlightId: higlightId },
     });
     if (comments.length) {
       res.status(200).json({ status: 200, comments });
@@ -865,7 +863,7 @@ class Article {
     if (Number(slug)) {
       return res.status(400).send({
         status: 400,
-        error: 'slug of an article can not be a number.'
+        error: 'slug of an article can not be a number.',
       });
     }
 
@@ -873,7 +871,7 @@ class Article {
     if (!results) {
       return res.status(404).send({
         status: 404,
-        error: 'Article can not be found.'
+        error: 'Article can not be found.',
       });
     }
     const allArticles = await ratingModel.allRatings(UserModel, ArticleModel, slug);
@@ -881,7 +879,7 @@ class Article {
     if (rows.length === 0) {
       return res.status(404).send({
         status: 404,
-        error: 'No rating. Be first to rate'
+        error: 'No rating. Be first to rate',
       });
     }
 
@@ -893,9 +891,9 @@ class Article {
       status: 200,
       article: {
         title,
-        slug: aSlug
+        slug: aSlug,
       },
-      averageRating: objKey(Math.ceil(AvgRate))
+      averageRating: objKey(Math.ceil(AvgRate)),
     });
   }
 
@@ -911,12 +909,12 @@ class Article {
 
     if (pageNumber <= 0) {
       return res.status(403).json({
-        error: 'Invalid page number'
+        error: 'Invalid page number',
       });
     }
     if (limitRatings <= 0) {
       return res.status(403).json({
-        error: 'Invalid limit'
+        error: 'Invalid limit',
       });
     }
     const offset = limitRatings * (pageNumber - 1);
@@ -924,10 +922,39 @@ class Article {
     if (listOfRatings.length) {
       res.status(200).json({
         articles: listOfRatings,
-        ratingCounts: listOfRatings.length
+        ratingCounts: listOfRatings.length,
       });
     } else {
       res.status(404).json({ error: 'No article found' });
+    }
+  }
+
+  /**
+   * @author Mwibutsa Floribert
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} ---
+   */
+  static async getBookmarkedArticles(req, res) {
+    const { id: userId } = helper.decodeToken(req);
+    const bookmarked = await bookmarkModel.find({
+      where: { userid: userId },
+      include: [
+        {
+          model: UserModel,
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+        {
+          model: ArticleModel,
+        },
+      ],
+    });
+    if (bookmarked) {
+      res.status(200).json({ status: 200, bookmarkedArticles: bookmarked });
+    } else {
+      res.status(404).json({ satus: 404, error: 'no bookmarked articles were found for you' });
     }
   }
 }
