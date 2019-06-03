@@ -3,6 +3,7 @@ import user from '../../controllers/user';
 import verifyToken from '../../middlewares/verifyToken';
 import Strategy from '../../middlewares/auth';
 import helper from '../../helpers/helper';
+import Notifications from '../../controllers/notifications';
 
 const router = express.Router();
 
@@ -21,7 +22,13 @@ router.delete(
   },
   user.unfollow,
 );
-router.get('/:username', helper.asyncHandler(user.getUserProfile));
+router.put(
+  '/notifications/emails',
+  (req, res, next) => {
+    new verifyToken(req, res, next).verify();
+  },
+  Notifications.optEmailNotifications
+);
 router.put('/:username', Strategy.verifyToken, helper.asyncHandler(user.editProfile));
 router.get(
   '/notifications',
@@ -30,6 +37,7 @@ router.get(
   },
   user.notifications,
 );
+router.get('/:username', helper.asyncHandler(user.getUserProfile));
 
 router.put(
   '/notifications/:id',

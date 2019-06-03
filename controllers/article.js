@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // import debug from 'debug';
 import select from 'lodash';
 import models from '../models';
@@ -39,8 +40,8 @@ class Article {
    */
   static async createArticle(req, res) {
     const {
- title, body, taglist, description 
-} = req.body;
+      title, body, taglist, description
+    } = req.body;
 
     const image = req.file ? req.file.url : 'null';
     if (!title) {
@@ -163,8 +164,8 @@ class Article {
   static async updateArticle(req, res) {
     const { slug } = req.params;
     const {
- title, body, taglist, description 
-} = req.body;
+      title, body, taglist, description
+    } = req.body;
     const authorid = req.user;
     const searchArticle = await ArticleModel.findArticleSlug(authorid, slug);
     if (!searchArticle) {
@@ -200,8 +201,8 @@ class Article {
     const { slug } = req.params;
     const { id: userId } = helper.decodeToken(req);
     const {
- comment, startPosition, endPosition, highlightedText, action 
-} = req.body;
+      comment, startPosition, endPosition, highlightedText, action
+    } = req.body;
 
     const highlighted = helper.compareAction(action === 'highlight', action === 'both');
     const commented = helper.compareAction(action === 'commented', action === 'both');
@@ -817,8 +818,8 @@ class Article {
         return res.status(404).json({ message: 'No reported article found!' });
       }
       const response = reported.map(({
- id, description, name, articleid, title, slug 
-}) => ({
+        id, description, name, articleid, title, slug
+      }) => ({
         id,
         category: name,
         description,
@@ -937,7 +938,7 @@ class Article {
    */
   static async getBookmarkedArticles(req, res) {
     const { id: userId } = helper.decodeToken(req);
-    const bookmarked = await bookmarkModel.find({
+    const bookmarked = await bookmarkModel.findAll({
       where: { userid: userId },
       include: [
         {

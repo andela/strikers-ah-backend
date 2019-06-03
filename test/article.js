@@ -891,7 +891,7 @@ describe('====ARTILCE TESTS', () => {
             .get('/api/articles/bookmarked')
             .set('x-auth-token', `${newUserToken}`)
             .then((res) => {
-              res.should.have.status(404);
+              res.should.have.status(200);
               done();
             })
             .catch(err => logError(err));

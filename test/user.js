@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import debug from 'debug';
@@ -866,6 +867,35 @@ describe('check if user follow another profile', () => {
         .set('Authorization', `Bearer ${Usertoken}`);
       res.body.should.have.status(400);
       res.body.should.have.property('error');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+
+describe('update user status for the notification opt in and out method', () => {
+  it('should be able opt in and out of notifications', async () => {
+    try {
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      await UserModel.emailNotifications(fuser.dataValues.id, !fuser.dataValues.email_notifications);
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
+
+describe('opt in and out of notifications', () => {
+  it('should allow users to opt in and out of notifications', async () => {
+    try {
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      const Usertoken = jwt.sign(fuser.dataValues, process.env.secretKey);
+      const res = await chai
+        .request(app)
+        .put('/api/profiles/notifications/emails')
+        .set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(201);
+      res.body.should.have.property('status');
     } catch (error) {
       logError(error);
     }
