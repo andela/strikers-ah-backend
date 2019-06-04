@@ -32,13 +32,12 @@ const ArticleModel = (sequelize, DataTypes) => {
       views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
       image: { type: DataTypes.STRING, allowNull: true },
     },
-    {},
+    {}
   );
 
   sequelizeTrasform(Article);
   Article.createArticle = article => Article.create(article);
-  Article.getAll = userModel => Article.find({
-    where: {},
+  Article.getAll = userModel => Article.findAll({
     include: [
       {
         model: userModel,
@@ -64,7 +63,7 @@ const ArticleModel = (sequelize, DataTypes) => {
         taglist: data.taglist,
         authorid: data.authorid,
       },
-      { returning: true, where: { id } },
+      { returning: true, where: { id } }
     );
     return data;
   };
