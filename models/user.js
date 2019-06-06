@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import helper from '../helpers/helper';
 
 const UserModel = (Sequelize, DataTypes) => {
@@ -54,6 +55,10 @@ const UserModel = (Sequelize, DataTypes) => {
   User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
   User.checkUser = username => User.findOne({ where: { username } });
   User.findUser = id => User.findOne({ where: { id } });
+  User.emailNotifications = (id, email_notifications) => User.update(
+    { email_notifications },
+    { where: { id } }
+  );
   User.checkuserExistance = authorid => User.findOne({
     attributes: {
       exclude: [

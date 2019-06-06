@@ -106,6 +106,31 @@ class Notifications {
       return error;
     }
   }
+
+  /**
+  * @author frank harerimana
+  * @param {*} req
+  * @param {*} res
+  * @returns {*} setting
+  */
+  static async optEmailNotifications(req, res) {
+    try {
+      const { id } = req.user;
+      const setting = await UserModel.findUser(id);
+      const emailNotificationStatus = !setting.dataValues.email_notifications;
+      await UserModel.emailNotifications(id, emailNotificationStatus);
+      res.status(201).json({
+        statusCode: 201,
+        message: 'changes updated successfully',
+        status: `${emailNotificationStatus}`
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 400,
+        error
+      });
+    }
+  }
 }
 
 export default Notifications;
