@@ -29,9 +29,9 @@ router.delete('/:slug', AuthToken, errorHandler(articleController.deleteArticle)
 router.put('/:slug', AuthToken, errorHandler(articleController.updateArticle));
 router.get('/rating/articles', errorHandler(articleController.articleRatingPagination));
 router.patch('/:slug/:likeState', Strategy.verifyToken, helper.asyncHandler(articleController.likeArticle));
-router.post('/:slug/comments', AuthToken, articleController.addComment);
-router.get('/:slug/comments', AuthToken, articleController.getComments);
-router.put('/:slug/comments/:commentid', AuthToken, articleController.updateComment);
+router.post('/:slug/comments', AuthToken, articleCommentController.addComment);
+router.get('/:slug/comments', AuthToken, articleCommentController.getComments);
+router.put('/:slug/comments/:commentid', AuthToken, articleCommentController.updateComment);
 router.delete('/:slug/comments/:commentid', AuthToken, articleCommentController.deleteComment);
 router.post('/:slug/comments/:commentid/like', AuthToken, articleCommentController.likeComment);
 router.get(
