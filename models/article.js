@@ -68,6 +68,20 @@ const ArticleModel = (sequelize, DataTypes) => {
     return data;
   };
   Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
+  Article.fetchLatest = userModel => Article.findAll({
+    order: [
+      ['createdAt', 'DESC'],
+    ],
+    include: [
+      {
+        model: userModel,
+        attributes: {
+          exclude: ['password', 'email', 'role'],
+        },
+      },
+    ],
+    limit: 6
+  });
 
   Article.associate = (models) => {
     Article.belongsTo(models.user, {
