@@ -958,5 +958,25 @@ class Article {
       res.status(404).json({ satus: 404, error: 'no bookmarked articles were found for you' });
     }
   }
+
+  /**
+   *@author: Clet Mwunguzi
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Latest articles
+   */
+  static async fetchLatestArticles(req, res) {
+    const result = await ArticleModel.fetchLatest(UserModel);
+    if (result.length) {
+      return res.status(200).send({
+        status: 200,
+        data: result
+      });
+    }
+    return res.status(200).send({
+      status: 200,
+      message: 'There are no latest articles'
+    });
+  }
 }
 export default Article;
