@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import faker from 'faker';
@@ -31,7 +32,7 @@ const mockUser = {
 };
 
 
-let userToken, userTokenId;
+let userToken;
 let articleSlug;
 describe('/Fetching latest articles--> Create a user for rating an article', () => {
   before('Cleaning the database first', async () => {
@@ -57,7 +58,6 @@ describe('/Fetching latest articles--> Create a user for rating an article', () 
 
   it('should create a another user', (done) => {
     chai.request(index).post('/api/auth/signup').send(mockUser).then((res) => {
-      userTokenId = res.body.user.token;
       res.should.have.status(200);
       res.body.should.be.a('object');
       res.body.user.should.be.a('object');
@@ -88,7 +88,7 @@ const fakeData = {
   description: faker.lorem.paragraphs(),
   body: faker.lorem.paragraphs()
 };
-describe('/Fetching ratings --> Create an article', () => {
+describe('/Fetching latestArticles', () => {
   it('should create an article', (done) => {
     chai.request(index).post('/api/articles')
       .set('Authorization', userToken)
