@@ -59,12 +59,18 @@ class ArticleComment {
       const type = req.commenttype && req.commenttype === 'popular' ? 'popular' : 'all';
       const comment = await ArticleCommentModel.listComments(articleDetails.id, type);
       const comments = [];
-      await comment.map(async (entry) => {
+
+      await Promise.all(comment.map(async (entry) => {
+        const historyData = await CommentHistoryModel.findAll({ where: { commentid: entry.id } });
+        const history = [];
+        historyData.forEach((data) => {
+          const historyDetails = select.pick(data, ['oldcomment', 'createdAt']);
+          history.push({ ...historyDetails });
+        });
         const author = select.pick(entry, ['username', 'bio', 'image']);
         entry = select.pick(entry, ['id', 'comment', 'likes', 'createdAt', 'updatedAt']);
-        entry.author = author;
-        comments.push(entry);
-      });
+        comments.push({ ...entry, history, author });
+      }));
 
       return helper.jsonResponse(res, 200, { comment: comments, commentsCount: comments.length });
     } catch (error) {
