@@ -901,3 +901,20 @@ describe('opt in and out of notifications', () => {
     }
   });
 });
+
+describe('check status for email notifications', () => {
+  it('should allow users to opt in and out of notifications', async () => {
+    try {
+      const fuser = await UserModel.checkEmail(UserObj.email);
+      const Usertoken = jwt.sign(fuser.dataValues, process.env.secretKey);
+      const res = await chai
+        .request(app)
+        .get('/api/profiles/notifications/emails')
+        .set('Authorization', `Bearer ${Usertoken}`);
+      res.body.should.have.status(201);
+      res.body.should.have.property('status');
+    } catch (error) {
+      logError(error);
+    }
+  });
+});
