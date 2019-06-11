@@ -843,6 +843,29 @@ describe('====ARTILCE TESTS', () => {
           .catch(err => logError(err));
       });
     });
+
+    describe('TEST GET USER ARTICLES', () => {
+      it('should be able to get user articles', (done) => {
+        chai
+          .request(index)
+          .get('/api/articles/user-articles/nkunziinnocent')
+          .then((res) => {
+            res.should.have.status(200);
+            done();
+          })
+          .catch(err => logError(err));
+      });
+      it('should return not found when the profile does not exist', (done) => {
+        chai
+          .request(index)
+          .get('/api/articles/user-articles/invalidprofile')
+          .then((res) => {
+            res.should.have.status(404);
+            done();
+          })
+          .catch(err => logError(err));
+      });
+    });
     describe('TEST BOOKMARKED ARTICLES', () => {
       it('Should be able to get bookmarked articles', (done) => {
         chai
@@ -855,6 +878,7 @@ describe('====ARTILCE TESTS', () => {
           })
           .catch(err => logError(err));
       });
+
       it('Should not be able to get bookmarked articles when not logged in', (done) => {
         chai
           .request(index)

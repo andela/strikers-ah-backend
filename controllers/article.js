@@ -865,13 +865,32 @@ class Article {
     if (result.length) {
       return res.status(200).send({
         status: 200,
-        data: result
+        data: result,
       });
     }
     return res.status(200).send({
       status: 200,
-      message: 'There are no latest articles'
+      message: 'There are no latest articles',
     });
+  }
+
+  /**
+   *@author Mwibutsa Floribert
+   * @param {*} req
+   * @param {*} res
+   * @returns { * } --
+   */
+  static async getUserArticles(req, res) {
+    const profile = await UserModel.findOne({ where: { username: req.params.username } });
+    if (profile) {
+      const userArticles = await ArticleModel.findAll({ where: { authorid: profile.id } });
+      res.status(200).json({
+        status: 200,
+        articles: userArticles,
+      });
+    } else {
+      res.status(404).json({ status: 404, error: `No articles were found for ${req.params.username}` });
+    }
   }
 }
 export default Article;

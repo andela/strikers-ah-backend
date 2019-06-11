@@ -12,6 +12,7 @@ const router = express.Router();
 router.get('/all', errorHandler(articleController.getAllArticles));
 router.get('/reports', AuthToken, errorHandler(articleController.getReportedArticle));
 router.get('/latest', articleController.fetchLatestArticles);
+router.get('/user-articles/:username', helper.asyncHandler(articleController.getUserArticles));
 router.post('/', AuthToken, imageUpload, errorHandler(articleController.createArticle));
 router.get(
   '/:slug/highlight/:highlightId/user-comments',
@@ -51,7 +52,6 @@ router.put('/report/category/:id', AuthToken, articleController.editReportingCat
 router.delete('/report/category/:id', AuthToken, articleController.deleteReportingCategory);
 router.post('/:slug/report/', AuthToken, articleController.reportingArticle);
 router.get('/:slug/ratings', articleController.fetchAvgRating);
-
 
 router.get('/:slug/:higlightId/comments', AuthToken, errorHandler(articleController.getHighlightComments));
 router.post('/:slug/highlight', AuthToken, errorHandler(articleController.highlightArticle));
