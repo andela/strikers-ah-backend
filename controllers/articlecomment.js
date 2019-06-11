@@ -61,7 +61,7 @@ class ArticleComment {
       const comments = [];
 
       await Promise.all(comment.map(async (entry) => {
-        const historyData = await CommentHistoryModel.findAll({ where: { commentid: entry.id } });
+        const historyData = await CommentHistoryModel.findAll({ where: { commentid: entry.id }, order: [['id', 'DESC']], limit: 5 });
         const history = [];
         historyData.forEach((data) => {
           const historyDetails = select.pick(data, ['oldcomment', 'createdAt']);
