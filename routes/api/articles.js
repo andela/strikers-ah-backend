@@ -57,9 +57,7 @@ router.get('/:slug/:higlightId/comments', AuthToken, errorHandler(articleControl
 router.post('/:slug/highlight', AuthToken, errorHandler(articleController.highlightArticle));
 router.get('/:slug/top-highlight', AuthToken, errorHandler(articleController.getTopHighlight));
 router.get('/:slug/user-highlights', AuthToken, errorHandler(articleController.getUserHighlights));
-router.get('/:slug', errorHandler(articleController.getArticle));
-router.get('/', articleController.getAllArticles);
-router.post('/', AuthToken, errorHandler(articleController.createArticle));
+router.get('/category/:category', AuthToken, articleController.getArticlesByCategory);
 
 router.delete('/:slug');
 router.put('/:slug');

@@ -15,6 +15,7 @@ module.exports = {
     authorid: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'users', key: 'id', onDelete: 'CASCADE' } },
     views: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
     image: { type: Sequelize.STRING, allowNull: true },
+    category: { type: Sequelize.INTEGER, allowNull: false },
     createdAt: { allowNull: false, type: Sequelize.DATE },
     updatedAt: { allowNull: false, type: Sequelize.DATE },
   }),

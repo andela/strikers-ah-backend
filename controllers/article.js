@@ -24,6 +24,7 @@ const {
   highlights: articleHighLights,
   articleHighLightComments,
   sequelize,
+  articlecategory: ArticleCategoryModel
 } = models;
 
 /**
@@ -40,6 +41,15 @@ class Article {
     const {
       title, body, taglist, description
     } = req.body;
+    let { category } = req.body;
+    if (!category || category === '') {
+      category = 0;
+    } else {
+      const categoryExists = await ArticleCategoryModel.findOne({ where: { id: category } });
+      if (!categoryExists) {
+        return helper.jsonResponse(res, 404, { error: 'Category not found' });
+      }
+    }
 
     const image = req.file ? req.file.url : 'null';
     if (!title) {
@@ -67,8 +77,14 @@ class Article {
       authorid,
       taglist,
       image,
+      category
     };
     const article = await ArticleModel.createArticle(newArticle);
+    let categoryName = 'Other';
+    const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+    if (getCategory) {
+      categoryName = getCategory.name;
+    }
     notify.emit('create', newArticle);
     return res.status(201).json({
       article: {
@@ -80,6 +96,7 @@ class Article {
         author: checkuser,
         taglist: article.taglist,
         image: article.image,
+        category: categoryName,
         updatedAt: article.updatedAt,
         createdAt: article.createdAt,
       },
@@ -108,6 +125,12 @@ class Article {
       if (created) {
         await ArticleModel.addViewer(articleid);
       }
+      let categoryName = 'Other';
+      const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+      if (getCategory) {
+        categoryName = getCategory.name;
+      }
+      article.category = categoryName;
       res.status(200).json({ article });
     }
   }
@@ -125,6 +148,16 @@ class Article {
         error: 'Not article found for now',
       });
     } else {
+      await Promise.all(getAll.map(async (article) => {
+        let categoryName = 'Other';
+        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+        if (getCategory) {
+          categoryName = getCategory.name;
+        }
+        article.category = categoryName;
+        return article;
+      }));
+      //
       res.status(200).json({
         article: getAll,
       });
@@ -164,6 +197,15 @@ class Article {
     const {
       title, body, taglist, description
     } = req.body;
+    let { category } = req.body;
+    if (!category || category === '') {
+      category = 0;
+    } else {
+      const categoryExists = await ArticleCategoryModel.findOne({ where: { id: category } });
+      if (!categoryExists) {
+        return helper.jsonResponse(res, 404, { error: 'Category not found' });
+      }
+    }
     const authorid = req.user;
     const searchArticle = await ArticleModel.findArticleSlug(authorid, slug);
     if (!searchArticle) {
@@ -181,8 +223,15 @@ class Article {
       slug: newSlug.length === 8 ? searchArticle.slug : newSlug,
       authorid,
       taglist: !taglist ? taglist : searchArticle.taglist,
+      category
     };
     const updateArticle = await ArticleModel.updateFoundArticle(id, updatedArticle);
+    let categoryName = 'Other';
+    const getCategory = await ArticleCategoryModel.findOne({ where: { id: updatedArticle.category } });
+    if (getCategory) {
+      categoryName = getCategory.name;
+    }
+    updateArticle.category = categoryName;
     res.status(200).json({
       message: 'Article updated',
       article: updateArticle,
@@ -307,7 +356,17 @@ class Article {
     }
     const offset = limit * (pageNumber - 1);
     const getAll = await ArticleModel.getAllPages(limit, offset);
-    if (getAll.length) {
+    await Promise.all(getAll.map(async (article) => {
+      let categoryName = 'Other';
+      const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+      if (getCategory) {
+        categoryName = getCategory.name;
+      }
+      article.category = categoryName;
+      return article;
+    }));
+    //
+    if (getAll) {
       res.status(200).json({
         article: getAll,
         articlesCount: getAll.length,
@@ -832,7 +891,7 @@ class Article {
    * @returns {*} ---
    */
   static async getBookmarkedArticles(req, res) {
-    const { id: userId } = helper.decodeToken(req);
+    const { user: userId } = req;
     const bookmarked = await bookmarkModel.findAll({
       where: { userid: userId },
       include: [
@@ -848,6 +907,16 @@ class Article {
       ],
     });
     if (bookmarked) {
+      await Promise.all(bookmarked.map(async (article) => {
+        let categoryName = 'Other';
+        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.article.category } });
+        if (getCategory) {
+          categoryName = getCategory.name;
+        }
+        article.article.category = categoryName;
+        return article;
+      }));
+      //
       res.status(200).json({ status: 200, bookmarkedArticles: bookmarked });
     } else {
       res.status(404).json({ satus: 404, error: 'no bookmarked articles were found for you' });
@@ -862,7 +931,17 @@ class Article {
    */
   static async fetchLatestArticles(req, res) {
     const result = await ArticleModel.fetchLatest(UserModel);
-    if (result.length) {
+    if (result) {
+      await Promise.all(result.map(async (article) => {
+        let categoryName = 'Other';
+        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+        if (getCategory) {
+          categoryName = getCategory.name;
+        }
+        article.category = categoryName;
+        return article;
+      }));
+      //
       return res.status(200).send({
         status: 200,
         data: result,
@@ -884,12 +963,62 @@ class Article {
     const profile = await UserModel.findOne({ where: { username: req.params.username } });
     if (profile) {
       const userArticles = await ArticleModel.findAll({ where: { authorid: profile.id } });
+      await Promise.all(userArticles.map(async (article) => {
+        let categoryName = 'Other';
+        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+        if (getCategory) {
+          categoryName = getCategory.name;
+        }
+        article.category = categoryName;
+        return article;
+      }));
+      //
       res.status(200).json({
         status: 200,
         articles: userArticles,
       });
     } else {
       res.status(404).json({ status: 404, error: `No articles were found for ${req.params.username}` });
+    }
+  }
+
+  /**
+   * @author Jacques Nyilinkindi
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} it returns an object of articles
+   */
+  static async getArticlesByCategory(req, res) {
+    const { category: name } = req.params;
+    if (!name || name === '' || name.trim() === '') {
+      return helper.jsonResponse(res, 400, { error: 'Provide Category Name' });
+    }
+    const id = 0;
+    if (name !== 'Other') {
+      const categoryExists = await ArticleCategoryModel.findOne({ where: { name } });
+      if (!categoryExists) {
+        return helper.jsonResponse(res, 404, { error: 'Category not found' });
+      }
+    }
+    const getAll = await ArticleModel.findAll({ where: { category: id } });
+    if (!getAll) {
+      res.status(404).json({
+        error: 'Not article found for now',
+      });
+    } else {
+      await Promise.all(getAll.map(async (article) => {
+        let categoryName = 'Other';
+        const getCategory = await ArticleCategoryModel.findOne({ where: { id: article.category } });
+        if (getCategory) {
+          categoryName = getCategory.name;
+        }
+        article.category = categoryName;
+        return article;
+      }));
+      //
+      res.status(200).json({
+        article: getAll,
+      });
     }
   }
 }
