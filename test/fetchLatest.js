@@ -77,7 +77,6 @@ it('should fetch latest articles', (done) => {
     .then((res) => {
       res.body.should.be.a('object');
       res.body.should.have.property('status').equal(200);
-      res.body.should.have.property('message').equal('There are no latest articles');
       done();
     })
     .catch(err => err);

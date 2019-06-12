@@ -242,9 +242,10 @@ describe('Pagination tests', () => {
       .request(index)
       .get('/api/articles?page=9&limit=9')
       .then((res) => {
-        res.should.have.status(404);
+        res.should.have.status(200);
         res.body.should.be.a('object');
-        res.body.should.have.property('error').eql('No article found for now');
+        res.body.should.have.property('article').eql([]);
+        res.body.should.have.property('articlesCount').eql(0);
         done();
       })
       .catch(error => logError(error));

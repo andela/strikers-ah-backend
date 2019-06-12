@@ -69,7 +69,10 @@ class ArticleComment {
         });
         const author = select.pick(entry, ['username', 'bio', 'image']);
         entry = select.pick(entry, ['id', 'comment', 'likes', 'createdAt', 'updatedAt']);
-        comments.push({ ...entry, history, author });
+        const likers = await ArticleCommentLiker.commentLikers(entry.id);
+        comments.push({
+          ...entry, likers, history, author
+        });
       }));
 
       return helper.jsonResponse(res, 200, { comment: comments, commentsCount: comments.length });
@@ -174,16 +177,19 @@ class ArticleComment {
     let message;
     try {
       const like = await ArticleCommentLiker.findOne({ where: { commentid, userid: req.user } });
+      let likers = [];
       if (like) {
         await ArticleCommentModel.decrement('likes', { by: 1, where: { id: commentid } });
         await ArticleCommentLiker.destroy({ where: { commentid, userid: req.user } });
+        likers = await ArticleCommentLiker.commentLikers(commentid);
         message = 'Comment unliked';
       } else {
         await ArticleCommentModel.increment('likes', { by: 1, where: { id: commentid } });
         await ArticleCommentLiker.create({ userid: req.user, commentid });
+        likers = await ArticleCommentLiker.commentLikers(commentid);
         message = 'Comment liked';
       }
-      return helper.jsonResponse(res, 200, { message });
+      return helper.jsonResponse(res, 200, { message, likers, likes: likers.length });
     } catch (error) {
       return helper.jsonResponse(res, 400, { error });
     }

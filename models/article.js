@@ -31,6 +31,7 @@ const ArticleModel = (sequelize, DataTypes) => {
       authorid: { type: DataTypes.INTEGER, allowNull: false },
       views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
       image: { type: DataTypes.STRING, allowNull: true },
+      category: { type: DataTypes.INTEGER, allowNull: false },
     },
     {}
   );
@@ -62,6 +63,7 @@ const ArticleModel = (sequelize, DataTypes) => {
         slug: data.slug,
         taglist: data.taglist,
         authorid: data.authorid,
+        category: data.category
       },
       { returning: true, where: { id } }
     );
