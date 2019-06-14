@@ -1,31 +1,14 @@
-module.exports = (sequelize, DataTypes) => {
-  const articleHighLightComments = sequelize.define(
-    'articleHighLightComments',
-    {
-      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      userId: { type: DataTypes.INTEGER },
-      articleHighlightId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      comment: { type: DataTypes.STRING, allowNull: false },
-      createdAt: {
-        allowNull: false,
-        type: DataTypes.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: DataTypes.DATE,
-      },
-    },
-    {},
-  );
-  articleHighLightComments.associate = (models) => {
-    articleHighLightComments.belongsTo(models.highlights, {
-      foreignKey: 'articleHighlightId',
-      onDelete: 'CASCADE',
-    });
-    articleHighLightComments.belongsTo(models.user, { foreignKey: 'userId', onDelete: 'CASCADE' });
-  };
-  return articleHighLightComments;
+const ArticleHighlightCommentModel = (Sequelize, DataTypes) => {
+  const ArticleHighlightComment = Sequelize.define('articlehighlightcomment', {
+    userid: { type: DataTypes.INTEGER, allowNull: false },
+    articleid: { type: DataTypes.INTEGER, allowNull: false },
+    comment: { type: DataTypes.STRING, allowNull: false },
+    text: { type: DataTypes.STRING, allowNull: false },
+    positionleft: { type: DataTypes.STRING, allowNull: false },
+    positiontop: { type: DataTypes.STRING, allowNull: false },
+  }, {
+    freezeTableName: true, // Model tableName will be the same as the model name
+  });
+  return ArticleHighlightComment;
 };
+export default ArticleHighlightCommentModel;

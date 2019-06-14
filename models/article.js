@@ -95,7 +95,6 @@ const ArticleModel = (sequelize, DataTypes) => {
       foreignKey: 'articleid',
       onDelete: 'CASCADE',
     });
-    Article.hasMany(models.highlights, { foreignKey: 'articleid', onDelete: 'CASCADE' });
   };
   return Article;
 };

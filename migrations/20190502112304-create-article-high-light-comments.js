@@ -1,20 +1,48 @@
+
+
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('articleHighLightComments', {
-    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    userId: { type: Sequelize.INTEGER },
-    articleHighlightId: {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('articlehighlightcomment', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    userid: {
       type: Sequelize.INTEGER,
       allowNull: false
     },
-    comment: { type: Sequelize.STRING, allowNull: false },
+    articleid: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    comment: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    text: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    positionleft: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    positiontop: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE
+      type: Sequelize.DATE,
+      default: true
     },
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE
     }
+
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('articleHighLightComments')
+
+  // eslint-disable-next-line no-unused-vars
+  down: (queryInterface, Sequelize) => Promise.all([queryInterface.dropTable('articlehighlightcomment')])
 };
