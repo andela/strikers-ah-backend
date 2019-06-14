@@ -21,9 +21,7 @@ const {
   articlereadingstats: ArticleReadingStats,
   reportingcategory: articleReportingCategory,
   articlereporting: articleReporting,
-  highlights: articleHighLights,
-  articleHighLightComments,
-  sequelize,
+  articlehighlightcomment: articleHighLightComments,
   articlecategory: ArticleCategoryModel
 } = models;
 
@@ -239,49 +237,86 @@ class Article {
   }
 
   /**
-   * @author Mwibutsa Floribert
+   * @author Mwibutsa Floribert and Jacques Nyilinkindi
    * @param {*} req
    * @param {*} res
    * @returns { object } --
    */
-  static async highlightArticle(req, res) {
+  static async addHighlightComment(req, res) {
     const { slug } = req.params;
-    const { id: userId } = helper.decodeToken(req);
+    const { user: userId } = req;
     const {
-      comment, startPosition, endPosition, highlightedText, action
+      comment, text, positionleft, positiontop
     } = req.body;
 
-    const highlighted = helper.compareAction(action === 'highlight', action === 'both');
-    const commented = helper.compareAction(action === 'commented', action === 'both');
     const article = await ArticleModel.findOne({ where: { slug } });
-    let highlightComment;
-    let hightLight;
-    if (article) {
-      hightLight = await articleHighLights.create({
-        startposition: startPosition,
-        endposition: endPosition,
-        userid: userId,
-        articleid: article.id,
-        textcontent: highlightedText,
-        highlighted,
-      });
-      if (commented) {
-        highlightComment = await articleHighLightComments.create({
-          comment,
-          userId,
-          articleHighlightId: hightLight.id,
-        });
-      }
-      res.status(201).json({
-        id: hightLight.id,
-        userId: hightLight.userid,
-        articleId: hightLight.articleid,
-        startPostion: hightLight.startposition,
-        endPosition: hightLight.endposition,
-        hightlightedText: hightLight.textcontent,
-        comment: commented ? highlightComment.comment : '',
+    if (!article) {
+      return res.status(404).json({
+        error: 'Article not found',
       });
     }
+    try {
+      const newHighlightComment = {
+        userid: userId,
+        articleid: article.id,
+        comment,
+        text,
+        positionleft,
+        positiontop
+      };
+      await articleHighLightComments.create(newHighlightComment);
+      return res.status(201).json({ highlight: newHighlightComment });
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+  }
+
+  /**
+   * @author Mwibutsa Floribert and Jacques Nyilinkindi
+   * @param {*} req
+   * @param {*} res
+   * @returns { * } --
+   */
+  static async getHighlightComments(req, res) {
+    const { slug } = req.params;
+    const { user: userId } = req;
+    const article = await ArticleModel.findOne({ where: { slug } });
+    if (!article) {
+      return res.status(404).json({
+        error: 'Article not found',
+      });
+    }
+    const comments = await articleHighLightComments.findAll({
+      where: { articleid: article.id, userid: userId }
+    });
+    return res.status(200).json(comments);
+  }
+
+  /**
+   * @author Jacques Nyilinkindi
+   * @param {*} req
+   * @param {*} res
+   * @returns { * } --
+   */
+  static async deleteHighlightComments(req, res) {
+    const { slug, id } = req.params;
+    const { user: userid } = req;
+    const article = await ArticleModel.findOne({ where: { slug } });
+    if (!article) {
+      return res.status(404).json({
+        error: 'Article not found',
+      });
+    }
+    const articleHighlight = await articleHighLightComments.findOne({ where: { articleid: article.id, userid, id } });
+    if (!articleHighlight) {
+      return res.status(404).json({
+        error: 'Article highlight not found',
+      });
+    }
+    await articleHighLightComments.destroy({
+      where: { id }
+    });
+    return res.status(200).json({ message: 'Highlight deleted' });
   }
 
   /**
@@ -311,26 +346,6 @@ class Article {
       res.status(403).json({
         error: 'Already bookmarked',
       });
-    }
-  }
-
-  /**
-   * @author Mwibutsa Floribert
-   * @param {*} req
-   * @param {*} res
-   * @returns { * } --
-   */
-  static async getUserHighlights(req, res) {
-    const { id: userId } = helper.decodeToken(req);
-    const { slug } = req.params;
-    const article = await ArticleModel.findOne({ where: { slug } });
-    if (article) {
-      const highlights = await articleHighLights.findAll({
-        where: { articleid: article.id, userid: userId },
-      });
-      res.status(200).json({ status: 200, highlights });
-    } else {
-      res.status(404).json({ status: 404, error: 'No highlights found for this article' });
     }
   }
 
@@ -513,26 +528,6 @@ class Article {
 
   /**
    * @author Mwibutsa Floribert
-   * @param {*} req
-   * @param {*} res
-   * @returns { * } --
-   */
-  static async getUserCommentsOnHightlight(req, res) {
-    const { id: userId } = helper.decodeToken(req);
-    const { highlightId } = req.params;
-
-    const comments = await articleHighLightComments.findAll({
-      where: { userId, articleHighlightId: highlightId },
-    });
-    if (comments.length) {
-      res.status(200).json({ status: 200, comments });
-    } else {
-      res.status(404).json({ status: 404, error: 'No comments are found on this highlight' });
-    }
-  }
-
-  /**
-   * @author Mwibutsa Floribert
    * @param {object} req - request object
    * @param {object} res - response object
    * @returns {object} -
@@ -677,45 +672,6 @@ class Article {
     }
   }
 
-  /**
-   * @param {*} req
-   * @param {*} res
-   * @returns { * } --
-   */
-  static async getTopHighlight(req, res) {
-    const { slug } = req.params;
-    const article = await ArticleModel.findOne({ where: { slug } });
-    let topHighlight;
-    if (article) {
-      topHighlight = await sequelize.query(
-        'SELECT textcontent from highlights group by textcontent order by count(*) desc limit 1'
-      );
-      // topHighlight = await articleHighLights.findOne({
-      //   where: { textcontent: topHighlight.textcontent }
-      // });
-      res.status(200).json({ status: 200, top: topHighlight[0][0] });
-    } else {
-      res.status(404).json({ status: 404, error: 'No top highlights can be found on non-existing article' });
-    }
-  }
-
-  /**
-   * @author Mwibutsa Floribert
-   * @param {*} req
-   * @param {*} res
-   * @returns { * } --
-   */
-  static async getArticleHighlight(req, res) {
-    const { slug } = req.params;
-    const article = await ArticleModel.findOne({ where: { slug } });
-    if (article) {
-      const highlights = await articleHighLights.findAll({ where: { articleid: article.id } });
-      if (highlights.length) res.status(200).json({ status: 200, highlights });
-      else res.status(404).json({ status: 404, error: 'No hightlights are found for this article' });
-    } else {
-      res.status(400).json({ status: 400, error: 'Can not find highlights for invalid article' });
-    }
-  }
 
   /**
    *@author: Jacques Nyilinkindi
@@ -786,24 +742,6 @@ class Article {
       return res.status(200).json({ report: response });
     } catch (error) {
       return res.status(500).json({ error });
-    }
-  }
-
-  /**
-   * @author Mwibutsa Floribert
-   * @param {*} req
-   * @param {*} res
-   * @returns { * } --
-   */
-  static async getHighlightComments(req, res) {
-    const { higlightId } = req.params;
-    const comments = await articleHighLightComments.findAll({
-      where: { articleHighlightId: higlightId },
-    });
-    if (comments.length) {
-      res.status(200).json({ status: 200, comments });
-    } else {
-      res.status(404).json({ status: 404, error: 'No comments are found on this highlight' });
     }
   }
 

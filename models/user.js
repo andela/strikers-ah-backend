@@ -99,8 +99,6 @@ const UserModel = (Sequelize, DataTypes) => {
       foreignKey: 'userid',
       onDelete: 'CASCADE',
     });
-    User.hasMany(models.highlights, { foreignKey: 'userid', onDelete: 'CASCADE' });
-    User.hasMany(models.articleHighLightComments, { foreignKey: 'userId', onDelete: 'CASCADE' });
   };
   User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image', 'role'] });
   User.singleUser = async username => User.findOne({ attributes: ['username', 'bio', 'image', 'role'], where: { username } });

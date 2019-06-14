@@ -14,12 +14,9 @@ router.get('/reports', AuthToken, errorHandler(articleController.getReportedArti
 router.get('/latest', articleController.fetchLatestArticles);
 router.get('/user-articles/:username', helper.asyncHandler(articleController.getUserArticles));
 router.post('/', AuthToken, imageUpload, errorHandler(articleController.createArticle));
-router.get(
-  '/:slug/highlight/:highlightId/user-comments',
-  helper.asyncHandler(articleController.getUserCommentsOnHightlight)
-);
-router.get('/slug/highlight/:highlightId/comments', helper.asyncHandler(articleController.getHighlightComments));
-router.get('/:slug/highlights', AuthToken, errorHandler(articleController.getArticleHighlight));
+router.post('/:slug/highlight', AuthToken, helper.asyncHandler(articleController.addHighlightComment));
+router.get('/:slug/highlight', AuthToken, helper.asyncHandler(articleController.getHighlightComments));
+router.delete('/:slug/highlight/:id', AuthToken, helper.asyncHandler(articleController.deleteHighlightComments));
 router.get('/bookmarked', AuthToken, helper.asyncHandler(articleController.getBookmarkedArticles));
 router.get('/:slug', AuthToken, errorHandler(articleController.getArticle));
 router.get('/', errorHandler(articleController.articlePagination));
@@ -52,11 +49,6 @@ router.put('/report/category/:id', AuthToken, articleController.editReportingCat
 router.delete('/report/category/:id', AuthToken, articleController.deleteReportingCategory);
 router.post('/:slug/report/', AuthToken, articleController.reportingArticle);
 router.get('/:slug/ratings', articleController.fetchAvgRating);
-
-router.get('/:slug/:higlightId/comments', AuthToken, errorHandler(articleController.getHighlightComments));
-router.post('/:slug/highlight', AuthToken, errorHandler(articleController.highlightArticle));
-router.get('/:slug/top-highlight', AuthToken, errorHandler(articleController.getTopHighlight));
-router.get('/:slug/user-highlights', AuthToken, errorHandler(articleController.getUserHighlights));
 router.get('/category/:category', AuthToken, articleController.getArticlesByCategory);
 
 router.delete('/:slug');
