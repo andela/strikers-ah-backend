@@ -131,6 +131,30 @@ class Notifications {
       });
     }
   }
+
+  /**
+  * @author frank harerimana
+  * @param {*} req
+  * @param {*} res
+  * @returns {*} setting
+  */
+  static async checkUserEmailNotificationStatus(req, res) {
+    try {
+      const { id } = req.user;
+      const setting = await UserModel.findUser(id);
+      const emailNotificationStatus = setting.dataValues.email_notifications;
+      res.status(201).json({
+        statusCode: 201,
+        message: 'Email notification status',
+        status: `${emailNotificationStatus}`
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: 400,
+        error
+      });
+    }
+  }
 }
 
 export default Notifications;

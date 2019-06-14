@@ -29,6 +29,13 @@ router.put(
   },
   Notifications.optEmailNotifications
 );
+router.get(
+  '/notifications/emails',
+  (req, res, next) => {
+    new verifyToken(req, res, next).verify();
+  },
+  Notifications.checkUserEmailNotificationStatus
+);
 router.put('/:username', Strategy.verifyToken, helper.asyncHandler(user.editProfile));
 router.get(
   '/notifications',
