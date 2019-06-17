@@ -110,7 +110,7 @@ class Article {
    */
   static async getArticle(req, res) {
     const { slug } = req.params;
-    const article = await ArticleModel.getOneArticle(slug);
+    let article = await ArticleModel.getOneArticle(slug);
     if (!article) {
       res.status(404).json({
         error: 'No article found with the slug provided',
@@ -129,6 +129,10 @@ class Article {
         categoryName = getCategory.name;
       }
       article.category = categoryName;
+      const bookmarked = await bookmarkModel.checkuser(req.user, articleid);
+      const isBookmarked = !!bookmarked;
+      const { username } = await UserModel.findOne({ attributes: ['username'], where: { id: req.user } });
+      article = { ...article.dataValues, bookmark: isBookmarked, username };
       res.status(200).json({ article });
     }
   }

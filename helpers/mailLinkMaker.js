@@ -19,7 +19,7 @@ class MailLinkMaker {
  * @return {*} link
  */
   async resetPasswordLink() {
-    return `${process.env.APP_URL}/api/auth/resetpassword/${this.token}`;
+    return `${process.env.FRONTEND_URL}/resetpassword/${this.token}`;
   }
 
   /**
@@ -28,7 +28,7 @@ class MailLinkMaker {
  * @return {*} link
  */
   async article() {
-    return `${process.env.APP_URL}/api/articles/${this.token}`;
+    return `${process.env.FRONTEND_URL}/article/${this.token}`;
   }
 }
 
