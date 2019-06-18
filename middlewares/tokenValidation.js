@@ -9,9 +9,13 @@ dotenv.config();
 const { user: UserModel } = model;
 
 const validateToken = async (req, res, next) => {
-  let token = req.headers['x-access-token'] || req.headers.authorization || req.headers['x-auth-token'];
+  let token = req.headers['x-access-token']
+    || req.headers.authorization
+    || req.headers['x-auth-token'];
   if (!token) {
-    return res.status(401).send({ status: 401, error: 'Token is not Supplied' });
+    return res
+      .status(401)
+      .send({ status: 401, error: 'Token is not Supplied' });
   }
 
   if (token.startsWith('Bearer ')) {

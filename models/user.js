@@ -1,3 +1,6 @@
+/* eslint-disable arrow-parens */
+/* eslint-disable indent */
+/* eslint-disable max-len */
 /* eslint-disable camelcase */
 import helper from '../helpers/helper';
 
@@ -56,14 +59,11 @@ const UserModel = (Sequelize, DataTypes) => {
     return result[0].dataValues;
   };
   User.checkEmail = email => User.findOne({ where: { email } });
-  User.resetpassword = (password, id) =>
-    User.update({ password }, { where: { id } });
+  User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
   User.checkUser = username => User.findOne({ where: { username } });
   User.findUser = id => User.findOne({ where: { id } });
-  User.emailNotifications = (id, email_notifications) =>
-    User.update({ email_notifications }, { where: { id } });
-  User.checkuserExistance = authorid =>
-    User.findOne({
+  User.emailNotifications = (id, email_notifications) => User.update({ email_notifications }, { where: { id } });
+  User.checkuserExistance = authorid => User.findOne({
       attributes: {
         exclude: [
           'id',
@@ -104,17 +104,14 @@ const UserModel = (Sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
   };
-  User.allUsers = async () =>
-    User.findAll({ attributes: ['username', 'bio', 'image', 'role'] });
-  User.singleUser = async username =>
-    User.findOne({
+  User.allUsers = async () => User.findAll({ attributes: ['username', 'bio', 'image', 'role'] });
+  User.singleUser = async username => User.findOne({
       attributes: ['username', 'bio', 'image', 'role'],
       where: { username }
     });
   User.verifyUser = id => User.findOne({ where: { id } });
   User.checkEmail = email => User.findOne({ where: { email } });
-  User.resetpassword = (password, id) =>
-    User.update({ password }, { where: { id } });
+  User.resetpassword = (password, id) => User.update({ password }, { where: { id } });
   User.checkUser = username => User.findOne({ where: { username } });
   User.findUser = id => User.findOne({ where: { id } });
   User.checkuser = authorid => User.findOne({ where: { id: authorid } });

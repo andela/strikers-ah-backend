@@ -15,7 +15,10 @@ const ArticleModel = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         trim: true,
-        validate: { len: { args: 5 }, notEmpty: true }
+        validate: {
+          len: { args: 5, msg: 'Title can not be under 5 characters' },
+          notEmpty: true
+        }
       },
       body: {
         type: DataTypes.TEXT,
@@ -43,15 +46,15 @@ const ArticleModel = (sequelize, DataTypes) => {
   sequelizeTrasform(Article);
   Article.createArticle = article => Article.create(article);
   Article.getAll = userModel => Article.findAll({
-      include: [
-        {
-          model: userModel,
-          attributes: {
-            exclude: ['password']
-          }
+    include: [
+      {
+        model: userModel,
+        attributes: {
+          exclude: ['password']
         }
-      ]
-    });
+      }
+    ]
+  });
   Article.getOneArticle = slug => Article.findOne({ where: { slug } });
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
   Article.deleteArticle = slug => Article.destroy({ where: { id: slug } });
@@ -75,17 +78,17 @@ const ArticleModel = (sequelize, DataTypes) => {
   };
   Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
   Article.fetchLatest = userModel => Article.findAll({
-      order: [['createdAt', 'DESC']],
-      include: [
-        {
-          model: userModel,
-          attributes: {
-            exclude: ['password', 'email', 'role']
-          }
+    order: [['createdAt', 'DESC']],
+    include: [
+      {
+        model: userModel,
+        attributes: {
+          exclude: ['password', 'email', 'role']
         }
-      ],
-      limit: 6
-    });
+      }
+    ],
+    limit: 6
+  });
 
   Article.associate = (models) => {
     Article.belongsTo(models.user, {

@@ -37,8 +37,8 @@ class Article {
    */
   static async createArticle(req, res) {
     const {
- title, body, taglist, description 
-} = req.body;
+      title, body, taglist, description
+    } = req.body;
     let { category } = req.body;
     if (!category || category === '') {
       category = 0;
@@ -50,13 +50,13 @@ class Article {
         return helper.jsonResponse(res, 404, { error: 'Category not found' });
       }
     }
-
     const image = req.file ? req.file.url : 'null';
+
     if (!title) {
-      return res.status(400).json({ error: 'title can not be null' });
+      return res.status(400).json({ error: 'title can not be empty' });
     }
     if (!body) {
-      return res.status(400).json({ error: 'body can not be null' });
+      return res.status(400).json({ error: 'body can not be empty' });
     }
     const authorid = req.user;
     const checkuser = await UserModel.checkuserExistance(authorid);
@@ -212,8 +212,8 @@ class Article {
   static async updateArticle(req, res) {
     const { slug } = req.params;
     const {
- title, body, taglist, description 
-} = req.body;
+      title, body, taglist, description
+    } = req.body;
     let { category } = req.body;
     if (!category || category === '') {
       category = 0;
@@ -225,6 +225,7 @@ class Article {
         return helper.jsonResponse(res, 404, { error: 'Category not found' });
       }
     }
+    const image = req.file ? req.file.url : 'null';
     const authorid = req.user;
     const searchArticle = await ArticleModel.findArticleSlug(authorid, slug);
     if (!searchArticle) {
@@ -241,7 +242,8 @@ class Article {
       description: description || searchArticle.description,
       slug: newSlug.length === 8 ? searchArticle.slug : newSlug,
       authorid,
-      taglist: !taglist ? taglist : searchArticle.taglist,
+      taglist: taglist.length !== 0 ? taglist : searchArticle.taglist,
+      image,
       category
     };
     const updateArticle = await ArticleModel.updateFoundArticle(
@@ -272,8 +274,8 @@ class Article {
     const { slug } = req.params;
     const { user: userId } = req;
     const {
- comment, text, positionleft, positiontop 
-} = req.body;
+      comment, text, positionleft, positiontop
+    } = req.body;
 
     const article = await ArticleModel.findOne({ where: { slug } });
     if (!article) {
@@ -790,8 +792,8 @@ class Article {
       }
       const response = reported.map(
         ({
- id, description, name, articleid, title, slug 
-}) => ({
+          id, description, name, articleid, title, slug
+        }) => ({
           id,
           category: name,
           description,

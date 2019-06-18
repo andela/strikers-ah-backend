@@ -60,7 +60,12 @@ router.delete(
   AuthToken,
   errorHandler(articleController.deleteArticle)
 );
-router.put('/:slug', AuthToken, errorHandler(articleController.updateArticle));
+router.put(
+  '/:slug',
+  AuthToken,
+  imageUpload,
+  errorHandler(articleController.updateArticle)
+);
 router.get(
   '/rating/articles',
   errorHandler(articleController.articleRatingPagination)

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import chai from 'chai';
 import faker from 'faker';
 import debug from 'debug';
@@ -24,14 +25,18 @@ process.env.NODE_ENV = 'test';
 describe('Clean the databse', () => {
   before('Cleaning the database first', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
-    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+    await userModel.destroy({
+      where: { email: userModel.email },
+      truncate: true,
+      cascade: true
+    });
   });
 });
 const user = {
   username: 'nkunziinnocent',
   email: 'nkunzi@gmail.com',
   password: '@Nkunzi1234',
-  role: 'Admin',
+  role: 'Admin'
 };
 dotenv.config();
 process.env.NODE_ENV = 'test';
@@ -39,7 +44,11 @@ process.env.NODE_ENV = 'test';
 describe('Cleaning the database', () => {
   before('Cleaning the database first', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
-    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+    await userModel.destroy({
+      where: { email: userModel.email },
+      truncate: true,
+      cascade: true
+    });
   });
 });
 
@@ -47,7 +56,7 @@ describe('Cleaning the database', () => {
 const newUser = {
   username: 'isharaketis',
   email: 'ishara@gmail.com',
-  password: 'Ishara@123',
+  password: 'Ishara@123'
 };
 let userToken;
 let testToken;
@@ -56,7 +65,11 @@ let articleData;
 describe('Create a user to be used in in creating article', () => {
   before('Cleaning the database first', async () => {
     await articleModel.destroy({ truncate: true, cascade: true });
-    await userModel.destroy({ where: { email: userModel.email }, truncate: true, cascade: true });
+    await userModel.destroy({
+      where: { email: userModel.email },
+      truncate: true,
+      cascade: true
+    });
   });
   it('should create a user', (done) => {
     chai
@@ -115,7 +128,7 @@ describe('It checks title errors', () => {
     const newArticle = {
       title: '',
       description: faker.lorem.paragraph(),
-      body: faker.lorem.paragraphs(),
+      body: faker.lorem.paragraphs()
     };
     chai
       .request(index)
@@ -125,7 +138,7 @@ describe('It checks title errors', () => {
       .then((res) => {
         res.should.have.status(400);
         res.body.should.be.a('object');
-        res.body.should.have.property('error').eql('title can not be null');
+        res.body.should.have.property('error').eql('title can not be empty');
         done();
       })
       .catch(error => logError(error));
@@ -135,7 +148,7 @@ describe('Test the body', () => {
   const newArticle = {
     title: faker.random.words(),
     description: faker.lorem.paragraph(),
-    body: '',
+    body: ''
   };
   it('should not create and article if the body is empty', (done) => {
     chai
@@ -146,7 +159,7 @@ describe('Test the body', () => {
       .then((res) => {
         res.should.have.status(400);
         res.body.should.be.a('object');
-        res.body.should.have.property('error').eql('body can not be null');
+        res.body.should.have.property('error').eql('body can not be empty');
         done();
       })
       .catch(error => logError(error));
@@ -154,7 +167,7 @@ describe('Test the body', () => {
   it('should return an error if the body is not predefined', (done) => {
     const longTitleArticle = {
       title: faker.random.words(),
-      description: faker.lorem.paragraph(),
+      description: faker.lorem.paragraph()
     };
     chai
       .request(index)
@@ -164,7 +177,7 @@ describe('Test the body', () => {
       .then((res) => {
         res.should.have.status(400);
         res.body.should.be.a('object');
-        res.body.should.have.property('error').eql('body can not be null');
+        res.body.should.have.property('error').eql('body can not be empty');
         done();
       })
       .catch(error => logError(error));
@@ -176,7 +189,7 @@ describe('Test the title', () => {
       title:
         'Et optio distinctio dolorem quia reprehenderit qui consequatur illo. Fugit placeat itaque. Temporibus animi quis velit quos ut.',
       body: faker.lorem.paragraphs(),
-      description: faker.lorem.paragraph(),
+      description: faker.lorem.paragraph()
     };
     chai
       .request(index)
@@ -195,7 +208,7 @@ describe('Test the title', () => {
 describe('Test description', () => {
   const newArticle = {
     title: faker.lorem.sentence(),
-    body: faker.lorem.paragraphs(),
+    body: faker.lorem.paragraphs()
   };
   it('should provide a description if not provided', (done) => {
     chai
@@ -257,7 +270,7 @@ describe('Tests for get article', () => {
   const newArticle = {
     title: 'hello world',
     description: faker.lorem.paragraph(),
-    body: faker.lorem.paragraphs(),
+    body: faker.lorem.paragraphs()
   };
   it('should create an article to be used in get', (done) => {
     chai
@@ -298,7 +311,9 @@ describe('Get article errors', () => {
       .then((res) => {
         res.should.have.status(404);
         res.body.should.be.a('object');
-        res.body.should.have.property('error').eql('No article found with the slug provided');
+        res.body.should.have
+          .property('error')
+          .eql('No article found with the slug provided');
         done();
       })
       .catch(error => logError(error));
@@ -309,7 +324,7 @@ describe('Delete article', () => {
   const newArticle = {
     title: 'hello world devs',
     description: faker.lorem.paragraph(),
-    body: faker.lorem.paragraphs(),
+    body: faker.lorem.paragraphs()
   };
   it('should create an article to be deleted', (done) => {
     chai
@@ -345,7 +360,9 @@ describe('Delete article', () => {
       .set('x-access-token', `${userToken}`)
       .then((res) => {
         res.should.have.status(404);
-        res.body.should.have.property('error').eql('No article found for you to delete');
+        res.body.should.have
+          .property('error')
+          .eql('No article found for you to delete');
         done();
       })
       .catch(error => logError(error));
@@ -427,10 +444,13 @@ describe('Test all articles', () => {
 let newSlug3;
 describe('Update tests', () => {
   const newArticle = {
-    title: faker.lorem.sentence(),
-    body: faker.lorem.paragraphs(),
-    description:
-      'Adipisci sed sit est deserunt. Et doloremque ullam eius incidunt ipsum minima et aperiam consectetur. Ex architecto corrupti.',
+    title: 'Lorem Ipsum is simply f',
+    body:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+    taglist: ['nkunzi', 'innocet'],
+    image:
+      'https://res.cloudinary.com/dixomt55l/image/upload/v1557847909/authorsHeaven/gksivxtdsli7ndqif90q.png⁩',
+    category: 0
   };
   it('should create an article to be updated', (done) => {
     chai
@@ -456,7 +476,9 @@ describe('Update tests', () => {
       .then((res) => {
         res.should.have.status(404);
         res.body.should.be.a('object');
-        res.body.should.have.property('error').eql('No article found for you to edit');
+        res.body.should.have
+          .property('error')
+          .eql('No article found for you to edit');
         done();
       });
   });
@@ -486,13 +508,14 @@ describe('Update tests', () => {
         res.body.should.have.property('message').eql('Article updated');
         newSlug3 = res.body.article.slug;
         done();
-      });
+      })
+      .catch(error => logError(error));
   });
 });
 describe('Test article reporting', () => {
   it('should save reporting category', (done) => {
     const newCategory = {
-      category: 'Abuse',
+      category: 'Abuse'
     };
     chai
       .request(index)
@@ -526,7 +549,7 @@ describe('Test article reporting', () => {
   });
   it('should edit reporting category', (done) => {
     const newCategory = {
-      category: 'Abusing',
+      category: 'Abusing'
     };
     chai
       .request(index)
@@ -537,7 +560,9 @@ describe('Test article reporting', () => {
         res.should.have.status(200);
         res.body.should.be.a('object');
         res.body.should.have.property('category');
-        res.body.category.should.have.property('name').eql(newCategory.category);
+        res.body.category.should.have
+          .property('name')
+          .eql(newCategory.category);
         done();
       })
       .catch(error => logError(error));
@@ -545,11 +570,15 @@ describe('Test article reporting', () => {
 });
 describe('Bookmark tests', () => {
   it('should bookmark an article', (done) => {
-    chai.request(index).post(`/api/articles/${newSlug3}/bookmark`).set('x-access-token', `${userToken}`).then((res) => {
-      res.should.have.status(201);
-      res.body.should.be.a('object');
-      done();
-    });
+    chai
+      .request(index)
+      .post(`/api/articles/${newSlug3}/bookmark`)
+      .set('x-access-token', `${userToken}`)
+      .then((res) => {
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        done();
+      });
   });
   it('should not bookmark an article for the second time', (done) => {
     chai
@@ -595,7 +624,7 @@ describe('Get users information', () => {
   });
   it('Assign user new role', (done) => {
     const newRole = {
-      role: 'Moderator',
+      role: 'Moderator'
     };
     chai
       .request(index)
@@ -605,7 +634,9 @@ describe('Get users information', () => {
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
-        res.body.should.have.property('message').eql(`${user.username}'s role is now ${newRole.role}`);
+        res.body.should.have
+          .property('message')
+          .eql(`${user.username}'s role is now ${newRole.role}`);
         done();
       })
       .catch(err => err);

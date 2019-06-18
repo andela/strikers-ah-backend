@@ -17,22 +17,25 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true,
-}));
-app.use((express.json()));
-app.use(session({
-  secret: process.env.secretKey,
-  resave: false,
-  saveUninitialized: true,
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
+app.use(express.json());
+app.use(
+  session({
+    secret: process.env.secretKey,
+    resave: false,
+    saveUninitialized: true
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api', routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 
 app.use(express.static(path.resolve(__dirname, 'view/')));
 
