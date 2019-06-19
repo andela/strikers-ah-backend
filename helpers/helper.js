@@ -63,8 +63,8 @@ const authenticationResponse = (res, token, userData) => res
   .json({
     user: {
       ...userData,
-      token
-    }
+      token,
+    },
   });
 const articleReadTime = article => Math.ceil(article.split(' ').length / 275);
 const combineHelper = (combinedObj, obj2) => ({ ...combinedObj, ...obj2 });
@@ -78,12 +78,12 @@ const combineWithArticle = (article, ...rest) => {
     'description',
     'authorid',
     'createdAt',
-    'updatedAt'
+    'updatedAt',
   ]);
   return {
     ...articleObject,
     ...rest.reduce(combineHelper),
-    readTimeMinutes: articleReadTime(articleObject.body)
+    readTimeMinutes: articleReadTime(articleObject.body),
   };
 };
 const asyncHandler = callBackFunction => async (req, res, next) => {
@@ -92,13 +92,19 @@ const asyncHandler = callBackFunction => async (req, res, next) => {
   } catch (error) {
     const statusCode = error.name === 'SequelizeValidationError' ? 400 : 500;
     res.status(statusCode).json({
-      error: error.message
+      error: error.message,
     });
   }
 };
 const decodeToken = req => jwt.verify(req.header('x-auth-token'), process.env.SECRETKEY);
 const jsonResponse = (res, statusCode, message) => res.status(statusCode).json(message);
 const compareAction = (action1, action2) => action1 || action2;
+const createSearchKeyword = (keyword) => {
+  keyword = `%${keyword}%`;
+  keyword = keyword.replace(' ', '% %');
+  keyword = keyword.split(' ');
+  return keyword;
+};
 export default {
   hashPassword,
   comparePassword,
@@ -112,5 +118,6 @@ export default {
   combineWithArticle,
   combineHelper,
   jsonResponse,
-  compareAction
+  compareAction,
+  createSearchKeyword,
 };
