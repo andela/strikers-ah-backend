@@ -16,7 +16,7 @@ const article = {
   description: Carmen Casco de Lara Castro (17 June 1918 – 8 May 1993) was a Paraguayan teacher, women's and human ...`,
   authorid: 1,
   createdAt: '2019-04-24T09:46:22.945Z',
-  updatedAt: '2019-04-24T09:46:22.945Z'
+  updatedAt: '2019-04-24T09:46:22.945Z',
 };
 describe('Test helpers', () => {
   const password = 'PassWord@1!';
@@ -62,7 +62,7 @@ describe('Test helpers', () => {
     const result = helpers.combineWithArticle(article, {
       likes: 1,
       dislikes: 0,
-      readTimeMinutes: 1
+      readTimeMinutes: 1,
     });
     result.should.have.property('likes');
     result.should.have.property('slug');
@@ -88,9 +88,9 @@ describe('Test helpers', () => {
             } catch (err) {
               err.name = 'SequelizeValidationError';
             }
-          }
+          },
         };
-      }
+      },
     };
     try {
       customFunction(req, res);
@@ -104,6 +104,12 @@ describe('Test helpers', () => {
     message.should.be
       .a('string')
       .eql('The password must contain at least one lower case character');
+  });
+  it('should return be able to create search keyword', () => {
+    helpers
+      .createSearchKeyword('Hashed')
+      .should.be.a('array')
+      .eql(['%Hashed%']);
   });
   it('should not allow password withless than 8 characters', () => {
     const message = helpers.validatePassword('@1Pass');
