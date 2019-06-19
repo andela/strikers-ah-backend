@@ -1,3 +1,5 @@
+/* eslint-disable arrow-parens */
+/* eslint-disable no-unused-vars */
 import chai from 'chai';
 import debug from 'debug';
 import faker from 'faker';
@@ -6,7 +8,10 @@ import encrypt from '../helpers/encrypt';
 import Mailer from '../helpers/mailer';
 import linkMaker from '../helpers/mailLinkMaker';
 import userHandler from '../helpers/userHandler';
-import { GetSocial, GetSocialTwitterGithub } from '../middlewares/callbackHandler';
+import {
+  GetSocial,
+  GetSocialTwitterGithub
+} from '../middlewares/callbackHandler';
 import Strategy from '../middlewares/auth';
 
 const logError = debug('app:*');
@@ -21,14 +26,14 @@ const handleUser = new userHandler();
  * test username generator class
  */
 describe('/ TEST Middleware', () => {
-  it('it should generate random username', (done) => {
+  it('it should generate random username', done => {
     const result = handleUser.getUsername('myusername');
     result.should.contain('myusername');
     done();
   });
 });
 describe('/ Should generate a unique username', () => {
-  it('it should return a username', (done) => {
+  it('it should return a username', done => {
     const userName = faker.internet.userName().toLowerCase();
     const result = handleUser.getUsername(userName);
     result.should.contain(userName);
@@ -41,7 +46,7 @@ describe('/ Should generate a unique username', () => {
  * test remove special character from generator class
  */
 describe('/ Should remove special character from strings', () => {
-  it('it should return a non special character string', (done) => {
+  it('it should return a non special character string', done => {
     const userName = faker.name.lastName();
     const result = handleUser.removeSpecialCharacters(`@${userName}$`);
     result.should.contain(userName);
@@ -56,7 +61,7 @@ describe('/ Should remove special character from strings', () => {
  * test remove special character from generator class
  */
 describe('/ Should make twitter image large', () => {
-  it('it should remove _normal from the image URL', (done) => {
+  it('it should remove _normal from the image URL', done => {
     const image = 'thisisimage.jpg';
     const result = handleUser.largeTwitterImage(`${image}_normal`);
     result.should.be.eql(image);
@@ -97,7 +102,11 @@ describe('/ sending mail to client', () => {
   it('it should be able to deliver send email', async () => {
     const client = faker.internet.email();
     const subject = 'testing purpose';
-    const result = await new Mailer(client, subject, faker.internet.url()).sender();
+    const result = await new Mailer(
+      client,
+      subject,
+      faker.internet.url()
+    ).sender();
     result.should.be.a('string');
   });
 });
@@ -134,7 +143,6 @@ describe('Token Verification', () => {
   });
 });
 
-
 /**
  * @author frank harerimana
  * middleware passport callback
@@ -142,19 +150,20 @@ describe('Token Verification', () => {
 const profile = {
   displayName: faker.name.findName(),
   _json: {
-    email: faker.internet.email(),
+    email: faker.internet.email()
   },
   name: {
     familyName: faker.name.firstName(),
-    givenName: faker.name.lastName(),
+    givenName: faker.name.lastName()
   },
   provider: faker.name.findName(),
   provideruserid: `${faker.random.number()}`,
-  photos:
-   [{
-     value:
+  photos: [
+    {
+      value:
         'https://lh5.googleusercontent.com/-wFNKsHlz-aY/AAAAAAAAAAI/AAAAAAAAABI/XqxWwOH1NSQ/photo.jpg'
-   }],
+    }
+  ]
 };
 /**
  * @author frank harerimana
@@ -178,7 +187,12 @@ describe('callback for social user', () => {
 describe('callback for social user', () => {
   it('should be able to return user object', async () => {
     try {
-      const result = GetSocialTwitterGithub('accessToken', 'refreshToken', profile, 'done');
+      const result = GetSocialTwitterGithub(
+        'accessToken',
+        'refreshToken',
+        profile,
+        'done'
+      );
       result.should.be.a('object');
     } catch (error) {
       return error;

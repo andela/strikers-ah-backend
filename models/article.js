@@ -9,13 +9,16 @@ const ArticleModel = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        onUpdate: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       title: {
         type: DataTypes.STRING,
         allowNull: false,
         trim: true,
-        validate: { len: { args: 5 }, notEmpty: true },
+        validate: {
+          len: { args: 5, msg: 'Title can not be under 5 characters' },
+          notEmpty: true
+        }
       },
       body: {
         type: DataTypes.TEXT,
@@ -23,15 +26,19 @@ const ArticleModel = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           len: { args: 255, msg: 'Body needs to be above 255 characters' },
-          notEmpty: true,
-        },
+          notEmpty: true
+        }
       },
-      taglist: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: true, defaultValue: [] },
+      taglist: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
+        defaultValue: []
+      },
       description: { type: DataTypes.TEXT, trim: true },
       authorid: { type: DataTypes.INTEGER, allowNull: false },
       views: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
       image: { type: DataTypes.STRING, allowNull: true },
-      category: { type: DataTypes.INTEGER, allowNull: false },
+      category: { type: DataTypes.INTEGER, allowNull: false }
     },
     {}
   );
@@ -43,10 +50,10 @@ const ArticleModel = (sequelize, DataTypes) => {
       {
         model: userModel,
         attributes: {
-          exclude: ['password'],
-        },
-      },
-    ],
+          exclude: ['password']
+        }
+      }
+    ]
   });
   Article.getOneArticle = slug => Article.findOne({ where: { slug } });
   Article.findArticleSlug = (authorid, slug) => Article.findOne({ where: { authorid, slug } });
@@ -71,16 +78,14 @@ const ArticleModel = (sequelize, DataTypes) => {
   };
   Article.addViewer = id => Article.increment('views', { by: 1, where: { id } });
   Article.fetchLatest = userModel => Article.findAll({
-    order: [
-      ['createdAt', 'DESC'],
-    ],
+    order: [['createdAt', 'DESC']],
     include: [
       {
         model: userModel,
         attributes: {
-          exclude: ['password', 'email', 'role'],
-        },
-      },
+          exclude: ['password', 'email', 'role']
+        }
+      }
     ],
     limit: 6
   });
@@ -88,12 +93,15 @@ const ArticleModel = (sequelize, DataTypes) => {
   Article.associate = (models) => {
     Article.belongsTo(models.user, {
       foreignKey: 'authorid',
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
-    Article.hasMany(models.rating, { foreignKey: 'articleSlug', onDelete: 'CASCADE' });
+    Article.hasMany(models.rating, {
+      foreignKey: 'articleSlug',
+      onDelete: 'CASCADE'
+    });
     Article.hasMany(models.bookmark, {
       foreignKey: 'articleid',
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
   };
   return Article;
