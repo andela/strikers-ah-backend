@@ -139,7 +139,7 @@ class Article {
       const isBookmarked = !!bookmarked;
       const { username } = await UserModel.findOne({
         attributes: ['username'],
-        where: { id: req.user }
+        where: { id: article.authorid }
       });
       article = { ...article.dataValues, bookmark: isBookmarked, username };
       res.status(200).json({ article });
@@ -373,8 +373,9 @@ class Article {
         article: bookmark
       });
     } else {
-      res.status(403).json({
-        error: 'Already bookmarked'
+      await bookmarkModel.destroy({ where: { userid, articleid: articleId } });
+      res.status(201).json({
+        message: 'Unbookmarked'
       });
     }
   }
@@ -1033,7 +1034,7 @@ class Article {
     if (!name || name === '' || name.trim() === '') {
       return helper.jsonResponse(res, 400, { error: 'Provide Category Name' });
     }
-    const id = 0;
+    let categoryId = 0;
     if (name !== 'Other') {
       const categoryExists = await ArticleCategoryModel.findOne({
         where: { name }
@@ -1041,8 +1042,9 @@ class Article {
       if (!categoryExists) {
         return helper.jsonResponse(res, 404, { error: 'Category not found' });
       }
+      categoryId = categoryExists.id;
     }
-    const getAll = await ArticleModel.findAll({ where: { category: id } });
+    const getAll = await ArticleModel.findAll({ where: { category: categoryId } });
     if (!getAll) {
       res.status(404).json({
         error: 'Not article found for now'

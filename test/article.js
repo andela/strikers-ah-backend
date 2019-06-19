@@ -580,13 +580,13 @@ describe('Bookmark tests', () => {
         done();
       });
   });
-  it('should not bookmark an article for the second time', (done) => {
+  it('should unbookmark an article for the second time', (done) => {
     chai
       .request(index)
       .post(`/api/articles/${newSlug3}/bookmark`)
       .set('x-access-token', `${userToken}`)
       .then((res) => {
-        res.should.have.status(403);
+        res.should.have.status(201);
         res.body.should.be.a('object');
         done();
       })

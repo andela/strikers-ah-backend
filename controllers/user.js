@@ -243,12 +243,12 @@ class User {
         await UserModel.update({ verified: true }, { where: { id } });
         await UserVerificationModel.update({ status: 'Used' }, { where: { hash, userid: id } });
         notify.emit('verified', id);
-        return res.status(200).json({ message: 'Account verified' });
+        return res.redirect(`${process.env.FRONTEND_URL}`);
       }
-      return res.status(401).json({ error: 'Verification token not found' });
+      return res.redirect(`${process.env.FRONTEND_URL}?invalidVerification`);
     } catch (error) {
       const status = error.name === 'SequelizeValidationError' ? 400 : 500;
-      return res.status(status).json({ error: `${error.message}` });
+      return res.redirect(`${process.env.FRONTEND_URL}?${status}`);
     }
   }
 
