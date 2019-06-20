@@ -199,8 +199,7 @@ describe('Article commenting', () => {
       .then((res) => {
         res.should.have.status(200);
         res.body.should.be.a('object');
-        res.body.should.have.property('stats');
-        res.body.should.have.property('statsCount');
+        res.body.should.have.property('statsArticles');
         done();
       })
       .catch(err => err);

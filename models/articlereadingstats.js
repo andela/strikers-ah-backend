@@ -6,7 +6,7 @@ const ArticleReadingStatsModel = (Sequelize, DataTypes) => {
     freezeTableName: true, // Model tableName will be the same as the model name
   });
   ArticleReadingStats.readingStats = async (type, id) => {
-    let query = `SELECT articlereadingstats.*, articles.title FROM articlereadingstats, articles WHERE articlereadingstats.userid = ${id} AND articles.authorid = articlereadingstats.userid AND articlereadingstats.articleid = articles.id`;
+    let query = `SELECT articles.*, articlereadingstats.* FROM articlereadingstats, articles WHERE articlereadingstats.userid = ${id} AND articles.authorid = articlereadingstats.userid AND articlereadingstats.articleid = articles.id ORDER BY articlereadingstats.id DESC`;
     if (type === 'article') {
       query = `SELECT articlereadingstats.*, users.username FROM articlereadingstats, users WHERE articlereadingstats.articleid = ${id} AND articlereadingstats.userid = users.id`;
     }
