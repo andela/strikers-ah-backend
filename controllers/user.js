@@ -70,7 +70,7 @@ class User {
       };
       await UserVerificationModel.create(verification);
 
-      let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+      let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image', 'verified']);
       const token = helper.generateToken(userAccount);
       userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
       return helper.authenticationResponse(res, token, userAccount);
@@ -103,7 +103,7 @@ class User {
     // verify password
     if (user && helper.comparePassword(password, user.password)) {
       // return user and token
-      let userAccount = select.pick(user, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+      let userAccount = select.pick(user, ['id', 'firstname', 'lastname', 'username', 'email', 'image', 'verified']);
       const token = helper.generateToken(userAccount);
       userAccount = select.pick(user, ['username', 'email', 'bio', 'image']);
       return helper.authenticationResponse(res, token, userAccount);
@@ -160,9 +160,10 @@ class User {
       image: req.user.image,
       provider: req.user.provider,
       provideruserid: req.user.provideruserid,
+      verified: true
     };
     const result = await UserModel.socialUsers(ruser);
-    let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image']);
+    let userAccount = select.pick(result, ['id', 'firstname', 'lastname', 'username', 'email', 'image', 'verified']);
     const token = helper.generateToken(userAccount);
     userAccount = select.pick(result, ['username', 'email', 'bio', 'image']);
     return res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
