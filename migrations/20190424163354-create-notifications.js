@@ -21,6 +21,11 @@ module.exports = {
     link: {
       type: Sequelize.TEXT
     },
+    status: {
+      type: Sequelize.STRING,
+      defaultValue: 'Unread'
+
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

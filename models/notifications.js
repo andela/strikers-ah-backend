@@ -4,6 +4,7 @@ const notificationModel = (sequelize, DataTypes) => {
     category: DataTypes.STRING,
     message: DataTypes.STRING,
     link: DataTypes.TEXT,
+    status: DataTypes.STRING
   }, {});
   Notifications.associate = (models) => {
     Notifications.belongsTo(models.user, { foreignKey: 'userid', onDelete: 'CASCADE' });
@@ -13,8 +14,14 @@ const notificationModel = (sequelize, DataTypes) => {
       userid, category, message, link,
     });
   };
-  Notifications.findAllNotification = userid => Notifications.findAll({ where: { userid } });
-  Notifications.read = (id, userid) => Notifications.update({ status: 'read' }, { where: { id, userid } });
+  Notifications.findAllNotification = userid => Notifications.findAll({
+    where: { userid },
+    order: [
+      ['status', 'DESC'],
+      ['createdAt', 'DESC']
+    ]
+  });
+  Notifications.read = (id, userid) => Notifications.update({ status: 'Read' }, { where: { id, userid } });
   return Notifications;
 };
 
