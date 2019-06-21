@@ -10,7 +10,7 @@ const ArticleReportingModel = (Sequelize, DataTypes) => {
   ArticleReporting.reportedArticles = async () => {
     const result = await Sequelize.query(
       `SELECT articlereporting.id, articlereporting.description, reportingcategory.name,
-       articles.id as articleid, articles.title, articles.slug FROM articlereporting, reportingcategory,
+       articles.id as articleid, articles.title, articles.slug, articles.image FROM articlereporting, reportingcategory,
        articles WHERE articlereporting.articleid = articles.id AND articlereporting.categoryid = reportingcategory.id`,
       { type: Sequelize.QueryTypes.SELECT },
     );

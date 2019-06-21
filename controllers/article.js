@@ -797,7 +797,7 @@ class Article {
       }
       const response = reported.map(
         ({
-          id, description, name, articleid, title, slug
+          id, description, name, articleid, title, slug, image
         }) => ({
           id,
           category: name,
@@ -805,7 +805,8 @@ class Article {
           article: {
             id: articleid,
             slug,
-            title
+            title,
+            image
           }
         })
       );
