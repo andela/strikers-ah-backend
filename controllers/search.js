@@ -13,27 +13,27 @@ const logError = debug('app:*');
  */
 class Search {
   /**
-     * @author: Innocent Nkunzi
-     * @param {*} req character
-     * @param {*} res array
-     * @returns {*} match
-     */
+   * @author: Innocent Nkunzi
+   * @param {*} req character
+   * @param {*} res array
+   * @returns {*} match
+   */
   static async systemSearch(req, res) {
     let { keyword, tag, author } = req.query;
     keyword = createSearchKeyword(keyword);
-    tag = createSearchKeyword(tag);
+    tag = tag.split(' ');
     author = createSearchKeyword(author);
     const { Op } = Sequelize;
     try {
       const searchTag = await articleModel.findAll({
         attributes: {
-          exclude: ['id', 'authorid'],
+          exclude: ['id', 'authorid']
         },
         where: {
           taglist: {
-            [Op.contains]: [tag],
-          },
-        },
+            [Op.contains]: tag
+          }
+        }
       });
       const searchAuthor = await UserModel.findAll({
         attributes: {
@@ -47,130 +47,125 @@ class Search {
             'email_notifications',
             'role',
             'createdAt',
-            'updatedAt',
-          ],
+            'updatedAt'
+          ]
         },
         where: {
           [Op.or]: {
             firstname: {
               [Op.iLike]: {
-                [Op.any]: author,
-              },
+                [Op.any]: author
+              }
             },
             lastname: {
               [Op.iLike]: {
-                [Op.any]: author,
-              },
+                [Op.any]: author
+              }
             },
             username: {
               [Op.iLike]: {
-                [Op.any]: author,
-              },
+                [Op.any]: author
+              }
             },
             email: {
               [Op.iLike]: {
-                [Op.any]: author,
-              },
+                [Op.any]: author
+              }
             },
             bio: {
               [Op.iLike]: {
-                [Op.any]: author,
-              },
+                [Op.any]: author
+              }
             },
             image: {
               [Op.iLike]: {
-                [Op.any]: author,
-              },
-            },
-          },
-        },
+                [Op.any]: author
+              }
+            }
+          }
+        }
       });
 
       const searchArticle = await articleModel.findAll({
-        include: [{
-          model: UserModel,
-          attributes: {
-            exclude: [
-              'password',
-              'verified',
-              'inapp_notifications',
-              'email_notifications',
-              'provideruserid',
-              'provider',
-            ],
-          },
-        },],
+        include: [
+          {
+            model: UserModel,
+            attributes: {
+              exclude: [
+                'password',
+                'verified',
+                'inapp_notifications',
+                'email_notifications',
+                'provideruserid',
+                'provider'
+              ]
+            }
+          }
+        ],
         where: {
           [Op.or]: {
             title: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
+                [Op.any]: keyword
+              }
             },
             slug: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
+                [Op.any]: keyword
+              }
             },
             body: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
+                [Op.any]: keyword
+              }
             },
             description: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
-            },
-          },
-        },
+                [Op.any]: keyword
+              }
+            }
+          }
+        }
       });
       const searchUser = await UserModel.findAll({
         attributes: {
-          exclude: [
-            'id',
-            'provider',
-            'provideruserid',
-            'password',
-            'createdAt',
-            'updatedAt',
-          ],
+          exclude: ['id', 'provider', 'provideruserid', 'password', 'createdAt', 'updatedAt']
         },
         where: {
           [Op.or]: {
             firstname: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
+                [Op.any]: keyword
+              }
             },
             lastname: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
+                [Op.any]: keyword
+              }
             },
             email: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
+                [Op.any]: keyword
+              }
             },
             username: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
+                [Op.any]: keyword
+              }
             },
             bio: {
               [Op.iLike]: {
-                [Op.any]: keyword,
-              },
-            },
-          },
-        },
+                [Op.any]: keyword
+              }
+            }
+          }
+        }
       });
       return res.status(200).json({
         searchArticle,
         searchUser,
         searchTag,
-        searchAuthor,
+        searchAuthor
       });
     } catch (error) {
       logError(error);

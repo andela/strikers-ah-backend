@@ -121,12 +121,16 @@ class Article {
       });
     } else {
       const { id: articleid } = article;
-      const [, created] = await ArticleReadingStats.findOrCreate({
+      const count = await ArticleReadingStats.count({
         where: { userid: req.user, articleid }
       });
-      if (created) {
+
+      if (count === 0) {
         await ArticleModel.addViewer(articleid);
       }
+      await ArticleReadingStats.destroy({ where: { userid: req.user, articleid } });
+      await ArticleReadingStats.create({ userid: req.user, articleid });
+
       let categoryName = 'Other';
       const getCategory = await ArticleCategoryModel.findOne({
         where: { id: article.category }
