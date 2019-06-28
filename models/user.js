@@ -52,6 +52,20 @@ const UserModel = (Sequelize, DataTypes) => {
     role: { type: DataTypes.STRING, allowNull: false, defaultValue: 'User' }
   });
   User.socialUsers = async userProfile => {
+    //
+    const { email } = userProfile;
+    if (email) {
+      const userInfo = await User.findOne({ where: { email } });
+      if (userInfo) {
+        const userId = userInfo.id;
+        //
+        const { provider } = userProfile;
+        const { provideruserid } = userProfile;
+        const result = await User.update({ provider, provideruserid }, { where: { id: userId }, returning: true });
+        return result[1][0].dataValues;
+      }
+    }
+    //
     const result = await User.findOrCreate({
       where: { provideruserid: userProfile.provideruserid },
       defaults: userProfile
